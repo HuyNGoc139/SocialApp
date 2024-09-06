@@ -3,5 +3,5 @@ export interface User{
     uid?:string,
     username:string,
     DateBitrhDay:any,
-    uri:string
+    url:string
 }

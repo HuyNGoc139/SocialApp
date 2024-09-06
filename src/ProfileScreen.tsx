@@ -69,7 +69,7 @@ const ProfileScreen=({navigation}:any)=>{
               <Text style={globalStyles.textHeader}>Profile</Text>
             </View>
           <View style={{justifyContent:'center',alignItems:'center',width:'100%',height:320}}>
-            <Image style={{borderRadius:5000,width:300,height:300}} source={require('./asset/image/avatar.png')}/>
+            {user?.url? <Image style={{borderRadius:5000,width:300,height:300}} source={{uri:user.url}}/>:<Image style={{borderRadius:5000,width:300,height:300}} source={require('./asset/image/avatar.png')}/>}
           </View>
           <View style={{flex:1,backgroundColor:'#ababab',
           borderRadius:20 ,

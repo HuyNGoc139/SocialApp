@@ -12,19 +12,21 @@ import auth from '@react-native-firebase/auth'
 import MessageList from './components/MessageList';
 import { fontFamilies } from './constants/fontFamily';
 import { User } from './models/user';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage'
 const RoomScreen=({navigation,route}:any)=>{
     const userSelect=route.params
     const [message,setMessage]=useState<any[]>([])
     const [user,setUser]=useState<User>()
     const userCurrent=auth().currentUser
     const [textRef,setTextRef]=useState('')
-    
     useEffect(() => {
     getUser()
-    createRoom(); // Chỉ gọi createRoom sau khi getUser hoàn tất        
+    createRoom(); // Chỉ gọi createRoom sau khi getUser hoàn tất   
+    getAllMessage()      
     }, [userCurrent?.uid]);
     useEffect(() => {
-        getAllMessage()      
+             
         }, []);
     const getUser=()=>{
         firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
@@ -84,9 +86,10 @@ const RoomScreen=({navigation,route}:any)=>{
                 text: message,
                 profileUrl: userCurrent?.photoURL,
                 senderName: user?.username,
-                createdAt: firestore.FieldValue.serverTimestamp(),
+                // createdAt: firestore.FieldValue.serverTimestamp(),
+                createdAt: new Date()
             });
-    
+            
             console.log('Message sent successfully');
             setTextRef(''); // Xóa nội dung input sau khi gửi
         } catch (err) {
@@ -118,6 +121,39 @@ const RoomScreen=({navigation,route}:any)=>{
 
     }
 
+
+    const handleSelectImage =async () => {
+        ImagePicker.openPicker({
+          width: 300,
+          height: 400,
+          cropping: true
+        }).then(async image => {
+          console.log(image);
+          // Gửi ảnh tới Firestore hoặc server
+            const filename = image.path.substring(image.path.lastIndexOf('/') + 1); // Lấy tên file từ đường dẫn
+            const reference = storage().ref(`Images/${filename}`); // Tạo reference đến Firebase Storage
+            await reference.putFile(image.path)
+            const url=await reference.getDownloadURL()
+            console.log('url',url)
+            
+            let roomId = getRoomId(userCurrent?.uid ?? '', userSelect.uid);
+            const docRef = firestore().collection('Rooms').doc(roomId);
+            const messagesRef = docRef.collection('messages');
+            await messagesRef.add({
+                userId: userCurrent?.uid,
+                url:url,
+                profileUrl: userCurrent?.photoURL,
+                senderName: user?.username,
+                // createdAt: firestore.FieldValue.serverTimestamp(),
+                createdAt: new Date()
+            });
+
+
+        }).catch(error => {
+          console.log('Error selecting image:', error);
+        });
+      };
+    
     return(
         <View style={{flex:1,backgroundColor:'white'}}>
             <View style={{backgroundColor:'white',
@@ -153,7 +189,7 @@ const RoomScreen=({navigation,route}:any)=>{
                 justifyContent:'space-between',alignItems:'center',
                 borderWidth:1,
                 borderRadius:50,}}>
-                    <TouchableOpacity style={{marginLeft:10}}>
+                    <TouchableOpacity style={{marginLeft:10}} onPress={handleSelectImage}>
                     <Camera size="28" color="black"/>
                     </TouchableOpacity>
                     <TextInput 

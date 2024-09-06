@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import { handleDateTime } from '../funtion/handleDateTime';
 import { formatDate } from '../funtion/formatDate';
+import { User } from '../models/user';
 interface Props{
     userName:string,
     uid:string,
@@ -18,7 +19,21 @@ interface Props{
 const ChatItem=(props:Props)=>{
     const{userName,uid,onPress,currentuser}=props //uid = user select
     const[lastMessage,setLastmessage]=useState<any>(undefined)
-    // console.log(currentuser.uid)
+    const [user,setUser]=useState<User>()
+    useEffect(()=>{
+        getUser()
+    },[])
+    const getUser=()=>{
+        firestore().doc(`Users/${uid}`).onSnapshot((snap:any)=>{
+            if(snap.exists){
+    
+                setUser({
+                    ...snap.data()
+                })
+            }
+            else{console.log('task not found')}
+        })
+    }
     useEffect(()=>{
         let roomId = getRoomId(currentuser?.uid ?? '', uid);
         const messagesRef = firestore().collection('Rooms').doc(roomId).collection('messages');
@@ -49,9 +64,9 @@ const ChatItem=(props:Props)=>{
         if(typeof lastMessage=='undefined') return 'Loading...';
         if(lastMessage){
             if(currentuser.uid==lastMessage.userId){
-                return `You: ${lastMessage.text}`
+                return `You: ${lastMessage.url? 'Image' :lastMessage.text}`
             }
-            else return lastMessage.text
+            else return lastMessage.url? 'Image' :lastMessage.text
         }
         else {return 'Say hi!!!'}
     }
@@ -65,7 +80,7 @@ const ChatItem=(props:Props)=>{
       };
     return(
         <TouchableOpacity style={styles.container} onPress={onPress}>
-            <Image style={{height:60,width:60,borderRadius:100}} source={require('../asset/image/avatar.png')}/>
+            {user?.url?<Image style={{height:60,width:60,borderRadius:100}} source={{uri:user.url}}/> :<Image style={{height:60,width:60,borderRadius:100}} source={require('../asset/image/avatar.png')}/>}
             <View style={{flex:1,marginLeft:10}}>
                 <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                 <Text style={{fontFamily:fontFamilies.semiBold,color:'black',fontSize:18}}>{userName}</Text>

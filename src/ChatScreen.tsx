@@ -7,30 +7,40 @@ import { SelectModel } from './models/SelectModal';
 import { SearchNormal1 } from 'iconsax-react-native';
 import { fontFamilies } from './constants/fontFamily';
 import { colors } from './constants/color';
+import { User } from './models/user';
 
 const ChatScreen = ({ navigation }: any) => {
   const [userSelect, setUserSelect] = useState<SelectModel[]>([]);
   const [searchKey, setSearchKey] = useState('');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const[lastMessage,setLastmessage]=useState<any>(undefined)
- 
+  const userCurrent = auth().currentUser;  
+  const [user,setUser]=useState<User>()
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
         setCurrentUser(user);
         handleGetAllUsers(user.uid);
+        getUser()
       }
     });
     return () => unsubscribe(); // Clean up the subscription on unmount
   }, []);
-  
+
+
+  const getUser=()=>{
+    firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
+        if(snap.exists){
+
+            setUser({
+                ...snap.data()
+            })
+        }
+        else{console.log('task not found')}
+    })
+}
+
   const handleGetAllUsers = async (currentUserId: string) => {
-
-    const getRoomId = (currentUserId: string, userId2: string) => {
-    const sortedIds = [currentUserId, userId2].sort();
-    return sortedIds.join('-');
-};
-
     
     try {
       const snapshot = await firestore().collection('Users').get();
@@ -47,39 +57,19 @@ const ChatScreen = ({ navigation }: any) => {
            
           }
         });
-        setUserSelect(items);
-        
-        //   items.forEach((i)=>{
-        //     let roomId = getRoomId(currentUserId ?? '', i.uid);
-        //     const messagesRef = firestore().collection('Rooms').doc(roomId).collection('messages');
-   
-        // // Tạo query để sắp xếp các tin nhắn theo thời gian tạo
-        // const q = messagesRef.orderBy('createdAt', 'desc');
-    
-        // // Lắng nghe thay đổi trên collection 'messages'
-        // const unsubscribe = q.onSnapshot((snapshot) => {
-        //     // Lấy tất cả các tin nhắn từ snapshot
-        //     let allMessages = snapshot.docs.map(doc => doc.data());
-        //   console.log(allMessages)
-            
-         
-        // }, (error) => {
-        //     console.error('Error fetching messages:', error);
-        // });
-        //   })
-     
+        setUserSelect(items);     
       }
     } catch (err) {
       console.log(err);
     }
   };
-  
+  console.log(userSelect)
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.chatHeader}>
         <Text style={{ fontFamily: fontFamilies.regular, fontSize: 24, color: 'white', marginLeft: 12 }}>Chats</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Image style={{ height: 48, width: 48, borderRadius: 100, marginRight: 12 }} source={require('./asset/image/avatar.png')} />
+         {user?.url?<Image style={{ height: 48, width: 48, borderRadius: 100, marginRight: 12 }} source={{uri:user.url}} /> : <Image style={{ height: 48, width: 48, borderRadius: 100, marginRight: 12 }} source={require('./asset/image/avatar.png')} />}
         </TouchableOpacity>
       </View>
       <View style={styles.searchContainer}>

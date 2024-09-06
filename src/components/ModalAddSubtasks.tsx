@@ -10,11 +10,12 @@ import { colors } from "../constants/color"
 import { fontFamilies } from "../constants/fontFamily"
 import SectionComponent from "./SectionComponent"
 import Container from "./Container"
-
+import ImagePicker from 'react-native-image-crop-picker';
 import SpaceComponent from "./SpaceComponent"
 import { Designtools, Lock, Sms, Subtitle } from "iconsax-react-native"
 import firestore from '@react-native-firebase/firestore';
 import DateTimePickerComponent from "./DateTimePickerComponent"
+import storage from '@react-native-firebase/storage'
 interface Props{
     visible:boolean,
     onClose:() => void,
@@ -23,7 +24,8 @@ interface Props{
 const initialValue={
     email:'',
     username:'',
-    DateBitrhDay:new Date()
+    DateBitrhDay:new Date(),
+    url:''
 }
 const ModalAddSubtasks=(props:Props)=>{
     
@@ -34,6 +36,7 @@ const ModalAddSubtasks=(props:Props)=>{
     const [user,setUser]=useState(initialValue)
     const [userName,setUserName]=useState('')
     const[isLoading,setISLoading]=useState(false)
+    const[urlprofile,seturlprofile]=useState('')
     const getUser=()=>{
         firestore().doc(`Users/${userId}`).onSnapshot((snap:any)=>{
             if(snap.exists){
@@ -58,12 +61,13 @@ const ModalAddSubtasks=(props:Props)=>{
         const data={
             ...user,
             updatedAt:Date.now(),
+            url:urlprofile,
         }
         setISLoading(true) 
         try {
             
         await firestore().doc(`Users/${userId}`).update(data).then(()=>{
-            console.log('Tasks Updated')
+            console.log('Updated Profile')
               })
         handldeCloseModal()
         setISLoading(false)
@@ -80,7 +84,24 @@ const ModalAddSubtasks=(props:Props)=>{
     
         setUser(item);
       };
-
+      const handleSelectImage =async () => {
+        ImagePicker.openPicker({
+          width: 300,
+          height: 400,
+          cropping: true
+        }).then(async image => {
+          console.log(image);
+          // Gửi ảnh tới Firestore hoặc server
+            const filename = image.path.substring(image.path.lastIndexOf('/') + 1); // Lấy tên file từ đường dẫn
+            const reference = storage().ref(`Images/${filename}`); // Tạo reference đến Firebase Storage
+            await reference.putFile(image.path)
+            const url=await reference.getDownloadURL()
+            console.log('url',url)
+            seturlprofile(url)
+        }).catch(error => {
+          console.log('Error selecting image:', error);
+        });
+      };
     return(
             <Modal visible={visible} style={{}} transparent animationType="slide">
                 <Container>
@@ -93,9 +114,9 @@ const ModalAddSubtasks=(props:Props)=>{
           <TitleComponent text="Update information" size={32} />
         </RowComponent>
 
-        <View style={{justifyContent:'center',alignItems:'center',width:'100%',height:320}}>
-            <Image style={{borderRadius:5000,width:300,height:300}} source={require('../asset/image/avatar.png')}/>
-          </View>
+        <TouchableOpacity onPress={handleSelectImage} style={{justifyContent:'center',alignItems:'center',width:'100%',height:320}}>
+           {user.url? <Image style={{borderRadius:5000,width:300,height:300}} source={{uri:user.url}}/>:<Image style={{borderRadius:5000,width:300,height:300}} source={require('../asset/image/avatar.png')}/>}
+          </TouchableOpacity>
 
         <InputComponent
         prefix={<Sms
