@@ -62,16 +62,17 @@ export const globalStyles=StyleSheet.create({
         marginTop: 20,
       },
       header:{
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:colors.fb,
-        height:56,
-        flexDirection:'row',
-        padding:12
+        justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.fb,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    height: 80,
+    flexDirection: 'row'
       },
       textHeader:{
-        fontFamily:fontFamilies.bold,
-        fontSize:18,
+        fontFamily:fontFamilies.regular,
+        fontSize:24,
         color:'white'
       }
 })

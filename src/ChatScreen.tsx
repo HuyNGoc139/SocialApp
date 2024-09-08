@@ -63,7 +63,6 @@ const ChatScreen = ({ navigation }: any) => {
       console.log(err);
     }
   };
-  console.log(userSelect)
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.chatHeader}>
@@ -76,22 +75,9 @@ const ChatScreen = ({ navigation }: any) => {
         <SearchNormal1 style={{ marginLeft: 10 }} size={28} color='black' />
         <TextInput onChangeText={val => setSearchKey(val)} style={{ flex: 1, marginLeft: 10 }} />
       </View>
-      <View>
-        <FlatList
-          horizontal
-          data={userSelect.filter(ele => ele.userName.toLowerCase().includes(searchKey))}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.userItem}>
-              <Image style={styles.avatar} source={require('./asset/image/avatar.png')} />
-              <Text numberOfLines={1} ellipsizeMode="tail">{item.userName}</Text>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-
       {userSelect.length > 0 ? (
         <FlatList
-          data={userSelect}
+          data={userSelect.filter(ele => ele.userName.toLowerCase().includes(searchKey.toLowerCase()))}
           keyExtractor={(item) => item.uid}
           renderItem={({ item }) => (
             <ChatItem onPress={() => navigation.navigate('RoomScreen',{...item})} 

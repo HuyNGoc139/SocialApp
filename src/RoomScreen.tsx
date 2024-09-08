@@ -126,7 +126,8 @@ const RoomScreen=({navigation,route}:any)=>{
         ImagePicker.openPicker({
           width: 300,
           height: 400,
-          cropping: true
+          cropping: true,
+          mediaType:'any'
         }).then(async image => {
           console.log(image);
           // Gửi ảnh tới Firestore hoặc server

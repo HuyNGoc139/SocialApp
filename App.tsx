@@ -12,6 +12,7 @@ import ChatScreen from './src/ChatScreen';
 import { Home, Profile2User, Menu, Message } from 'iconsax-react-native';
 import auth from '@react-native-firebase/auth';
 import RoomScreen from './src/RoomScreen';
+import CreatePostScreen from './src/CreatePostScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,6 +59,7 @@ function App() {
           {isLogin ? (
             <><Stack.Screen name="HomeTab" component={HomeTab} />
             <Stack.Screen name="RoomScreen" component={RoomScreen} />
+            <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} />
             </>
             
           ) : (
