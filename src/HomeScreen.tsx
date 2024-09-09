@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import { AddSquare, Heart, Velas } from 'iconsax-react-native';
 import SpaceComponent from './components/SpaceComponent';
 import { User } from './models/user';
 import { fontFamilies } from './constants/fontFamily';
+import { posts } from './models/user';
+import PostCardComponent from './components/PostCardComponent';
 const HomeScreen=({navigation}:any)=>{
   useEffect(()=>{
  getUser()
+ getAllPost()
   },[])
   const [user,setUser]=useState<User>()
+  const [postsList, setPostsList] = useState<any[]>([]);
+  const flatListRef = useRef<FlatList<any>>(null);
  const userCurrent = auth().currentUser;      
  const getUser=()=>{
     firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
@@ -26,6 +31,90 @@ const HomeScreen=({navigation}:any)=>{
     })
 }
 
+// const getAllPost = async (): Promise<(posts & { user: any })[]> => {
+//     try {
+//       // Lấy tất cả các bài đăng và sắp xếp theo thời gian tạo
+//       const snapshot = await firestore()
+//         .collection('Posts')
+//         .orderBy('createAt', 'desc')
+//         .get();
+  
+//       // Tạo một mảng các promises để lấy thông tin người dùng dựa trên userId
+//       const postsWithUsers = await Promise.all(
+//         snapshot.docs.map(async (doc) => {
+//           const postData = doc.data();
+  
+//           // Truy vấn thông tin người dùng dựa trên userId
+//           const userSnapshot = await firestore()
+//             .collection('Users')
+//             .doc(postData.userId)
+//             .get();
+            
+//           const userData = userSnapshot.data();
+  
+//           // Kết hợp dữ liệu bài đăng và thông tin người dùng
+//           return {
+//             id: doc.id,
+//             url: postData.url,
+//             createAt: postData.createAt.toDate(), // Chuyển đổi Firestore Timestamp thành Date
+//             body: postData.body,
+//             userId: postData.userId,
+//             type: postData.type,
+//             user: userData || null, // Gán thông tin người dùng hoặc null nếu không tìm thấy
+//           };
+//         })
+//       );
+  
+//       console.log('Fetched and sorted posts with users:', postsWithUsers);
+//       setPostsList(postsWithUsers)
+//       return(postsWithUsers)
+//     } catch (error) {
+//       console.error('Error fetching and sorting posts with users:', error);
+//       return [];
+//     }
+//   };
+const getAllPost = () => {
+  // Lắng nghe sự thay đổi của collection "Posts"
+  const unsubscribe = firestore()
+    .collection('Posts')
+    .orderBy('createAt', 'desc')
+    .onSnapshot(async (snapshot) => {
+      // Khi có sự thay đổi, lấy dữ liệu mới
+      const postsWithUsers = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          const postData = doc.data();
+
+          // Truy vấn thông tin người dùng dựa trên userId
+          const userSnapshot = await firestore()
+            .collection('Users')
+            .doc(postData.userId)
+            .get();
+          
+          const userData = userSnapshot.data();
+
+          // Kết hợp dữ liệu bài đăng và thông tin người dùng
+          return {
+            id: doc.id,
+            url: postData.url,
+            createAt: postData.createAt.toDate(),
+            body: postData.body,
+            userId: postData.userId,
+            type: postData.type,
+            user: userData || null,
+          };
+        })
+      );
+
+      console.log('Fetched and sorted posts with users:', postsWithUsers);
+      setPostsList(postsWithUsers);
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    }, (error) => {
+      console.error('Error fetching and sorting posts with users:', error);
+    });
+
+  // Trả về hàm hủy đăng ký khi component bị unmount
+  return unsubscribe;
+};
     return(
         <View style={{flex:1}}>
             <View style={styles.header}> 
@@ -45,6 +134,16 @@ const HomeScreen=({navigation}:any)=>{
         </TouchableOpacity>
                 </View>
             </View>
+            <View style={{flex:1,margin:16}}>
+            <FlatList 
+            ref={flatListRef}
+            data={postsList}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }: any) => (
+            <PostCardComponent post={item} />
+            )}
+            />
+            </View>
         </View>
     )
 }
@@ -59,4 +158,5 @@ const styles=StyleSheet.create({
     flexDirection: 'row',
     backgroundColor:'white'
     },
+    
 })

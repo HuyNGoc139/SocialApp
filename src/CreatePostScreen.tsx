@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, Button, TouchableOpacity, ScrollView, Image, StyleSheet } from 'react-native';
+import { View, Text, Button, TouchableOpacity, ScrollView, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import { ArrowSquareLeft, Back, Camera,  Forbidden2,  VideoAdd } from 'iconsax-react-native';
@@ -23,6 +23,8 @@ const initialValue:posts={
   type:'',
 }
 const CreatePostScreen=({navigation,route}:any)=>{
+  const [isLoading, setIsLoading] = useState(false);
+
   const[data,setDate]=useState<posts>(initialValue)
   const { user } = route.params;
   const richText = useRef<RichEditor>(null);
@@ -31,7 +33,8 @@ const CreatePostScreen=({navigation,route}:any)=>{
   const [videoUrl, setVideoUrl] = useState('');
   const[type,setType]=useState('')
   const handleSelectImage = async () => {
-    setType('image')
+    setType('image');
+    setIsLoading(true); // Bắt đầu tải ảnh
     try {
       const image = await ImagePicker.openPicker({
         width: 300,
@@ -42,46 +45,42 @@ const CreatePostScreen=({navigation,route}:any)=>{
   
       console.log('Selected image:', image);
   
-      // Lấy tên file từ đường dẫn
       const filename = image.path.substring(image.path.lastIndexOf('/') + 1);
-  
-      // Tạo reference đến Firebase Storage
       const reference = storage().ref(`Images/${filename}`);
-  
-      // Upload file
       await reference.putFile(image.path);
-  
-      // Lấy URL của file đã upload
       const url = await reference.getDownloadURL();
-  
-      // Cập nhật URL ảnh vào state
       setFile(url);
     } catch (error) {
       console.log('Error selecting image:', error);
+    } finally {
+      setIsLoading(false); // Kết thúc tải ảnh
     }
   };
   const handleSelectMedia = async () => {
-    setType('video')
-    ImagePicker.openPicker({
-      mediaType: 'video', // Cho phép chọn cả ảnh và video
-    })
-      .then(async (media) => {
-        console.log(media);
-        const filename = media.path.substring(media.path.lastIndexOf('/') + 1); // Lấy tên file từ đường dẫn
-        const reference = storage().ref(`Media/${filename}`); // Tạo reference đến Firebase Storage
-        await reference.putFile(media.path);
-        const url = await reference.getDownloadURL();
-        console.log('url', url);
-        setFile(url)
-      })
-      .catch((error) => {
-        console.log('Error selecting media:', error);
+    setType('video');
+    setIsLoading(true); // Bắt đầu tải media
+    try {
+      const media = await ImagePicker.openPicker({
+        mediaType: 'video',
       });
+  
+      console.log(media);
+      const filename = media.path.substring(media.path.lastIndexOf('/') + 1);
+      const reference = storage().ref(`Media/${filename}`);
+      await reference.putFile(media.path);
+      const url = await reference.getDownloadURL();
+      setFile(url);
+    } catch (error) {
+      console.log('Error selecting media:', error);
+    } finally {
+      setIsLoading(false); // Kết thúc tải media
+    }
   };
   const handleSavePost = async () => {
     if (user) {
+      setIsLoading(true); // Bắt đầu gửi bài đăng
       const postId = firestore().collection('Posts').doc().id;
-
+  
       const data = {
         id: postId,
         url: file,
@@ -90,13 +89,15 @@ const CreatePostScreen=({navigation,route}:any)=>{
         userId: user.userId,
         type: type,
       };
-
+  
       try {
         await firestore().collection('Posts').doc(postId).set(data);
         console.log('Post saved successfully');
         navigation.goBack();
       } catch (error) {
         console.error('Error saving post:', error);
+      } finally {
+        setIsLoading(false); // Kết thúc gửi bài đăng
       }
     } else {
       console.error('User is not authenticated');
@@ -117,7 +118,7 @@ const CreatePostScreen=({navigation,route}:any)=>{
             <View style={{flexDirection:'row'}}>
                 <View style={{flexDirection:'row'}}>
                 {user?.url?<Image style={{ height: 56, width: 56, borderRadius: 12, marginRight: 12 }} source={{uri:user.url}} /> 
-            : <Image style={{ height: 48, width: 48, borderRadius: 100, marginRight: 12 }} source={require('./asset/image/avatar.png')} />}
+            : <Image style={{ height: 48, width: 48, borderRadius: 12, marginRight: 12 }} source={require('./asset/image/avatar.png')} />}
                 </View>
                 <View>
                     <Text style={{fontSize:20,fontFamily:fontFamilies.regular,color:'black'}}>{user.username}</Text>
@@ -126,6 +127,7 @@ const CreatePostScreen=({navigation,route}:any)=>{
             </View>
             <View style={{flex:1,marginTop:20,height:320}}>
             <RichToolbar style={styles.richbar}
+            editorStyle={{ color: 'black' }}
             selectedButtonStyle={styles.selectedButton}
             editor={richText}
             actions={[actions.setBold,
@@ -180,9 +182,13 @@ const CreatePostScreen=({navigation,route}:any)=>{
             </View>
             
             </ScrollView>
-            <View style={{margin:20}}>
-              <ButtonComponent text='Post' onPress={handleSavePost} color=''/>
-            </View>
+            <View style={{ margin: 20 }}>
+  {isLoading ? (
+    <ActivityIndicator size="large" color="#FF8A65" />
+  ) : (
+    <ButtonComponent text='Post' onPress={handleSavePost} color='' />
+  )}
+</View>
         </View>
     )
 }
