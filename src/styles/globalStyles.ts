@@ -74,5 +74,6 @@ export const globalStyles=StyleSheet.create({
         fontFamily:fontFamilies.regular,
         fontSize:24,
         color:'white'
-      }
+      },
+      
 })

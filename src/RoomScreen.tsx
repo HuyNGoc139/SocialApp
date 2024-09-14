@@ -25,9 +25,9 @@ const RoomScreen=({navigation,route}:any)=>{
     createRoom(); // Chỉ gọi createRoom sau khi getUser hoàn tất   
     getAllMessage()      
     }, [userCurrent?.uid]);
-    useEffect(() => {
+    // useEffect(() => {
              
-        }, []);
+    //     }, []);
     const getUser=()=>{
         firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
             if(snap.exists){
@@ -84,12 +84,14 @@ const RoomScreen=({navigation,route}:any)=>{
             await messagesRef.add({
                 userId: userCurrent?.uid,
                 text: message,
-                profileUrl: userCurrent?.photoURL,
                 senderName: user?.username,
                 // createdAt: firestore.FieldValue.serverTimestamp(),
                 createdAt: new Date()
             });
-            
+            await docRef.update({
+      lastMessageAt: firestore.FieldValue.serverTimestamp(),
+      lastMessage: message // Lưu nội dung tin nhắn cuối cùng (tuỳ chọn)
+    });
             console.log('Message sent successfully');
             setTextRef(''); // Xóa nội dung input sau khi gửi
         } catch (err) {
@@ -143,7 +145,7 @@ const RoomScreen=({navigation,route}:any)=>{
             await messagesRef.add({
                 userId: userCurrent?.uid,
                 url:url,
-                profileUrl: userCurrent?.photoURL,
+                
                 senderName: user?.username,
                 // createdAt: firestore.FieldValue.serverTimestamp(),
                 createdAt: new Date()

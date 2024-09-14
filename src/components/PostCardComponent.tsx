@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { fontFamilies } from '../constants/fontFamily';
 import { formatDate } from '../funtion/formatDate';
-import { Heart, Message, More, Send2 } from 'iconsax-react-native';
+import { Heart, Message, More, Send2, User } from 'iconsax-react-native';
 import RenderHTML from 'react-native-render-html';
 import Video from 'react-native-video';
 import SpaceComponent from './SpaceComponent';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import  { memo } from 'react';
 
-const PostCardComponent = (props: any) => {
-    const { post, userCurrent } = props;
+const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} }: any) => {
+    const MemoizedRenderHTML = memo(RenderHTML);
+    // const { post, userCurrent,navigation } = props;
     const user = post.user;
     const [like, setLike] = useState(false);
     const [userLike, setUserLike] = useState<any[]>([]);
-  
+    const [modalVisible, setModalVisible] = useState(false);
+    const [url, setUrl] = useState('');
+    const [userComment, setUserComment] = useState<any[]>([]);
     useEffect(() => {
-      getLikes();
-    }, [like]);
-  
+      getLikes()
+      getComment()
+    }, [like,userComment]);
     const getLikes = async () => {
       const docRef = firestore().collection('Posts').doc(post.id);
       const likeRef = docRef.collection('like');
@@ -48,11 +52,28 @@ const PostCardComponent = (props: any) => {
         setUserLike([]);
       }
     };
+    const getComment = async () => {
+      const docRef = firestore().collection('Posts').doc(post.id);
+      const commentRef = docRef.collection('comments');
+      if(commentRef){
+        const snapshot = await commentRef.get();
+  
+      // Kiểm tra nếu có dữ liệu
+      if (!snapshot.empty) {
+        const comment = snapshot.docs.map((doc) => {
+          return {
+            userId: doc.id, // hoặc doc.data().userId
+            ...doc.data(), // Lấy tất cả dữ liệu của user đã like
+          };
+        });
+        setUserComment(comment); // Đây là danh sách các user đã like
+      }}
+      else {setUserComment([])}
+    };
   
     const sendLike = async () => {
       const docRef = firestore().collection('Posts').doc(post.id);
       const likeRef = docRef.collection('like').doc(userCurrent?.userId);
-  
       if (like) {
         // Nếu userCurrent đã like, xóa like khỏi Firestore
         await likeRef.delete();
@@ -64,15 +85,32 @@ const PostCardComponent = (props: any) => {
             userId: userCurrent.userId,
             senderName: userCurrent?.username,
             createdAt: new Date(),
+            url:userCurrent.url??''
           },
           { merge: true }
         );
         setLike(true);
       }
-  
-      // Cập nhật lại danh sách các user đã like
     };
+    const renderUserLike = ({ item }: any) => {
+        return (<View style={[styles.userItem,{flexDirection:'row',flex:1}]}>
+            {item?.url ? (
+          <Image
+            style={{ height: 36, width: 36, borderRadius: 100, marginRight: 12 }}
+            source={{ uri: item.url }}
+          />
+        ) : (
+            <Image
+            style={{ height: 36, width: 36, borderRadius: 100, marginRight: 12 }}
+            source={require('../asset/image/avatar.png')}
+          />
+        )}
+        <Text style={{ fontSize: 16, fontFamily: fontFamilies.semiBold, color: 'black',flex:1 }}>{item.senderName}</Text>
+        <Heart size="32" variant="Bold" color="red" />
+      </View>)
+    }
   return (
+    <>
     <View style={styles.container}>
       <View style={styles.header}>
         {user?.url ? (
@@ -82,7 +120,7 @@ const PostCardComponent = (props: any) => {
           />
         ) : (
           <Image
-            style={{ height: 48, width: 48, borderRadius: 12, marginRight: 12 }}
+            style={{ height: 56, width: 56, borderRadius: 12, marginRight: 12 }}
             source={require('../asset/image/avatar.png')}
           />
         )}
@@ -94,13 +132,12 @@ const PostCardComponent = (props: any) => {
             {formatDate(post.createAt)}
           </Text>
         </View>
-        <TouchableOpacity>
-          <More size="32" color="black" />
-        </TouchableOpacity>
+        
       </View>
       <View style={{ flex: 1 }}>
         {post.body ? (
-          <RenderHTML source={{ html: post.body }} contentWidth={100} />
+          <MemoizedRenderHTML source={{ html: post.body }} contentWidth={100} tagsStyles={{
+            body: { color: 'black',fontSize:16 }}}/>
         ) : (
           <></>
         )}
@@ -132,14 +169,17 @@ const PostCardComponent = (props: any) => {
                 <Heart size="32"  color="gray" />
               )}
             </TouchableOpacity>
+            <TouchableOpacity onPress={()=>setModalVisible(true)}>
             <Text style={{ color: 'gray', fontSize: 18, marginLeft: 4 }}>{userLike.length}</Text>
+            </TouchableOpacity>
           </View>
           <SpaceComponent width={12} />
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>navigation.navigate('PostDetail',{post:{...post,
+            createdAt: post.createAt.toISOString()},userCurrent})}>
               <Message size="32" color="gray" />
             </TouchableOpacity>
-            <Text style={{ color: 'gray', fontSize: 18, marginLeft: 4 }}>0</Text>
+            <Text style={{ color: 'gray', fontSize: 18, marginLeft: 4 }}>{userComment.length}</Text>
           </View>
           <SpaceComponent width={12} />
           <TouchableOpacity>
@@ -147,27 +187,77 @@ const PostCardComponent = (props: any) => {
           </TouchableOpacity>
         </View>
       </View>
+      
     </View>
+    <Modal style={{justifyContent:'center',alignContent:'center'}}
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {/* <Text style={styles.modalTitle}>Danh sách người đã like</Text> */}
+            <FlatList
+              data={userLike}
+              renderItem={renderUserLike}
+              keyExtractor={(item) => item.userId}
+            />
+            <Button title="Close" onPress={() => setModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
 export default PostCardComponent;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 10,
-    marginBottom: 16,
-    borderRadius: 20,
-    borderCurve: 'continuous',
-    padding: 10,
-    borderWidth: 0.6,
-    backgroundColor: 'white',
-    borderColor: 'gray',
-    paddingVertical: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-});
+    container: {
+      flex: 1,
+      gap: 10,
+      marginBottom: 16,
+      borderRadius: 20,
+      borderCurve: 'continuous',
+      padding: 10,
+      borderWidth: 0.6,
+      backgroundColor: 'white',
+      borderColor: 'gray',
+      paddingVertical: 12,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    modalContainer: {
+      flex:1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+      width: 300,
+      padding: 20,
+      backgroundColor: 'white',
+      borderRadius: 10,
+    //   alignItems: 'center',
+    },
+    modalTitle: {
+        width:'100%',
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 10,
+    },
+    userItem: {
+        flex:1,
+      padding: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ddd',
+      justifyContent:'center',
+      alignItems:'center'
+    },
+    userName: {
+      fontSize: 16,
+    },
+  });

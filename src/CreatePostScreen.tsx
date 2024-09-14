@@ -111,7 +111,7 @@ const CreatePostScreen=({navigation,route}:any)=>{
             <ArrowSquareLeft color='white' size={32}/>
             </TouchableOpacity>
             <View style={{justifyContent:'center',alignItems:'center',flex:1}}>
-            <Text style={[globalStyles.textHeader,{flex:1,lineHeight:58}]}>CreatePostScreen</Text>
+            <Text style={[globalStyles.textHeader,{flex:1,lineHeight:58}]}>Create Post</Text>
             </View>
             </View>
             <ScrollView style={{flex:1,margin:20}}>

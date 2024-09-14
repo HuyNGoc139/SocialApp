@@ -11,6 +11,7 @@ import { fontFamilies } from './constants/fontFamily';
 import { posts } from './models/user';
 import PostCardComponent from './components/PostCardComponent';
 const HomeScreen=({navigation}:any)=>{
+
   useEffect(()=>{
  getUser()
  getAllPost()
@@ -27,7 +28,7 @@ const HomeScreen=({navigation}:any)=>{
                 ...snap.data()
             })
         }
-        else{console.log('task not found')}
+        else{console.log('user not found')}
     })
 }
 
@@ -73,6 +74,7 @@ const getAllPost = () => {
   // Trả về hàm hủy đăng ký khi component bị unmount
   return unsubscribe;
 };
+
     return(
         <View style={{flex:1}}>
             <View style={styles.header}> 
@@ -94,11 +96,16 @@ const getAllPost = () => {
             </View>
             <View style={{flex:1,margin:16}}>
             <FlatList 
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
             ref={flatListRef}
             data={postsList}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }: any) => (
-            <PostCardComponent key={item.id} post={item} userCurrent={user}/>
+            <PostCardComponent key={item.id} 
+            post={item} 
+            userCurrent={user}
+            navigation={navigation}/>
             )}
             />
             </View>
