@@ -20,57 +20,63 @@ const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} 
     const [url, setUrl] = useState('');
     const [userComment, setUserComment] = useState<any[]>([]);
     useEffect(() => {
-      getLikes()
-      getComment()
-    }, [like,userComment]);
-    const getLikes = async () => {
+      const unsubscribeLikes = subscribeLikes();
+      const unsubscribeComments = subscribeComments();
+    
+      // Cleanup subscription khi component unmount
+      return () => {
+        unsubscribeLikes();
+        unsubscribeComments();
+      };
+    }, []);
+    
+    const subscribeLikes = () => {
       const docRef = firestore().collection('Posts').doc(post.id);
       const likeRef = docRef.collection('like');
-  
-      // Lấy tất cả các user đã like
-      const snapshot = await likeRef.get();
-  
-      // Kiểm tra nếu có dữ liệu
-      if (!snapshot.empty) {
-        const likes = snapshot.docs.map((doc) => {
-          return {
-            userId: doc.id, // hoặc doc.data().userId
-            ...doc.data(), // Lấy tất cả dữ liệu của user đã like
-          };
-        });
-        setUserLike(likes); // Đây là danh sách các user đã like
-  
-        // Kiểm tra xem userCurrent đã like hay chưa
-        const currentUserLike = likes.find((like) => like.userId === userCurrent.userId);
-        if (currentUserLike) {
-          setLike(true); // Nếu userCurrent đã like, đặt trạng thái like thành true
+    
+      // Lắng nghe sự thay đổi trong collection 'like'
+      return likeRef.onSnapshot((snapshot) => {
+        if (!snapshot.empty) {
+          const likes = snapshot.docs.map((doc) => ({
+            userId: doc.id,
+            ...doc.data(),
+          }));
+    
+          setUserLike(likes);
+    
+          // Kiểm tra xem userCurrent đã like hay chưa
+          const currentUserLike = likes.find((like) => like.userId === userCurrent.userId);
+          if (currentUserLike) {
+            setLike(true);
+          } else {
+            setLike(false);
+          }
         } else {
-          setLike(false); // Nếu chưa like, đặt trạng thái like thành false
+          setUserLike([]);
+          setLike(false);
         }
-      } else {
-        console.log('Không có ai đã like bài viết này.');
-        setUserLike([]);
-      }
+      });
     };
-    const getComment = async () => {
+    
+    const subscribeComments = () => {
       const docRef = firestore().collection('Posts').doc(post.id);
       const commentRef = docRef.collection('comments');
-      if(commentRef){
-        const snapshot = await commentRef.get();
-  
-      // Kiểm tra nếu có dữ liệu
-      if (!snapshot.empty) {
-        const comment = snapshot.docs.map((doc) => {
-          return {
-            userId: doc.id, // hoặc doc.data().userId
-            ...doc.data(), // Lấy tất cả dữ liệu của user đã like
-          };
-        });
-        setUserComment(comment); // Đây là danh sách các user đã like
-      }}
-      else {setUserComment([])}
+    
+      // Lắng nghe sự thay đổi trong collection 'comments'
+      return commentRef.onSnapshot((snapshot) => {
+        if (!snapshot.empty) {
+          const comments = snapshot.docs.map((doc) => ({
+            userId: doc.id,
+            ...doc.data(),
+          }));
+    
+          setUserComment(comments);
+        } else {
+          setUserComment([]);
+        }
+      });
     };
-  
+ 
     const sendLike = async () => {
       const docRef = firestore().collection('Posts').doc(post.id);
       const likeRef = docRef.collection('like').doc(userCurrent?.userId);
@@ -135,12 +141,17 @@ const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} 
         
       </View>
       <View style={{ flex: 1 }}>
+        <View style={{marginLeft:8,marginBottom:4}}>
         {post.body ? (
           <MemoizedRenderHTML source={{ html: post.body }} contentWidth={100} tagsStyles={{
-            body: { color: 'black',fontSize:16 }}}/>
+            body: { color: 'black',fontSize:18 },
+            h1: { fontSize: 36, fontWeight: 'bold' },
+            h4: { fontSize: 20, fontWeight: 'bold' },
+          }}/>
         ) : (
           <></>
         )}
+        </View>
         {post.url && (
           <View style={{ flex: 1, marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
             {post.type == 'image' ? (
@@ -175,8 +186,8 @@ const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} 
           </View>
           <SpaceComponent width={12} />
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <TouchableOpacity onPress={()=>navigation.navigate('PostDetail',{post:{...post,
-            createdAt: post.createAt.toISOString()},userCurrent})}>
+            <TouchableOpacity onPress={()=>navigation.navigate('PostDetail',{post,
+            userCurrent})}>
               <Message size="32" color="gray" />
             </TouchableOpacity>
             <Text style={{ color: 'gray', fontSize: 18, marginLeft: 4 }}>{userComment.length}</Text>

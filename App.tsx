@@ -14,7 +14,7 @@ import auth from '@react-native-firebase/auth';
 import RoomScreen from './src/RoomScreen';
 import CreatePostScreen from './src/CreatePostScreen';
 import PostDetail from './src/PostDetail';
-
+import { MenuProvider } from 'react-native-popup-menu'; 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -26,18 +26,6 @@ const HomeTab = () => (
     <Tab.Screen name='Chat' component={ChatScreen} options={{ tabBarIcon: () => <Message size="28" color="#4267B2" /> }} />
     <Tab.Screen name='Profile' component={ProfileScreen} options={{ tabBarIcon: () => <Menu size="28" color="#4267B2" /> }} />
   </Tab.Navigator>
-);
-const ChatStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="ChatScreen" component={ChatScreen} />
-    <Stack.Screen name="RoomScreen" component={RoomScreen} />
-  </Stack.Navigator>
-);
-const AuthNavigator = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="LoginScreen" component={LoginScreen} />
-    <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
-  </Stack.Navigator>
 );
 
 function App() {
@@ -54,7 +42,8 @@ function App() {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <MenuProvider>
+      <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {isLogin ? (
@@ -73,6 +62,7 @@ function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
+    </MenuProvider>
   );
 }
 

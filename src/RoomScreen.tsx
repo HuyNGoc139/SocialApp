@@ -111,7 +111,11 @@ const RoomScreen=({navigation,route}:any)=>{
         // Lắng nghe thay đổi trên collection 'messages'
         const unsubscribe = q.onSnapshot((snapshot) => {
             // Lấy tất cả các tin nhắn từ snapshot
-            let allMessages = snapshot.docs.map(doc => doc.data());
+            let allMessages = snapshot.docs.map(doc => ({
+                id: doc.id,
+                roomId:roomId,        // Lấy id của document
+                ...doc.data()      // Gộp dữ liệu của document
+            }));
     
             // Cập nhật trạng thái với danh sách tin nhắn đã sắp xếp
             setMessage(allMessages);

@@ -17,7 +17,6 @@ const PostDetail=({navigation,route}:any)=>{
     const {post,userCurrent}=route.params
 
   //do phai cho truyen nen render lau
-    const createAtDate = new Date(post.createdAt)
     const [userComment, setUserComment] = useState<any[]>([]);
     const [user,setUser]=useState<User>()
     useEffect(() => {

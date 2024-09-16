@@ -115,7 +115,8 @@ const ModalAddSubtasks=(props:Props)=>{
         </RowComponent>
 
         <TouchableOpacity onPress={handleSelectImage} style={{justifyContent:'center',alignItems:'center',width:'100%',height:320}}>
-           {user.url? <Image style={{borderRadius:5000,width:300,height:300}} source={{uri:user.url}}/>:<Image style={{borderRadius:5000,width:300,height:300}} source={require('../asset/image/avatar.png')}/>}
+           {urlprofile?<Image style={{borderRadius:5000,width:300,height:300}} source={{uri:urlprofile}}/>:user.url? <Image style={{borderRadius:5000,width:300,height:300}} source={{uri:user.url}}/>
+           :<Image style={{borderRadius:5000,width:300,height:300}} source={require('../asset/image/avatar.png')}/>}
           </TouchableOpacity>
 
         <InputComponent

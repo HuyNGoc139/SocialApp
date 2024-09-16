@@ -60,7 +60,9 @@ const ProfileScreen=({navigation}:any)=>{
         const date = new Date(timestamp.seconds * 1000);
         return handleDateTime.DateString(date); // Hoặc sử dụng `date.toISOString()` để định dạng khác
       };
-
+      console.log('====================================');
+      console.log(user);
+      console.log('====================================');
     return(
         <>
         <View style={{flex:1}}>
