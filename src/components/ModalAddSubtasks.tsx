@@ -62,6 +62,7 @@ const ModalAddSubtasks=(props:Props)=>{
             ...user,
             updatedAt:Date.now(),
             url:urlprofile,
+            uid:userId  //them doan nay
         }
         setISLoading(true) 
         try {

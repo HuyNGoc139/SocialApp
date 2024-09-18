@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, Button, Alert, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Button, Alert, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import ButtonComponent from './components/ButtonComponent';
@@ -11,11 +11,18 @@ import { colors } from './constants/color';
 import TitleComponent from './components/TitleComponent';
 import { fontFamilies } from './constants/fontFamily';
 import RowComponent from './components/RowComponent';
-import { Information, Logout } from 'iconsax-react-native';
+import { Information, Logout, MoreSquare } from 'iconsax-react-native';
 import SpaceComponent from './components/SpaceComponent';
 import { handleDateTime } from './funtion/handleDateTime';
 import ModalAddSubtasks from './components/ModalAddSubtasks';
 import { User } from './models/user';
+import PostCardComponent from './components/PostCardComponent';
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 interface FirebaseTimestamp {
   seconds: number;
   nanoseconds: number;
@@ -29,10 +36,52 @@ const ProfileScreen=({navigation}:any)=>{
   const [isVisibleModalSubTasks, setIsVisibleModalSubTasks] = useState(false);
   const userCurrent = auth().currentUser;  
   const [user,setUser]=useState<User>()
+  const [postsList, setPostsList] = useState<any[]>([]);
   useEffect(()=>{
     getUser()
-},[userCurrent?.uid])
+    getAllPost()
+},[])
+
+   const getAllPost = () => {
+      const unsubscribe = firestore()
+        .collection('Posts')
+        .orderBy('createAt', 'desc')
+        .onSnapshot(async (snapshot) => {
+          const postsWithUsers = await Promise.all(
+            snapshot.docs.map(async (doc) => {
+              const postData = doc.data();
+    
+              // Kiểm tra nếu postData.userId bằng với userId đã truyền vào
+              if (postData.userId === userCurrent?.uid) {
+                // Lấy thông tin của người dùng từ collection 'Users'
+                const userSnapshot = await firestore().doc(`Users/${postData.userId}`).get();
+                const userData = userSnapshot.exists ? userSnapshot.data() : null;
+    
+                return {
+                  id: doc.id,
+      url: postData.url,
+      createAt: postData.createAt.toDate(),
+      body: postData.body,
+      userId: postData.userId,
+      type: postData.type,
+      user: userData || null, // Thông tin người dùng
+                };
+              } else {
+                return null; // Nếu không khớp, trả về null
+              }
+            })
+          );
+    
+          // Loại bỏ các giá trị null không khớp và cập nhật danh sách bài đăng
+          setPostsList(postsWithUsers.filter((post) => post !== null));
+        }, (error) => {
+          console.error('Error fetching posts:', error);
+        });
+    
+      return unsubscribe; // Trả về hàm hủy đăng ký khi component bị unmount
+    };
   const getUser=()=>{
+    // const userCurrent = auth().currentUser;  
     firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
         if(snap.exists){
 
@@ -60,12 +109,10 @@ const ProfileScreen=({navigation}:any)=>{
         const date = new Date(timestamp.seconds * 1000);
         return handleDateTime.DateString(date); // Hoặc sử dụng `date.toISOString()` để định dạng khác
       };
-      console.log('====================================');
-      console.log(user);
-      console.log('====================================');
+
     return(
         <>
-        <View style={{flex:1}}>
+        <ScrollView style={{flex:1}}>
           <View style={{flex:1}}>
             <View style={globalStyles.header}>
               <Text style={globalStyles.textHeader}>Profile</Text>
@@ -102,7 +149,41 @@ const ProfileScreen=({navigation}:any)=>{
 
           </View>
           </View>
-        </View>
+          <View>
+          <View style={{flex:1,margin:16}}>
+          {postsList.map((item) => (
+           <View key={item.id}>
+            {/* <Menu>
+      <MenuTrigger style={{}}>
+      <MoreSquare size="32" color="#FF8A65"/>
+      </MenuTrigger>
+      <MenuOptions customStyles={{
+                    optionsContainer:{
+                        borderRadius:10,
+                        borderCurve:'continuous',
+                        marginTop:40,
+                        marginRight:30
+                    }
+                }}>
+                    <MenuOption >
+                        <Text style={{ padding: 10 }}>Edit</Text>
+                    </MenuOption>
+                    <MenuOption >
+                        <Text style={{ padding: 10, color: 'red' }}>Delete</Text>
+                    </MenuOption>
+                </MenuOptions>
+    </Menu> */}
+           <PostCardComponent
+             post={item}
+             userCurrent={user}
+             isEdit={true}
+             navigation={navigation}
+           />
+         </View>
+        ))}
+            </View>
+          </View>
+        </ScrollView>
         <ModalAddSubtasks visible={isVisibleModalSubTasks}
         userId={userCurrent?.uid??''} 
         onClose={()=>setIsVisibleModalSubTasks(false)}/>

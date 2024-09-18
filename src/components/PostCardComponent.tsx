@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Modal, FlatList } from 'react-native';
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import { fontFamilies } from '../constants/fontFamily';
 import { formatDate } from '../funtion/formatDate';
-import { Heart, Message, More, Send2, User } from 'iconsax-react-native';
+import { Heart, Message, More, MoreSquare, Send2, User } from 'iconsax-react-native';
 import RenderHTML from 'react-native-render-html';
 import Video from 'react-native-video';
 import SpaceComponent from './SpaceComponent';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import  { memo } from 'react';
-
-const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} }: any) => {
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import ModalEditPost from './ModalEditPost';
+const PostCardComponent = ({ post = {}, userCurrent = {},isEdit, navigation = () => {} }: any) => {
     const MemoizedRenderHTML = memo(RenderHTML);
     // const { post, userCurrent,navigation } = props;
     const user = post.user;
@@ -19,6 +25,7 @@ const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} 
     const [modalVisible, setModalVisible] = useState(false);
     const [url, setUrl] = useState('');
     const [userComment, setUserComment] = useState<any[]>([]);
+    const [isVisibleModal, setIsVisibleModal] = useState(false);
     useEffect(() => {
       const unsubscribeLikes = subscribeLikes();
       const unsubscribeComments = subscribeComments();
@@ -115,6 +122,29 @@ const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} 
         <Heart size="32" variant="Bold" color="red" />
       </View>)
     }
+    const handleDeletePost= async()=>{
+      try {
+        Alert.alert('Delete Post','Do you want delete post?',[
+          {
+            text:'Cancel',
+            style:'cancel'
+          },{
+            text:'Ok',
+            onPress:async()=>{
+              const postref=firestore().collection('Posts').doc(post.id)
+              postref.delete()
+              .then(()=>console.log('Post deleted successfully'))
+              .catch((error)=>console.log(error))
+            }
+          }
+        ])
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    const handleEditPost=()=>{
+
+    }
   return (
     <>
     <View style={styles.container}>
@@ -138,7 +168,26 @@ const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} 
             {formatDate(post.createAt)}
           </Text>
         </View>
-        
+        {isEdit&&<Menu>
+      <MenuTrigger style={{}}>
+      <MoreSquare size="32" color="gray"/>
+      </MenuTrigger>
+      <MenuOptions customStyles={{
+                    optionsContainer:{
+                        borderRadius:10,
+                        borderCurve:'continuous',
+                        marginTop:40,
+                        marginRight:30
+                    }
+                }}>
+                    <MenuOption onSelect={()=>setIsVisibleModal(true)}>
+                        <Text style={{ padding: 10 }}>Edit</Text>
+                    </MenuOption>
+                    <MenuOption onSelect={handleDeletePost}>
+                        <Text style={{ padding: 10, color: 'red' }}>Delete</Text>
+                    </MenuOption>
+                </MenuOptions>
+    </Menu>}
       </View>
       <View style={{ flex: 1 }}>
         <View style={{marginLeft:8,marginBottom:4}}>
@@ -218,6 +267,10 @@ const PostCardComponent = ({ post = {}, userCurrent = {}, navigation = () => {} 
           </View>
         </View>
       </Modal>
+      <ModalEditPost visible={isVisibleModal}
+        onClose={()=>setIsVisibleModal(false)}
+        post={post}
+        />
     </>
   );
 };
