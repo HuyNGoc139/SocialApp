@@ -36,7 +36,32 @@ const PostCardComponent = ({ post = {}, userCurrent = {},isEdit, navigation = ()
         unsubscribeComments();
       };
     }, []);
+    // console.log('====================================');
+    // console.log(userCurrent);
+    // console.log('====================================');
+//hom nay sua o day
+const sendLikeNotification = async () => {
+  try {
+    const notificationRef = firestore().collection('notifi');
     
+    await notificationRef.add({
+      postId: post.id,
+      senderName: userCurrent.username,
+      senderId: userCurrent.userId,
+      type: 'like', // loại thông báo (like hoặc comment)
+      createdAt: new Date(),
+      receiverId: post.userId, // người đăng bài viết
+      isRead: false,
+    });
+    console.log('Notification sent successfully');
+  } catch (error) {
+    console.log('Error sending notification:', error);
+  }
+};
+//hom nay sua o day
+
+
+
     const subscribeLikes = () => {
       const docRef = firestore().collection('Posts').doc(post.id);
       const likeRef = docRef.collection('like');
@@ -87,21 +112,40 @@ const PostCardComponent = ({ post = {}, userCurrent = {},isEdit, navigation = ()
     const sendLike = async () => {
       const docRef = firestore().collection('Posts').doc(post.id);
       const likeRef = docRef.collection('like').doc(userCurrent?.userId);
+      const notificationRef = firestore()
+        .collection('notifi')
+        .where('postId', '==', post.id)
+        .where('senderId', '==', userCurrent?.userId)
+        .where('type', '==', 'like'); // Tìm thông báo "like" cho bài post này
+    
       if (like) {
-        // Nếu userCurrent đã like, xóa like khỏi Firestore
+        // Nếu user đã like, xóa like khỏi Firestore
         await likeRef.delete();
+    
+        // Xóa thông báo like tương ứng
+        const notificationsSnapshot = await notificationRef.get();
+        notificationsSnapshot.forEach(async (doc) => {
+          await doc.ref.delete(); // Xóa từng thông báo
+        });
+    
         setLike(false);
       } else {
-        // Nếu userCurrent chưa like, thêm like vào Firestore
+        // Nếu user chưa like, thêm like vào Firestore
         await likeRef.set(
           {
             userId: userCurrent.userId,
             senderName: userCurrent?.username,
             createdAt: new Date(),
-            url:userCurrent.url??''
+            url: userCurrent.url ?? '',
           },
           { merge: true }
         );
+    
+        // Thêm thông báo mới vào collection 'notifications'
+        if (userCurrent.userId !== post.userId) {
+          await sendLikeNotification();
+        }
+    
         setLike(true);
       }
     };
@@ -141,9 +185,6 @@ const PostCardComponent = ({ post = {}, userCurrent = {},isEdit, navigation = ()
       } catch (error) {
         console.log(error)
       }
-    }
-    const handleEditPost=()=>{
-
     }
   return (
     <>

@@ -15,7 +15,9 @@ import CommentItem from './components/CommentItem';
 const PostDetail=({navigation,route}:any)=>{
     const [textRef,setTextRef]=useState('')
     const {post,userCurrent}=route.params
-
+console.log('====================================');
+console.log(post);
+console.log('====================================');
   //do phai cho truyen nen render lau
     const [userComment, setUserComment] = useState<any[]>([]);
     const [user,setUser]=useState<User>()
@@ -39,6 +41,25 @@ const PostDetail=({navigation,route}:any)=>{
       
         return () => unsubscribe(); // Hủy lắng nghe khi component bị unmount
       }, []);
+      const sendCommentNotification = async (comment: string) => {
+        try {
+          const notificationRef = firestore().collection('notifi');
+          
+          await notificationRef.add({
+            postId: post.id,
+            senderName: userCurrent.username,
+            senderId: userCurrent.userId,
+            commentText: comment,
+            type: 'comment', // loại thông báo (comment)
+            createdAt: new Date(),
+            receiverId: post.user.userId,
+            isRead: false,
+          });
+          console.log('Notification sent successfully');
+        } catch (error) {
+          console.log('Error sending notification:', error);
+        }
+      };
       const handleSentComment = async () => {
         let comment = textRef.trim();
         if (!comment) return;
@@ -58,13 +79,16 @@ const PostDetail=({navigation,route}:any)=>{
                 senderName: userCurrent?.username,
                 createdAt: new Date(),
             });
-    
+            if (userCurrent.userId !== post.user.userId) {
+              await sendCommentNotification(comment)
+            }
             console.log('Comments sent successfully');
             setTextRef(''); // Xóa nội dung input sau khi gửi
         } catch (err) {
             console.log('Error sending message:', err);
         }
     };
+    
     return(
         <ScrollView>
             <View style={[globalStyles.header,{paddingLeft:12,flex:1,paddingRight:12}]}>

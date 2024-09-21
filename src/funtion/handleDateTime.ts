@@ -1,4 +1,8 @@
 import firestore from '@react-native-firebase/firestore';
+interface FirestoreTimestamp {
+  seconds: number;
+  nanoseconds: number;
+}
 const monthName=[
     'Jan',
     'Feb',
@@ -41,4 +45,24 @@ export class handleDateTime{
       };
       const startTime: string = startDate.toLocaleTimeString('en-US', options); 
       return startTime;}
+      static convertFirestoreTimestamp(timestamp: FirestoreTimestamp): string {
+        // Chuyển đổi về milliseconds
+        const milliseconds = timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000);
+        
+        // Tạo đối tượng Date
+        const date = new Date(milliseconds);
+        
+        // Định dạng ngày tháng
+        const options: Intl.DateTimeFormatOptions = { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit',  
+            hour12: false 
+        };
+        
+        // Trả về chuỗi định dạng
+        return date.toLocaleString('vi-VN', options);
+    }
 }

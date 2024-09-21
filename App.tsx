@@ -15,6 +15,7 @@ import RoomScreen from './src/RoomScreen';
 import CreatePostScreen from './src/CreatePostScreen';
 import PostDetail from './src/PostDetail';
 import { MenuProvider } from 'react-native-popup-menu';
+import NotificationScreen from './src/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -72,6 +73,7 @@ function App() {
                 <Stack.Screen name="RoomScreen" component={RoomScreen} />
                 <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} />
                 <Stack.Screen name="PostDetail" component={PostDetail} />
+                <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
               </>
             ) : (
               <>
