@@ -15,9 +15,9 @@ import CommentItem from './components/CommentItem';
 const PostDetail=({navigation,route}:any)=>{
     const [textRef,setTextRef]=useState('')
     const {post,userCurrent}=route.params
-console.log('====================================');
-console.log(post);
-console.log('====================================');
+// console.log('====================================');
+// console.log(post);
+// console.log('====================================');
   //do phai cho truyen nen render lau
     const [userComment, setUserComment] = useState<any[]>([]);
     const [user,setUser]=useState<User>()

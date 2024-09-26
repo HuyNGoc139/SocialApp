@@ -11,7 +11,7 @@ import { colors } from './constants/color';
 import TitleComponent from './components/TitleComponent';
 import { fontFamilies } from './constants/fontFamily';
 import RowComponent from './components/RowComponent';
-import { Information, Logout, MoreSquare } from 'iconsax-react-native';
+import { Information, Logout, MoreSquare, PasswordCheck } from 'iconsax-react-native';
 import SpaceComponent from './components/SpaceComponent';
 import { handleDateTime } from './funtion/handleDateTime';
 import ModalAddSubtasks from './components/ModalAddSubtasks';
@@ -23,6 +23,7 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
+import ChangePasswordModal from './components/ChangePasswordModal';
 interface FirebaseTimestamp {
   seconds: number;
   nanoseconds: number;
@@ -37,6 +38,7 @@ const ProfileScreen=({navigation}:any)=>{
   const userCurrent = auth().currentUser;  
   const [user,setUser]=useState<User>()
   const [postsList, setPostsList] = useState<any[]>([]);
+  const [isModalVisible, setModalVisible] = useState(false);
   useEffect(()=>{
     getUser()
     getAllPost()
@@ -140,6 +142,13 @@ const ProfileScreen=({navigation}:any)=>{
               </RowComponent>
               <SpaceComponent height={12}></SpaceComponent>
               <RowComponent styles={{width:'90%'}}>
+              <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black',flex:1}}>Change Password</Text>
+                <TouchableOpacity onPress={()=>setModalVisible(true)}>
+                <PasswordCheck size="28"color="black"/>
+                </TouchableOpacity>
+              </RowComponent>
+              <SpaceComponent height={12}></SpaceComponent>
+              <RowComponent styles={{width:'90%'}}>
               <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black',flex:1}}>LogOut</Text>
                 <TouchableOpacity onPress={handleLogout}>
                 <Logout size="28"color="black"/>
@@ -153,26 +162,7 @@ const ProfileScreen=({navigation}:any)=>{
           <View style={{flex:1,margin:16}}>
           {postsList.map((item) => (
            <View key={item.id}>
-            {/* <Menu>
-      <MenuTrigger style={{}}>
-      <MoreSquare size="32" color="#FF8A65"/>
-      </MenuTrigger>
-      <MenuOptions customStyles={{
-                    optionsContainer:{
-                        borderRadius:10,
-                        borderCurve:'continuous',
-                        marginTop:40,
-                        marginRight:30
-                    }
-                }}>
-                    <MenuOption >
-                        <Text style={{ padding: 10 }}>Edit</Text>
-                    </MenuOption>
-                    <MenuOption >
-                        <Text style={{ padding: 10, color: 'red' }}>Delete</Text>
-                    </MenuOption>
-                </MenuOptions>
-    </Menu> */}
+            
            <PostCardComponent
              post={item}
              userCurrent={user}
@@ -187,6 +177,10 @@ const ProfileScreen=({navigation}:any)=>{
         <ModalAddSubtasks visible={isVisibleModalSubTasks}
         userId={userCurrent?.uid??''} 
         onClose={()=>setIsVisibleModalSubTasks(false)}/>
+        <ChangePasswordModal 
+        isVisible={isModalVisible} 
+        onClose={() => setModalVisible(false)} 
+      />
         </>
     )
 }

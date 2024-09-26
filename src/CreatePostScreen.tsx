@@ -43,7 +43,7 @@ const CreatePostScreen=({navigation,route}:any)=>{
         mediaType: 'any',
       });
   
-      console.log('Selected image:', image);
+      // console.log('Selected image:', image);
   
       const filename = image.path.substring(image.path.lastIndexOf('/') + 1);
       const reference = storage().ref(`Images/${filename}`);
@@ -64,7 +64,7 @@ const CreatePostScreen=({navigation,route}:any)=>{
         mediaType: 'video',
       });
   
-      console.log(media);
+      // console.log(media);
       const filename = media.path.substring(media.path.lastIndexOf('/') + 1);
       const reference = storage().ref(`Media/${filename}`);
       await reference.putFile(media.path);
@@ -190,6 +190,7 @@ const CreatePostScreen=({navigation,route}:any)=>{
   )}
 </View>
         </View>
+        
     )
 }
 export default CreatePostScreen

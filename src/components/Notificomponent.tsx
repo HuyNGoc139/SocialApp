@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import storage from '@react-native-firebase/storage'
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from "react-native-popup-menu";
+import { MoreSquare } from "iconsax-react-native";
 const Notificomponent=(props:any)=>{
     const{data,userCurrent,navigation}=props
     const [post, setPost] = useState<any>(null);
@@ -30,15 +32,14 @@ const Notificomponent=(props:any)=>{
       
           const postData = postDoc.data();
       
-          // Truy vấn thông tin người dùng dựa trên userId
           const userSnapshot = await firestore()
             .collection('Users')
             .doc(postData?.userId)
             .get();
       
           const userData = userSnapshot.data();
-      
-          // Kết hợp dữ liệu bài đăng và thông tin người dùng
+ 
+
           return {
             id: postDoc.id,
             url: postData?.url,
@@ -66,10 +67,34 @@ const Notificomponent=(props:any)=>{
           console.error('Error updating notification:', error);
         }
       };
+      const handletruePress = async () => {
+        try {
+          // Cập nhật isRead = true
+          await firestore().collection('notifi').doc(data.id).update({
+            isRead: true,
+          });
+    
+          // Chuyển trang
+        } catch (error) {
+          console.error('Error updating notification:', error);
+        }
+      };
+      const handlenonPress = async () => {
+        try {
+          // Cập nhật isRead = true
+          await firestore().collection('notifi').doc(data.id).update({
+            isRead: false,
+          });
+
+        } catch (error) {
+          console.error('Error updating notification:', error);
+        }
+      };
     return(
         <TouchableOpacity onPress={handlePress}
         style={[styles.container,{backgroundColor:data.isRead?'white':'#babfbf'}]}>
-            {data.UserSender?.url ? (
+           <View style={{flex:1,flexDirection:'row'}}>
+           {data.UserSender?.url ? (
           <Image
             style={{ height: 56, width: 56, borderRadius: 12, marginRight: 12 }}
             source={{ uri: data.UserSender?.url }}
@@ -80,18 +105,55 @@ const Notificomponent=(props:any)=>{
             source={require('../asset/image/avatar.png')}
           />
         )}
-        <View style={{flex:1}}>
-            <View style={{flexDirection:'row',alignItems:'center',height:28}}>
-            <Text style={{fontFamily:fontFamilies.bold,fontSize:16,color:'black'}}>{data.UserSender.username} 
-            </Text>
-            {data.type=='like'?<Text style={{fontFamily:fontFamilies.regular,fontSize:16,color:'black'}}> đã thích bài viết của bạn.</Text>
-            :<Text style={{fontFamily:fontFamilies.regular,fontSize:16,color:'black'}}> đã bình luận bài viết của bạn.</Text>}
+        <View>
+            <View style={{flexDirection:'row',alignItems:'center'}}>
+            {/* <Text style={{fontFamily:fontFamilies.bold,fontSize:16,color:'black'}}>{data.UserSender.username} 
+            </Text> */}
+           {data.type === 'like' ? (
+    <Text style={styles.text}>
+        <Text style={styles.textBold}>{data.UserSender.username} </Text>
+        đã thích bài viết của bạn.
+    </Text>
+) : (
+    <Text style={styles.text}>
+        <Text style={styles.textBold}>{data.UserSender.username} </Text>
+         đã bình luận về bài viết của bạn.
+    </Text>
+)}
+
             </View>
-            <View>
+            
             {data.type=='comment'?<Text style={{fontFamily:fontFamilies.regular,fontSize:14}}>"{data.commentText}"</Text>:<></>}
             <Text>{handleDateTime.convertFirestoreTimestamp(data.createdAt)}</Text>
-            </View>
         </View>
+           </View>
+           <View>
+    <Menu>
+        <MenuTrigger style={{}}>
+            <MoreSquare size="28" color="#FF8A65"/>
+        </MenuTrigger>
+        <MenuOptions customStyles={{
+            optionsContainer: {
+                borderRadius: 10,
+                borderCurve: 'continuous',
+                marginTop: 40,
+                marginRight: 30,
+            }
+        }}>
+            <MenuOption onSelect={() => { 
+                handletruePress() 
+            }}>
+                <Text style={{ padding: 10 }}>Đánh dấu là đã đọc</Text>
+            </MenuOption>
+            <MenuOption onSelect={() => { 
+                handlenonPress(); 
+            }}>
+                <Text style={{ padding: 10, color: 'red' }}>Đánh dấu là chưa đọc</Text>
+            </MenuOption>
+        </MenuOptions>
+    </Menu>
+</View>
+
         </TouchableOpacity>
     )
 }
@@ -103,5 +165,17 @@ const styles=StyleSheet.create({
         marginTop:10,
         padding:10,
         flexDirection:'row'
+    },
+    text:{
+      fontFamily:fontFamilies.regular,
+      fontSize:15,
+      color:'black',
+      width:260,
+    },
+    textBold:{
+      fontFamily:fontFamilies.bold,
+      fontSize:16,
+      color:'black',
+
     }
 })

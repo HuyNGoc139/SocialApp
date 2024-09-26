@@ -87,7 +87,7 @@ const getAllPost = () => {
         })
       );
 
-      console.log('Fetched and sorted posts with users:', postsWithUsers);
+      // console.log('Fetched and sorted posts with users:', postsWithUsers);
       setPostsList(postsWithUsers);
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     }, (error) => {
@@ -104,11 +104,16 @@ const getAllPost = () => {
                 <View style={{flexDirection:'row',justifyContent:'center',
         alignItems:'center',}}>
                 <TouchableOpacity onPress={()=>navigation.navigate('NotificationScreen',{user})}>
-                {unReadCount>0? <Like size="28" color="red" variant="Bold"/>:<Like size="28" color="black"/>}
+                {unReadCount>0? (
+        <>
+          <Heart size={30} color="red" variant="Bold" />
+          <View style={styles.viewNoti}><Text style={styles.textNoti}>{unReadCount}</Text></View>
+        </>
+      ):<Heart size="30" color="black"/>}
                 </TouchableOpacity>
                 <SpaceComponent width={10}/>
                 <TouchableOpacity onPress={() => navigation.navigate('CreatePostScreen',{user})}>
-                <AddSquare size="28" color="black"/>
+                <AddSquare size="30" color="black"/>
                 </TouchableOpacity>
                 <SpaceComponent width={10}/>
                 <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
@@ -145,7 +150,21 @@ const styles=StyleSheet.create({
     flexDirection: 'row',
     backgroundColor:'white'
     },
-    footer:{
+    textNoti:{
 
+      color:'black',
+      
+      lineHeight:20
+    },
+    viewNoti:{
+      position:'absolute',
+      backgroundColor:'white',
+      height:18,
+      width:18,
+      justifyContent:'center',
+      alignItems:'center',
+      borderRadius:100,
+      top:12,
+      left:12,
     }
 })

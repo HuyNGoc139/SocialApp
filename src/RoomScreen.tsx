@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, Button, TouchableOpacity, Image, StatusBar, TextInput } from 'react-native';
-import { ArrowSquareLeft, Back, Call, Camera, Send2, Video } from 'iconsax-react-native';
+import { View, Text, Button, TouchableOpacity, Image, StatusBar, TextInput, Alert } from 'react-native';
+import { ArrowSquareLeft, Back, Call, Camera, MessageRemove, Send2, Video, VideoAdd } from 'iconsax-react-native';
 import RowComponent from './components/RowComponent';
 import { colors } from './constants/color';
 import { globalStyles } from './styles/globalStyles';
@@ -160,7 +160,38 @@ const RoomScreen=({navigation,route}:any)=>{
           console.log('Error selecting image:', error);
         });
       };
-    
+      const confirmDeleteMessages = () => {
+        Alert.alert(
+            'Xóa tất cả tin nhắn',
+            'Bạn có chắc chắn muốn xóa tất cả tin nhắn không?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Delete', onPress: handleDeleteAllMessages },
+            ],
+            { cancelable: true }
+        );
+    };
+
+    // Hàm xóa tất cả tin nhắn
+    const handleDeleteAllMessages = async () => {
+        let roomId = getRoomId(userCurrent?.uid ?? '', userSelect.uid);
+        const messagesRef = firestore().collection('Rooms').doc(roomId).collection('messages');
+        const batch = firestore().batch();
+
+        try {
+            const snapshot = await messagesRef.get();
+            snapshot.docs.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+            console.log('All messages deleted successfully');
+            Alert.alert('Đã xóa tất cả tin nhắn');
+        } catch (error) {
+            console.error('Error deleting all messages:', error);
+            Alert.alert('Lỗi xóa tin nhắn');
+        }
+    };
+
     return(
         <View style={{flex:1,backgroundColor:'white'}}>
             <View style={{backgroundColor:'white',
@@ -183,6 +214,10 @@ const RoomScreen=({navigation,route}:any)=>{
             <Call size="28" color="black"/>
             <SpaceComponent width={20}/>
             <Video size="28" color="black"/>
+            <SpaceComponent width={20}/>
+            <TouchableOpacity onPress={confirmDeleteMessages}>
+            <MessageRemove size="28" color="black"/>
+            </TouchableOpacity>
             </View>
             </View>
             <View style={{flex:1,justifyContent:'center'}}>
@@ -198,6 +233,9 @@ const RoomScreen=({navigation,route}:any)=>{
                 borderRadius:50,}}>
                     <TouchableOpacity style={{marginLeft:10}} onPress={handleSelectImage}>
                     <Camera size="28" color="black"/>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{marginLeft:10}}>
+                    <VideoAdd size="28" color="black"/>
                     </TouchableOpacity>
                     <TextInput 
                     value={textRef}
