@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import { AddSquare, Heart, Like, Velas } from 'iconsax-react-native';
@@ -14,17 +14,24 @@ import PostCardComponent from './components/PostCardComponent';
 const HomeScreen=({navigation}:any)=>{
   const[unReadCount,setUnreadCount]=useState<number>(0)
   useEffect(()=>{
- getUser()
- getAllPost()
- listenToUnreadNotifications()
+    const unsubscribeUser = getUser();
+    const unsubscribePosts = getAllPost();
+    const unsubscribeNotifications = listenToUnreadNotifications();
+
+    return () => {
+        console.log('Cleaning up listeners');
+        unsubscribeUser();
+        unsubscribePosts();
+        unsubscribeNotifications();
+    };
   },[])
   const [user,setUser]=useState<User>()
   const [postsList, setPostsList] = useState<any[]>([]);
-  
+  const [isLoading, setIsLoading] = useState<boolean>(true); 
   const flatListRef = useRef<FlatList<any>>(null);
  const userCurrent = auth().currentUser;
  const getUser=()=>{
-    firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
+  const unsubscribe =firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
         if(snap.exists){
 
             setUser({
@@ -33,6 +40,7 @@ const HomeScreen=({navigation}:any)=>{
         }
         else{console.log('user not found')}
     })
+    return unsubscribe;
 }
 const listenToUnreadNotifications = () => {
 
@@ -62,6 +70,7 @@ const getAllPost = () => {
     .orderBy('createAt', 'desc')
     .onSnapshot(async (snapshot) => {
       // Khi có sự thay đổi, lấy dữ liệu mới
+      setIsLoading(true);
       const postsWithUsers = await Promise.all(
         snapshot.docs.map(async (doc) => {
           const postData = doc.data();
@@ -90,8 +99,10 @@ const getAllPost = () => {
       // console.log('Fetched and sorted posts with users:', postsWithUsers);
       setPostsList(postsWithUsers);
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+      setIsLoading(false);
     }, (error) => {
       console.error('Error fetching and sorting posts with users:', error);
+      setIsLoading(false);
     });
 
   // Trả về hàm hủy đăng ký khi component bị unmount
@@ -122,19 +133,20 @@ const getAllPost = () => {
                 </View>
             </View>
             <View style={{flex:1,margin:16}}>
-            <FlatList 
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            ref={flatListRef}
-            data={postsList}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }: any) => (
-            <PostCardComponent key={item.id} 
-            post={item} 
-            userCurrent={user}
-            navigation={navigation}/>
-            )}
-            />
+            {isLoading ? ( // Hiển thị ActivityIndicator nếu đang loading
+                    <ActivityIndicator size="large" color="black" />
+                ) : (
+                    <FlatList
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        ref={flatListRef}
+                        data={postsList}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }: any) => (
+                            <PostCardComponent key={item.id} post={item} userCurrent={user} navigation={navigation} />
+                        )}
+                    />
+                )}
             </View>
         </View>
     )

@@ -95,9 +95,24 @@ const NotificationScreen = ({ navigation, route }: any) => {
             <Text style={[globalStyles.textHeader,{color:'black'}]}>Notifications</Text>
             </View>
             </View>
-            {!loading?<View style={{flex:1}}>
+            {/* {!loading?<View style={{flex:1}}>
             {notifications.map((item,index)=><Notificomponent key={index} data={item} userCurrent={user} navigation={navigation}/>)}
-            </View>:<ActivityIndicator size={'large'} />}
+            </View>:<ActivityIndicator size={'large'} />} */}
+             {!loading ? (
+                <View style={{ flex: 1 }}>
+                    {notifications.length > 0 ? (
+                        notifications.map((item, index) => (
+                            <Notificomponent key={index} data={item} userCurrent={user} navigation={navigation} />
+                        ))
+                    ) : (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 16, color: 'black' }}>No notifications</Text>
+                        </View>
+                    )}
+                </View>
+            ) : (
+                <ActivityIndicator size={'large'} />
+            )}
         </View>
     );
 };
