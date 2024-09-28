@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, Button, Alert, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { View, Text, Button, Alert, Image, TouchableOpacity, ScrollView, FlatList, StyleSheet } from 'react-native';
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import ButtonComponent from './components/ButtonComponent';
@@ -24,27 +24,99 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import ChangePasswordModal from './components/ChangePasswordModal';
+import RenderFriend from './components/RenderFriendComponent';
 interface FirebaseTimestamp {
   seconds: number;
   nanoseconds: number;
 }
-const initialValue={
-  email:'',
-  username:'',
-}
-
 const ProfileScreen=({navigation}:any)=>{
   const [isVisibleModalSubTasks, setIsVisibleModalSubTasks] = useState(false);
   const userCurrent = auth().currentUser;  
   const [user,setUser]=useState<User>()
   const [postsList, setPostsList] = useState<any[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
-  useEffect(()=>{
-    getUser()
-    getAllPost()
-},[])
+  const [friends, setFriends] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      await getUser(); // Đảm bảo lấy thông tin người dùng trước
+    };
+  
+    fetchData().then(() => {
+      if (user?.uid) {
+        getUserFriends(); // Chỉ gọi lấy bạn bè khi user đã có uid
+        getAllPost(); // Lấy bài viết sau khi user đã có uid
+      }
+    });
+  }, [user?.uid]);
+  const getUserFriends = () => {
+    try {
+      // Lấy dữ liệu một lần ngay khi mở màn hình
+      firestore()
+        .collection('Users')
+        .doc(user?.uid)
+        .get()
+        .then(async (userDoc) => {
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            const friendsList = userData?.friends || [];
+  
+            if (friendsList.length > 0) {
+              const friendsData = await Promise.all(
+                friendsList.map(async (friendId: string) => {
+                  const friendDoc = await firestore().collection('Users').doc(friendId).get();
+                  return friendDoc.exists ? { id: friendId, ...friendDoc.data() } : null;
+                })
+              );
+  
+              setFriends(friendsData.filter(friend => friend !== null));
+            } else {
+              setFriends([]);
+            }
+          } else {
+            setFriends([]);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user friends:', error);
+          setFriends([]);
+        });
+  
+      // Sau đó thiết lập onSnapshot để lắng nghe sự thay đổi
+      firestore()
+        .collection('Users')
+        .doc(user?.uid)
+        .onSnapshot(async (userDoc) => {
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            const friendsList = userData?.friends || [];
+  
+            if (friendsList.length > 0) {
+              const friendsData = await Promise.all(
+                friendsList.map(async (friendId: string) => {
+                  const friendDoc = await firestore().collection('Users').doc(friendId).get();
+                  return friendDoc.exists ? { id: friendId, ...friendDoc.data() } : null;
+                })
+              );
+  
+              setFriends(friendsData.filter(friend => friend !== null));
+            } else {
+              setFriends([]);
+            }
+          } else {
+            setFriends([]);
+          }
+        }, (error) => {
+          console.error('Error fetching user friends:', error);
+          setFriends([]);
+        });
+    } catch (error) {
+      console.error('Error setting up snapshot listener:', error);
+      setFriends([]);
+    }
+  };
+  
 
-   const getAllPost = () => {
+const getAllPost = () => {
       const unsubscribe = firestore()
         .collection('Posts')
         .orderBy('createAt', 'desc')
@@ -82,14 +154,15 @@ const ProfileScreen=({navigation}:any)=>{
     
       return unsubscribe; // Trả về hàm hủy đăng ký khi component bị unmount
     };
-  const getUser=()=>{
+  const getUser=async()=>{
     // const userCurrent = auth().currentUser;  
-    firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
+   await firestore().doc(`Users/${userCurrent?.uid}`).onSnapshot((snap:any)=>{
         if(snap.exists){
 
             setUser({
                 ...snap.data()
             })
+          
         }
         else{console.log('task not found')}
     })
@@ -100,6 +173,7 @@ const ProfileScreen=({navigation}:any)=>{
           .then(() => {
             Alert.alert('Đăng xuất thành công!');
             // Điều hướng về màn hình đăng nhập hoặc màn hình khác
+            
           })
           .catch(error => {
             Alert.alert('Đăng xuất thất bại!', error.message);
@@ -111,7 +185,6 @@ const ProfileScreen=({navigation}:any)=>{
         const date = new Date(timestamp.seconds * 1000);
         return handleDateTime.DateString(date); // Hoặc sử dụng `date.toISOString()` để định dạng khác
       };
-
     return(
         <>
         <ScrollView style={{flex:1}}>
@@ -119,41 +192,49 @@ const ProfileScreen=({navigation}:any)=>{
             <View style={globalStyles.header}>
               <Text style={globalStyles.textHeader}>Profile</Text>
             </View>
-          <View style={{justifyContent:'center',alignItems:'center',width:'100%',height:320}}>
+          <View style={{justifyContent:'center',alignItems:'center',width:'100%',marginTop:10}}>
             {user?.url? <Image style={{borderRadius:5000,width:300,height:300}} source={{uri:user.url}}/>:<Image style={{borderRadius:5000,width:300,height:300}} source={require('./asset/image/avatar.png')}/>}
+            <Text style={{fontFamily:fontFamilies.bold,fontSize:24,color:'black'}}>{user?.username}</Text>
+            <View>
+              {friends.length>0?<RenderFriend friend={friends} length={friends.length}/>:<></>}
+            </View>
           </View>
           <View style={{flex:1,backgroundColor:'#ababab',
           borderRadius:20 ,
           justifyContent:'center',
           alignItems:'center',
           margin:12}}>
-            <View style={{width: '90%', height:180,justifyContent:'space-evenly'}}>
-            <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black'}}>UserName: {user?.username}</Text>
-            <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black'}}>Email: {user?.email}</Text>
-            <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black'}}>Date Of Birth: {getFormattedDate(user?.DateBitrhDay)}</Text>
-            <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black'}}>createAt: {handleDateTime.DateString(userCurrent?.metadata.creationTime)}</Text>
+            <View style={{width: '90%'}}>
+            <SpaceComponent height={12}></SpaceComponent>
+            <Text style={styles.text}>Email: {user?.email}</Text>
+            <SpaceComponent height={12}></SpaceComponent>
+            <Text style={styles.text}>Date Of Birth: {getFormattedDate(user?.DateBitrhDay)}</Text>
+            <SpaceComponent height={12}></SpaceComponent>
+            <Text style={styles.text}>createAt: {handleDateTime.DateString(userCurrent?.metadata.creationTime)}</Text>
             </View>
+            <SpaceComponent height={12}></SpaceComponent>
             <View style={{flex:1}}>
             <RowComponent styles={{width:'90%'}}>
-              <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black',flex:1}}>Update information</Text>
+              <Text style={[styles.text,{flex:1}]}>Update information</Text>
                 <TouchableOpacity onPress={()=>setIsVisibleModalSubTasks(true)}>
                 <Information size="28"color="black"/>
                 </TouchableOpacity>
               </RowComponent>
               <SpaceComponent height={12}></SpaceComponent>
               <RowComponent styles={{width:'90%'}}>
-              <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black',flex:1}}>Change Password</Text>
+              <Text style={[styles.text,{flex:1}]}>Change Password</Text>
                 <TouchableOpacity onPress={()=>setModalVisible(true)}>
                 <PasswordCheck size="28"color="black"/>
                 </TouchableOpacity>
               </RowComponent>
               <SpaceComponent height={12}></SpaceComponent>
               <RowComponent styles={{width:'90%'}}>
-              <Text style={{fontFamily:fontFamilies.regular,fontSize:18,color:'black',flex:1}}>LogOut</Text>
+              <Text style={[styles.text,{flex:1}]}>LogOut</Text>
                 <TouchableOpacity onPress={handleLogout}>
                 <Logout size="28"color="black"/>
                 </TouchableOpacity>
               </RowComponent>
+              <SpaceComponent height={12}></SpaceComponent>
             </View>
 
           </View>
@@ -185,3 +266,10 @@ const ProfileScreen=({navigation}:any)=>{
     )
 }
 export default ProfileScreen
+const styles=StyleSheet.create({
+  text:{
+    fontFamily:fontFamilies.regular,
+    fontSize:18,
+    color:'black',
+  }
+})

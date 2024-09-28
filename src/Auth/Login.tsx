@@ -29,7 +29,6 @@ const LoginScreen=({navigation}:any)=>{
     const[isLoading,setIsLoading]=useState<boolean>(false)
     const[errText,setErrorText]=useState('')
     const[showPass,setShowPass]=useState(false)
-    
     const handleLogin = async () => {
         if (!email || !password) {
           setErrorText('Please enter your email and password!!!');

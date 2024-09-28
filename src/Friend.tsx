@@ -15,13 +15,30 @@ const FriendScreen = () => {
     const [friendRequests, setFriendRequests] = useState<SelectModel[]>([]);
     const [friends, setFriends] = useState<SelectModel[]>([]); // Danh sách bạn bè
 
+    // useEffect(() => {
+    //     const unsubscribe = auth().onAuthStateChanged((user) => {
+    //         if (user) {
+    //             handleGetFriendRequests(user.uid);
+    //             handleGetAllUsers(user.uid);
+    //         }
+    //     });
+    //     return () => unsubscribe(); // Clean up the subscription on unmount
+    // }, []);
     useEffect(() => {
+        const handleInitialData = async (uid: string) => {
+            // Chờ `handleGetFriendRequests` hoàn thành
+            await handleGetFriendRequests(uid);
+    
+            // Sau đó mới thực thi `handleGetAllUsers`
+            handleGetAllUsers(uid);
+        };
+    
         const unsubscribe = auth().onAuthStateChanged((user) => {
             if (user) {
-                handleGetAllUsers(user.uid);
-                handleGetFriendRequests(user.uid);
+                handleInitialData(user.uid); // Gọi hàm async
             }
         });
+    
         return () => unsubscribe(); // Clean up the subscription on unmount
     }, []);
 
@@ -66,6 +83,8 @@ const FriendScreen = () => {
             setIsLoading(false); // Kết thúc quá trình tải
         }
     };
+
+    
     const handleGetFriendRequests = async (currentUserId: string) => {
         setIsLoading(true);
         const unsubscribe = firestore()
@@ -90,7 +109,6 @@ const FriendScreen = () => {
     const requestUids = friendRequests.map(request => request.uid);
     // Lấy danh sách uid của những người bạn
     const friendUids = friends.map(friend => friend.uid);
-
     return (
         <View style={{ flex: 1 }}>
             <View style={globalStyles.header}>

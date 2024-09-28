@@ -160,6 +160,34 @@ const RoomScreen=({navigation,route}:any)=>{
           console.log('Error selecting image:', error);
         });
       };
+      const handleSelectMedia = async () => {
+        try {
+          const media = await ImagePicker.openPicker({
+            mediaType: 'video',
+          })
+          // console.log(media);
+          const filename = media.path.substring(media.path.lastIndexOf('/') + 1);
+          const reference = storage().ref(`Media/${filename}`);
+          await reference.putFile(media.path);
+          const url = await reference.getDownloadURL();
+          let roomId = getRoomId(userCurrent?.uid ?? '', userSelect.uid);
+            const docRef = firestore().collection('Rooms').doc(roomId);
+            const messagesRef = docRef.collection('messages');
+            await messagesRef.add({
+                userId: userCurrent?.uid,
+                videourl:url,
+                
+                senderName: user?.username,
+                // createdAt: firestore.FieldValue.serverTimestamp(),
+                createdAt: new Date()
+            });
+
+        } catch (error) {
+          console.log('Error selecting media:', error);
+        } 
+      };
+
+    
       const confirmDeleteMessages = () => {
         Alert.alert(
             'Xóa tất cả tin nhắn',
@@ -171,7 +199,6 @@ const RoomScreen=({navigation,route}:any)=>{
             { cancelable: true }
         );
     };
-
     // Hàm xóa tất cả tin nhắn
     const handleDeleteAllMessages = async () => {
         let roomId = getRoomId(userCurrent?.uid ?? '', userSelect.uid);
@@ -234,7 +261,7 @@ const RoomScreen=({navigation,route}:any)=>{
                     <TouchableOpacity style={{marginLeft:10}} onPress={handleSelectImage}>
                     <Camera size="28" color="black"/>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{marginLeft:10}}>
+                    <TouchableOpacity style={{marginLeft:10}} onPress={handleSelectMedia}>
                     <VideoAdd size="28" color="black"/>
                     </TouchableOpacity>
                     <TextInput 

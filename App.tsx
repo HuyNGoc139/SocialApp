@@ -97,15 +97,21 @@ const App: React.FC = () => {
       if (user) {
         setIsLogin(true);
         // Bắt đầu lắng nghe số lượng yêu cầu kết bạn khi người dùng đã đăng nhập
-        handleGetFriendRequestCount(user.uid);
+        const unsubscribeFriendRequests = handleGetFriendRequestCount(user.uid);
+            // Clean up subscription khi component unmount
+            return () => unsubscribeFriendRequests();
       } else {
         setIsLogin(false);
+        resetData()
       }
     });
 
     return () => unsubscribe();
   }, []);
+  const resetData = () => {
+    setFriendRequestCount(0)
 
+};
   const handleGetFriendRequestCount = (userId: string) => {
     const unsubscribe = firestore()
       .collection('FriendRequests')
@@ -119,6 +125,7 @@ const App: React.FC = () => {
 
     return () => unsubscribe(); // Clean up subscription khi component unmount
   };
+//loi add frien cong la do ki dang xuat dữ liệu của người dùng cũ vẫn còn nên khi người dùng khác gửi thì hometab friend vẫn cộng thêm 1
 
   return (
     <MenuProvider>

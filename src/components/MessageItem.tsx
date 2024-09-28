@@ -12,6 +12,7 @@ import {
 import { More, Save2 } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
+import Video from 'react-native-video';
 // Định nghĩa type cho props của MessageItem
 interface MessageItemProps {
     mess: any; // Thay 'any' bằng type cụ thể cho tin nhắn nếu có
@@ -92,18 +93,48 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
                
                 <Menu>
                 <MenuTrigger>
-                {isEditing ? (
-                            <TextInput
-                                style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black', marginBottom: 10 }}
-                                value={editedText}
-                                onChangeText={setEditedText}
-                            />
-                        ) : (
-                            mess.url ? <Image style={{ height: 160, width: 160, borderRadius: 10 }} source={{ uri: mess.url }} /> : 
-                            <Text style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black' }}>{mess.text}</Text>
-                        )}
-                        
-                    </MenuTrigger>
+    {isEditing ? (
+        <>
+            <TextInput
+                style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black', marginBottom: 10 }}
+                value={editedText}
+                onChangeText={setEditedText}
+            />
+            {mess.url && (
+                <Image
+                    style={{ height: 160, width: 160, borderRadius: 10, marginTop: 10 }}
+                    source={{ uri: mess.url }}
+                />
+            )}
+            {mess.videourl && (
+                <Video
+                    source={{ uri: mess.videourl }}
+                    style={{ height: 160, width: 160, borderRadius: 10, marginTop: 10 }}
+                    controls
+                />
+            )}
+        </>
+    ) : (
+        mess.url ? (
+            <>
+                <Image style={{ height: 160, width: 160, borderRadius: 10 }} source={{ uri: mess.url }} />
+                <Text style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black' }}>{mess.text}</Text>
+            </>
+        ) : mess.videourl ? (
+            <>
+                <Text style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black' }}>{mess.text}</Text>
+                <Video
+                    source={{ uri: mess.videourl }}
+                    style={{ height: 160, width: 160, borderRadius: 10 }}
+                    controls
+                />
+            </>
+        ) : (
+            <Text style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black' }}>{mess.text}</Text>
+        )
+    )}
+</MenuTrigger>
+
                 <MenuOptions customStyles={{
                     optionsContainer:{
                         borderRadius:10,
@@ -131,14 +162,43 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
             </View>
         )
     }else {
-        return(
-            <View style={{flexDirection:'row',justifyContent:'flex-start',marginBottom:12,marginLeft:12}}>
-                <View style={{backgroundColor:'#a4dede', borderRadius:25,padding:20}}>
-                {mess.url?<Image style={{height:160,width:160,borderRadius:10}} source={{uri:mess.url}}/> :<Text style={{fontFamily:fontFamilies.regular,fontSize:16,color:'black'}}>{mess.text}</Text>}
-                <Text style={{fontFamily:fontFamilies.regular,fontSize:12}}>{handleDateTime.GetHour(mess.createdAt)}</Text>
+        return (
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 12, marginLeft: 12 }}>
+                <View style={{ backgroundColor: '#a4dede', borderRadius: 25, padding: 20 }}>
+                    {mess.url ? (
+                        <>
+                            <Image
+                                style={{ height: 160, width: 160, borderRadius: 10 }}
+                                source={{ uri: mess.url }}
+                            />
+                            {mess.text ? (
+                                <Text style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black', marginTop: 10 }}>
+                                    {mess.text}
+                                </Text>
+                            ) : null}
+                        </>
+                    ) : mess.videourl ? (
+                        <>
+                            <Text style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black' }}>
+                                {mess.text}
+                            </Text>
+                            <Video
+                                source={{ uri: mess.videourl }}
+                                style={{ height: 160, width: 160, borderRadius: 10, marginTop: 10 }}
+                                controls
+                            />
+                        </>
+                    ) : (
+                        <Text style={{ fontFamily: fontFamilies.regular, fontSize: 16, color: 'black' }}>
+                            {mess.text}
+                        </Text>
+                    )}
+                    <Text style={{ fontFamily: fontFamilies.regular, fontSize: 12 }}>
+                        {handleDateTime.GetHour(mess.createdAt)}
+                    </Text>
                 </View>
             </View>
-        )
+        );
     }
 }
 
