@@ -111,7 +111,7 @@ const getAllPost = () => {
     return(
         <View style={{flex:1}}>
             <View style={styles.header}> 
-                <Text style={{flex:1,marginLeft:10,color:'black',fontSize:24,fontFamily:fontFamilies.regular}}>ScocialAPP</Text>
+                <Text style={styles.textHeader}>ScocialAPP</Text>
                 <View style={{flexDirection:'row',justifyContent:'center',
         alignItems:'center',}}>
                 <TouchableOpacity onPress={()=>navigation.navigate('NotificationScreen',{user})}>
@@ -128,12 +128,12 @@ const getAllPost = () => {
                 </TouchableOpacity>
                 <SpaceComponent width={10}/>
                 <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-         {user?.url?<Image style={{ height: 42, width: 42, borderRadius: 100, marginRight: 12 }} source={{uri:user.url}} /> : <Image style={{ height: 48, width: 48, borderRadius: 100, marginRight: 12 }} source={require('./asset/image/avatar.png')} />}
+         {user?.url?<Image style={styles.image} source={{uri:user.url}} /> : <Image style={styles.image} source={require('./asset/image/avatar.png')} />}
         </TouchableOpacity>
                 </View>
             </View>
             <View style={{flex:1,margin:16}}>
-            {isLoading ? ( // Hiển thị ActivityIndicator nếu đang loading
+            {isLoading ? (
                     <ActivityIndicator size="large" color="black" />
                 ) : (
                     <FlatList
@@ -143,7 +143,11 @@ const getAllPost = () => {
                         data={postsList}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }: any) => (
-                            <PostCardComponent key={item.id} post={item} userCurrent={user} navigation={navigation} />
+                            <PostCardComponent 
+                            key={item.id} 
+                            post={item} 
+                            userCurrent={user} 
+                            navigation={navigation} />
                         )}
                     />
                 )}
@@ -160,7 +164,7 @@ const styles=StyleSheet.create({
     borderBottomRightRadius: 16,
     height: 80,
     flexDirection: 'row',
-    backgroundColor:'white'
+    backgroundColor:'#71b0b0'
     },
     textNoti:{
 
@@ -178,5 +182,18 @@ const styles=StyleSheet.create({
       borderRadius:100,
       top:12,
       left:12,
+    },
+    textHeader:{
+      flex:1,
+      marginLeft:10,
+      color:'black',
+      fontSize:24,
+      fontFamily:fontFamilies.regular,
+    },
+    image:{
+      height: 48,
+      width: 48, 
+      borderRadius: 100, 
+      marginRight: 12
     }
 })

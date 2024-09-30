@@ -194,12 +194,12 @@ const sendLikeNotification = async () => {
       <View style={styles.header}>
         {user?.url ? (
           <Image
-            style={{ height: 56, width: 56, borderRadius: 12, marginRight: 12 }}
+            style={styles.imagUser}
             source={{ uri: user.url }}
           />
         ) : (
           <Image
-            style={{ height: 56, width: 56, borderRadius: 12, marginRight: 12 }}
+            style={styles.imagUser}
             source={require('../asset/image/avatar.png')}
           />
         )}
@@ -258,16 +258,19 @@ const sendLikeNotification = async () => {
         )}
         </View>
         {post.url && (
-          <View style={{ flex: 1, marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ flex: 1, 
+          marginBottom: 20, 
+          justifyContent: 'center', 
+          alignItems: 'center' }}>
             {post.type == 'image' ? (
-              <Image style={{ width: 350, height: 350, borderRadius: 16 }} source={{ uri: post.url }} />
+              <Image style={styles.image} source={{ uri: post.url }} />
             ) : (
               <></>
             )}
             {post.type == 'video' ? (
               <Video
                 source={{ uri: post.url }}
-                style={{ width: 300, height: 300 }}
+                style={styles.image}
                 controls
                 resizeMode="contain"
               />
@@ -291,8 +294,11 @@ const sendLikeNotification = async () => {
           </View>
           <SpaceComponent width={12} />
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <TouchableOpacity onPress={()=>navigation.navigate('PostDetail',{post,
+            <TouchableOpacity
+            disabled={isSelect}
+            onPress={()=>navigation.navigate('PostDetail',{post,
             userCurrent})}>
+            
               <Message size="32" color="gray" />
             </TouchableOpacity>
             <Text style={{ color: 'gray', fontSize: 18, marginLeft: 4 }}>{userComment.length}</Text>
@@ -385,4 +391,15 @@ const styles = StyleSheet.create({
     userName: {
       fontSize: 16,
     },
+    image:{
+      width: 350, 
+      height: 350,
+      borderRadius: 16
+    },
+    imagUser:{
+      height: 56,
+      width: 56, 
+      borderRadius: 12, 
+      marginRight: 12
+    }
   });

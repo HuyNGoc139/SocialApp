@@ -80,13 +80,13 @@ const ChatItem=(props:Props)=>{
       };
     return(
         <TouchableOpacity style={styles.container} onPress={onPress}>
-            {user?.url?<Image style={{height:60,width:60,borderRadius:100}} source={{uri:user.url}}/> :<Image style={{height:60,width:60,borderRadius:100}} source={require('../asset/image/avatar.png')}/>}
+            {user?.url?<Image style={styles.image} source={{uri:user.url}}/> :<Image style={styles.image} source={require('../asset/image/avatar.png')}/>}
             <View style={{flex:1,marginLeft:10}}>
                 <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                <Text style={{fontFamily:fontFamilies.semiBold,color:'black',fontSize:18}}>{userName}</Text>
-                <Text style={{fontFamily:fontFamilies.regular,fontSize:16}}>{renderTime()}</Text>
+                <Text style={styles.textBold}>{userName}</Text>
+                <Text style={styles.text}>{renderTime()}</Text>
                 </View>
-                <Text style={{fontFamily:fontFamilies.regular,fontSize:16}}>{renderLastmessage()}</Text>
+                <Text style={styles.text}>{renderLastmessage()}</Text>
             </View>
         </TouchableOpacity>
     )
@@ -96,8 +96,23 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'center',
         borderBottomWidth:1,
-        margin:10,
+        marginLeft:10,
+        marginRight:10,
         padding:8
+    },
+    text:{
+        fontFamily:fontFamilies.regular,
+        fontSize:16
+    },
+    textBold:{
+        fontFamily:fontFamilies.semiBold,
+        color:'black',
+        fontSize:18
+    },
+    image:{
+        height:60,
+        width:60,
+        borderRadius:100
     }
   });
 export default ChatItem
