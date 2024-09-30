@@ -8,6 +8,8 @@ import Video from 'react-native-video';
 import SpaceComponent from './SpaceComponent';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { WebView } from 'react-native-webview';
+import HTMLView from 'react-native-htmlview';
 import  { memo } from 'react';
 import {
   Menu,
@@ -16,7 +18,8 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import ModalEditPost from './ModalEditPost';
-const PostCardComponent = ({ post = {}, userCurrent = {},isEdit, navigation = () => {} }: any) => {
+import ProfileModalComponent from './ProfileFriend';
+const PostCardComponent = ({ post = {}, userCurrent = {},isEdit,isSelect, navigation = () => {} }: any) => {
     const MemoizedRenderHTML = memo(RenderHTML);
     // const { post, userCurrent,navigation } = props;
     const user = post.user;
@@ -24,6 +27,7 @@ const PostCardComponent = ({ post = {}, userCurrent = {},isEdit, navigation = ()
     const [userLike, setUserLike] = useState<any[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [url, setUrl] = useState('');
+    const [isModalFriendVisible, setModalFriendVisible] = useState(false);
     const [userComment, setUserComment] = useState<any[]>([]);
     const [isVisibleModal, setIsVisibleModal] = useState(false);
     useEffect(() => {
@@ -36,9 +40,6 @@ const PostCardComponent = ({ post = {}, userCurrent = {},isEdit, navigation = ()
         unsubscribeComments();
       };
     }, []);
-    // console.log('====================================');
-    // console.log(userCurrent);
-    // console.log('====================================');
 //hom nay sua o day
 const sendLikeNotification = async () => {
   try {
@@ -186,6 +187,7 @@ const sendLikeNotification = async () => {
         console.log(error)
       }
     }
+    
   return (
     <>
     <View style={styles.container}>
@@ -201,14 +203,26 @@ const sendLikeNotification = async () => {
             source={require('../asset/image/avatar.png')}
           />
         )}
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontFamily: fontFamilies.semiBold, color: 'black' }}>
-            {user.username}
-          </Text>
-          <Text style={{ fontSize: 12, fontFamily: fontFamilies.regular }}>
-            {formatDate(post.createAt)}
-          </Text>
-        </View>
+        
+  <TouchableOpacity 
+    style={{ flex: 1 }} 
+    onPress={() => {
+      if(post.userId==userCurrent.uid){
+        navigation.navigate('Profile')
+      }
+      else{setModalFriendVisible(true)}
+      }}
+    disabled={isSelect} // Sử dụng disabled để vô hiệu hóa nút
+  >
+    <Text style={{ fontSize: 16, fontFamily: fontFamilies.semiBold, color: 'black' }}>
+      {user.username}
+    </Text>
+    <Text style={{ fontSize: 12, fontFamily: fontFamilies.regular }}>
+      {formatDate(post.createAt)}
+    </Text>
+  </TouchableOpacity>
+
+
         {isEdit&&<Menu>
       <MenuTrigger style={{}}>
       <MoreSquare size="32" color="gray"/>
@@ -238,6 +252,7 @@ const sendLikeNotification = async () => {
             h1: { fontSize: 36, fontWeight: 'bold' },
             h4: { fontSize: 20, fontWeight: 'bold' },
           }}/>
+          
         ) : (
           <></>
         )}
@@ -311,6 +326,11 @@ const sendLikeNotification = async () => {
       <ModalEditPost visible={isVisibleModal}
         onClose={()=>setIsVisibleModal(false)}
         post={post}
+        />
+        <ProfileModalComponent isVisible={isModalFriendVisible}
+        onClose={()=>setModalFriendVisible(false)}
+        userId={post.userId}
+        navigation={navigation}
         />
     </>
   );

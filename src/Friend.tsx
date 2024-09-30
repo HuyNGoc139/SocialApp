@@ -8,13 +8,13 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { SelectModel } from './models/SelectModal';
 
-const FriendScreen = () => {
+const FriendScreen = ({navigation}:any) => {
     const [search, setSearch] = useState('');
     const [userSelect, setUserSelect] = useState<SelectModel[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [friendRequests, setFriendRequests] = useState<SelectModel[]>([]);
     const [friends, setFriends] = useState<SelectModel[]>([]); // Danh sách bạn bè
-
+    const [isLoadingfr, setIsLoadingfr] = useState(false);
     // useEffect(() => {
     //     const unsubscribe = auth().onAuthStateChanged((user) => {
     //         if (user) {
@@ -43,7 +43,7 @@ const FriendScreen = () => {
     }, []);
 
     const handleGetAllUsers = (currentUserId: string) => {
-        setIsLoading(true); // Bắt đầu quá trình tải
+        setIsLoadingfr(true); // Bắt đầu quá trình tải
         try {
             // Lấy thông tin người dùng hiện tại
             const unsubscribeCurrentUser = firestore().doc(`Users/${currentUserId}`).onSnapshot((currentUserDoc) => {
@@ -80,7 +80,7 @@ const FriendScreen = () => {
         } catch (err) {
             console.log(err);
         } finally {
-            setIsLoading(false); // Kết thúc quá trình tải
+            setIsLoadingfr(false); // Kết thúc quá trình tải
         }
     };
 
@@ -135,7 +135,7 @@ const FriendScreen = () => {
                             data={friendRequests}
                             keyExtractor={(item) => item.uid}
                             renderItem={({ item }) => (
-                                <FriendComponent key={item.uid} uid={item.uid} isRequest />
+                                <FriendComponent key={item.uid} uid={item.uid} isRequest navigation={navigation}/>
                             )}
                         />
                     ) : (
@@ -157,7 +157,7 @@ const FriendScreen = () => {
                             )}
                             keyExtractor={(item) => item.uid}
                             renderItem={({ item }) => (
-                                <FriendComponent key={item.uid} uid={item.uid} />
+                                <FriendComponent key={item.uid} uid={item.uid} navigation={navigation}/>
                             )}
                         />
                     ) : (

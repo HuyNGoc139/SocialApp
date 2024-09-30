@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 // Định nghĩa HomeTab như một component
-const HomeTab: React.FC<{ friendRequestCount: number }> = ({ friendRequestCount }) => (
+const HomeTab= () => (
   <Tab.Navigator 
     screenOptions={({ route }) => ({
       headerShown: false,
@@ -42,14 +42,7 @@ const HomeTab: React.FC<{ friendRequestCount: number }> = ({ friendRequestCount 
             break;
           case 'Friend':
             icon = (
-              <View>
-                <Profile2User size="28" color={iconColor} variant={focused ? 'Bold' : 'Outline'} />
-                {friendRequestCount > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{friendRequestCount}</Text>
-                  </View>
-                )}
-              </View>
+                <Profile2User size="28" color={iconColor} variant={focused ? 'Bold' : 'Outline'} />  
             );
             break;
           case 'Chat':
@@ -90,43 +83,19 @@ const HomeTab: React.FC<{ friendRequestCount: number }> = ({ friendRequestCount 
 
 const App: React.FC = () => {
   const [isLogin, setIsLogin] = useState(false);
-  const [friendRequestCount, setFriendRequestCount] = useState(0);
+
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(user => {
       if (user) {
         setIsLogin(true);
-        // Bắt đầu lắng nghe số lượng yêu cầu kết bạn khi người dùng đã đăng nhập
-        const unsubscribeFriendRequests = handleGetFriendRequestCount(user.uid);
-            // Clean up subscription khi component unmount
-            return () => unsubscribeFriendRequests();
+
       } else {
         setIsLogin(false);
-        resetData()
       }
     });
-
     return () => unsubscribe();
   }, []);
-  const resetData = () => {
-    setFriendRequestCount(0)
-
-};
-  const handleGetFriendRequestCount = (userId: string) => {
-    const unsubscribe = firestore()
-      .collection('FriendRequests')
-      .where('receiverId', '==', userId)
-      .where('status', '==', 'pending')
-      .onSnapshot(snapshot => {
-        setFriendRequestCount(snapshot.size); // Cập nhật số lượng yêu cầu kết bạn
-      }, error => {
-        console.log('Error fetching friend requests:', error);
-      });
-
-    return () => unsubscribe(); // Clean up subscription khi component unmount
-  };
-//loi add frien cong la do ki dang xuat dữ liệu của người dùng cũ vẫn còn nên khi người dùng khác gửi thì hometab friend vẫn cộng thêm 1
-
   return (
     <MenuProvider>
       <SafeAreaView style={{ flex: 1 }}>
@@ -134,9 +103,8 @@ const App: React.FC = () => {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             {isLogin ? (
               <>
-                <Stack.Screen name="HomeTab">
-                  {() => <HomeTab friendRequestCount={friendRequestCount} />}
-                </Stack.Screen>
+                <Stack.Screen name="HomeTab" component={HomeTab}/>
+                 
                 <Stack.Screen name="RoomScreen" component={RoomScreen} />
                 <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} />
                 <Stack.Screen name="PostDetail" component={PostDetail} />

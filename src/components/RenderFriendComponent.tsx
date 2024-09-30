@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Image, Modal, StyleSheet, Text, TouchableOpacity, View, FlatList } from "react-native";
 import { fontFamilies } from "../constants/fontFamily";
+import ProfileModalComponent from "./ProfileFriend";
 
 interface Props {
   length: number;
@@ -10,8 +11,8 @@ interface Props {
 const RenderFriend = (props: Props) => {
   const { friend, length } = props;
   const [modalVisible, setModalVisible] = useState(false);
-    // console.log(friend)
   return (
+    <>
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Text style={styles.text}>{length} friends</Text>
       <TouchableOpacity  onPress={() => setModalVisible(true)} style={{ flexDirection: 'row' }}>
@@ -61,6 +62,8 @@ const RenderFriend = (props: Props) => {
         </View>
       </Modal>
     </View>
+    
+        </>
   );
 };
 

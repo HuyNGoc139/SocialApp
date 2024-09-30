@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { ArrowSquareLeft, Back } from 'iconsax-react-native';
+import { View, Text, Button, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { ArrowSquareLeft, Back, UserAdd } from 'iconsax-react-native';
 import storage from '@react-native-firebase/storage'
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import { globalStyles } from './styles/globalStyles';
 import Notificomponent from './components/Notificomponent';
+import { fontFamilies } from './constants/fontFamily';
 
 interface Notification {
     id: string;
@@ -95,6 +96,16 @@ const NotificationScreen = ({ navigation, route }: any) => {
             <Text style={[globalStyles.textHeader,{color:'black'}]}>Notifications</Text>
             </View>
             </View>
+            <TouchableOpacity style={styles.add}
+            onPress={()=>navigation.navigate('Friend')}>
+            <View style={{borderWidth:1,borderColor:'#ced6d6',borderRadius:100,padding:4}}>
+            <UserAdd size="32" color="black"/>
+            </View>
+            <View style={{flex:1,paddingLeft:16}}>
+            <Text style={styles.textadd}>Add Friend Request</Text>
+            <Text style={{fontSize:14,fontFamily:fontFamilies.regular}}>Accept or Decline Request</Text>
+            </View>
+            </TouchableOpacity>
             {/* {!loading?<View style={{flex:1}}>
             {notifications.map((item,index)=><Notificomponent key={index} data={item} userCurrent={user} navigation={navigation}/>)}
             </View>:<ActivityIndicator size={'large'} />} */}
@@ -118,3 +129,16 @@ const NotificationScreen = ({ navigation, route }: any) => {
 };
 
 export default NotificationScreen;
+const styles=StyleSheet.create({
+    add:{
+        flexDirection:'row',
+        backgroundColor:'white',
+        borderRadius:10,
+        padding:10
+    },
+    textadd:{
+        fontSize:16,
+        fontFamily:fontFamilies.regular,
+        color:'black'
+    }
+})

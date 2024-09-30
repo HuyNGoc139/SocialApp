@@ -16,6 +16,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage'
 const RoomScreen=({navigation,route}:any)=>{
     const userSelect=route.params
+    
     const [message,setMessage]=useState<any[]>([])
     const [user,setUser]=useState<User>()
     const userCurrent=auth().currentUser

@@ -4,19 +4,21 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth'; // Để lấy thông tin người dùng hiện tại
 import { fontFamilies } from '../constants/fontFamily';
 import SpaceComponent from './SpaceComponent';
+import ProfileModalComponent from './ProfileFriend';
 
 interface Props {
     uid: string; // Người dùng mục tiêu (người nhận yêu cầu)
     isRequest?: boolean;
+    navigation:any
 }
 
 const FriendComponent = (props: Props) => {
-    const { uid, isRequest } = props;
+    const { uid, isRequest,navigation} = props;
     const [user, setUser] = useState<any>(null); 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isFriendRequested, setIsFriendRequested] = useState<boolean>(false); 
     const currentUser = auth().currentUser; // Người dùng hiện tại
-
+    const [isModalFriendVisible, setModalFriendVisible] = useState(false);
     useEffect(() => {
         getUser();
         checkFriendRequest();
@@ -24,7 +26,7 @@ const FriendComponent = (props: Props) => {
 
     const getUser = async () => {
         setIsLoading(true);
-        await firestore().doc(`Users/${uid}`).onSnapshot((snap: any) => {
+        const unsubscribe = firestore().doc(`Users/${uid}`).onSnapshot((snap: any) => {
             if (snap.exists) {
                 setUser({
                     ...snap.data()
@@ -34,8 +36,9 @@ const FriendComponent = (props: Props) => {
             }
             setIsLoading(false);
         });
+    
+        return () => unsubscribe(); // Hủy bỏ snapshot khi component unmount
     };
-
     const checkFriendRequest = async () => {
         // Kiểm tra xem đã có yêu cầu kết bạn hay chưa
         const snapshot = await firestore()
@@ -148,12 +151,15 @@ const FriendComponent = (props: Props) => {
     }
 
     return (
+        <>
         <View style={{ flex: 1, flexDirection: 'row', marginBottom: 12 }}>
+            <TouchableOpacity onPress={()=>setModalFriendVisible(true)}> 
             {user?.url ? (
                 <Image style={{ height: 80, width: 80, borderRadius: 100 }} source={{ uri: user.url }} />
             ) : (
                 <Image style={{ height: 80, width: 80, borderRadius: 100 }} source={require('../asset/image/avatar.png')} />
             )}
+            </TouchableOpacity>
             <View style={{ flex: 1, marginLeft: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     {user && user.username ? (
@@ -179,6 +185,12 @@ const FriendComponent = (props: Props) => {
                 </View>
             </View>
         </View>
+        <ProfileModalComponent isVisible={isModalFriendVisible}
+        onClose={()=>setModalFriendVisible(false)}
+        userId={uid}
+        navigation={navigation}
+        />
+        </>
     );
 };
 
