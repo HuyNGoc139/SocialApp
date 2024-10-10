@@ -13,7 +13,10 @@ interface ChangePasswordModalProps {
   onClose: () => void;
 }
 
-const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isVisible, onClose }) => {
+const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
+  isVisible,
+  onClose,
+}) => {
   const [oldPassword, setOldPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -48,13 +51,18 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isVisible, on
       return;
     }
 
-    const credential = auth.EmailAuthProvider.credential(user.email ?? '', oldPassword);
+    const credential = auth.EmailAuthProvider.credential(
+      user.email ?? '',
+      oldPassword,
+    );
 
     // Reauthenticate user
-    user.reauthenticateWithCredential(credential)
+    user
+      .reauthenticateWithCredential(credential)
       .then(() => {
         // Đổi mật khẩu
-        user.updatePassword(newPassword)
+        user
+          .updatePassword(newPassword)
           .then(() => {
             Alert.alert('Đổi mật khẩu thành công, Vui lòng đăng nhập lại!');
             auth().signOut(); // Đăng xuất sau khi đổi mật khẩu
@@ -63,7 +71,6 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isVisible, on
       })
       .catch(error => Alert.alert('Lỗi xác thực mật khẩu cũ', error.message));
   };
-
 
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={onClose}>
@@ -78,7 +85,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isVisible, on
         />
 
         <InputComponent
-          prefix={<Lock1 size="32" color="#FAFAFA" />} 
+          prefix={<Lock1 size="32" color="#FAFAFA" />}
           title="Password"
           onChange={val => setNewPassword(val)}
           placeholder="Password"
@@ -86,24 +93,28 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isVisible, on
           value={newPassword}
         />
 
-     
         <InputComponent
-          prefix={<Lock1 size="32" color="#FAFAFA" />}  
+          prefix={<Lock1 size="32" color="#FAFAFA" />}
           title="Confirm PassWord"
           onChange={val => setConfirmPassword(val)}
           placeholder="Confirm PassWord"
-           isPassword 
+          isPassword
           value={confirmPassword}
         />
 
         <RowComponent>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
             <TouchableOpacity onPress={onClose}>
               <TextComponent flex={0} text="Đóng" color="white" />
             </TouchableOpacity>
           </View>
           <View style={{ flex: 1 }}>
-            <ButtonComponent text="Đổi mật khẩu" onPress={reauthenticateAndChangePassword} />
+            <ButtonComponent
+              text="Đổi mật khẩu"
+              onPress={reauthenticateAndChangePassword}
+            />
           </View>
         </RowComponent>
       </Container>

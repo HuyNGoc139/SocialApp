@@ -9,7 +9,7 @@ import { name as appName } from './app.json';
 // Kiểm tra và sử dụng LogBox nếu có
 if (LogBox) {
   LogBox.ignoreLogs([
-    'Non-serializable values were found in the navigation state'
+    'Non-serializable values were found in the navigation state',
   ]);
 }
 

@@ -1,10 +1,13 @@
-
 import React from 'react';
-import {StyleProp, TextStyle, TouchableOpacity, ViewStyle} from 'react-native';
-import {globalStyles} from '../styles/globalStyles';
+import {
+  StyleProp,
+  TextStyle,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
+import { globalStyles } from '../styles/globalStyles';
 import TextComponent from './TextComponent';
 import { colors } from '../constants/color';
-
 
 interface Props {
   text: string;
@@ -15,7 +18,7 @@ interface Props {
 }
 
 const TagComponent = (props: Props) => {
-  const {text, textStyles, color, tagStyles, onPress} = props;
+  const { text, textStyles, color, tagStyles, onPress } = props;
 
   return (
     <TouchableOpacity
@@ -24,8 +27,9 @@ const TagComponent = (props: Props) => {
       style={[
         globalStyles.tag,
         tagStyles,
-        {backgroundColor: color ?? colors.blue},
-      ]}>
+        { backgroundColor: color ?? colors.blue },
+      ]}
+    >
       <TextComponent text={text} />
     </TouchableOpacity>
   );

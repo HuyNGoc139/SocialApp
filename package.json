@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@react-native-firebase/app": "^20.4.0",
@@ -17,6 +18,7 @@
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/drawer": "^6.7.2",
     "@react-navigation/native-stack": "^6.11.0",
+    "@shopify/flash-list": "^1.7.1",
     "iconsax-react-native": "^0.0.8",
     "react": "18.3.1",
     "react-native": "0.75.1",

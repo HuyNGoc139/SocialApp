@@ -17,13 +17,15 @@ import CreatePostScreen from './src/CreatePostScreen';
 import PostDetail from './src/PostDetail';
 import { MenuProvider } from 'react-native-popup-menu';
 import NotificationScreen from './src/NotificationScreen';
+import ModalAddSubtasks from './src/components/ModalAddSubtasks';
+import ProfileModalComponent from './src/components/ProfileFriend';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 // Định nghĩa HomeTab như một component
-const HomeTab= () => (
-  <Tab.Navigator 
+const HomeTab = () => (
+  <Tab.Navigator
     screenOptions={({ route }) => ({
       headerShown: false,
       tabBarStyle: {
@@ -35,21 +37,43 @@ const HomeTab= () => (
       tabBarIcon: ({ focused }) => {
         let icon;
         const iconColor = focused ? '#4267B2' : 'black'; // Màu xanh Facebook khi được chọn, màu xám khi không được chọn
-        
+
         switch (route.name) {
           case 'Home':
-            icon = <Home size="28" color={iconColor} variant={focused ? 'Bold' : 'Outline'} />;
+            icon = (
+              <Home
+                size="28"
+                color={iconColor}
+                variant={focused ? 'Bold' : 'Outline'}
+              />
+            );
             break;
           case 'Friend':
             icon = (
-                <Profile2User size="28" color={iconColor} variant={focused ? 'Bold' : 'Outline'} />  
+              <Profile2User
+                size="28"
+                color={iconColor}
+                variant={focused ? 'Bold' : 'Outline'}
+              />
             );
             break;
           case 'Chat':
-            icon = <Message size="28" color={iconColor} variant={focused ? 'Bold' : 'Outline'} />;
+            icon = (
+              <Message
+                size="28"
+                color={iconColor}
+                variant={focused ? 'Bold' : 'Outline'}
+              />
+            );
             break;
           case 'Profile':
-            icon = <Menu size="28" color={iconColor} variant={focused ? 'Bold' : 'Outline'} />;
+            icon = (
+              <Menu
+                size="28"
+                color={iconColor}
+                variant={focused ? 'Bold' : 'Outline'}
+              />
+            );
             break;
         }
         return icon;
@@ -70,26 +94,28 @@ const HomeTab= () => (
             label = 'Profile';
             break;
         }
-        return <Text style={{ color: focused ? "#4267B2" : "black", fontSize: 12 }}>{label}</Text>;
+        return (
+          <Text style={{ color: focused ? '#4267B2' : 'black', fontSize: 12 }}>
+            {label}
+          </Text>
+        );
       },
-    })}>
-    <Tab.Screen name='Home' component={HomeScreen} />
-    <Tab.Screen name='Friend' component={FriendScreen} />
-    <Tab.Screen name='Chat' component={ChatScreen} />
-    <Tab.Screen name='Profile' component={ProfileScreen} />
+    })}
+  >
+    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="Friend" component={FriendScreen} />
+    <Tab.Screen name="Chat" component={ChatScreen} />
+    <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>
 );
 
-
 const App: React.FC = () => {
   const [isLogin, setIsLogin] = useState(false);
-
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(user => {
       if (user) {
         setIsLogin(true);
-
       } else {
         setIsLogin(false);
       }
@@ -103,17 +129,34 @@ const App: React.FC = () => {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             {isLogin ? (
               <>
-                <Stack.Screen name="HomeTab" component={HomeTab}/>
-                 
+                <Stack.Screen name="HomeTab" component={HomeTab} />
                 <Stack.Screen name="RoomScreen" component={RoomScreen} />
-                <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} />
+                <Stack.Screen
+                  name="CreatePostScreen"
+                  component={CreatePostScreen}
+                />
                 <Stack.Screen name="PostDetail" component={PostDetail} />
-                <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
+                <Stack.Screen
+                  name="NotificationScreen"
+                  component={NotificationScreen}
+                />
+                <Stack.Screen name="Update" component={ModalAddSubtasks} />
+                <Stack.Screen
+                  name="ProfileModalComponent"
+                  component={ProfileModalComponent}
+                  options={{
+                    presentation: 'modal', // Thiết lập trình bày như modal
+                    headerShown: false, // Ẩn header nếu cần
+                  }}
+                />
               </>
             ) : (
               <>
                 <Stack.Screen name="LoginScreen" component={LoginScreen} />
-                <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+                <Stack.Screen
+                  name="RegisterScreen"
+                  component={RegisterScreen}
+                />
               </>
             )}
           </Stack.Navigator>

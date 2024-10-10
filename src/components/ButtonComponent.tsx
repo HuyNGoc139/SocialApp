@@ -1,8 +1,7 @@
-import {View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
-import React, {ReactNode} from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { ReactNode } from 'react';
 import TextComponent from './TextComponent';
 import { colors } from '../constants/color';
-
 
 interface Props {
   text: string;
@@ -13,7 +12,7 @@ interface Props {
 }
 
 const ButtonComponent = (props: Props) => {
-  const {text, icon, onPress, color, isLoading} = props;
+  const { text, icon, onPress, color, isLoading } = props;
 
   return (
     <TouchableOpacity
@@ -26,7 +25,8 @@ const ButtonComponent = (props: Props) => {
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
-      }}>
+      }}
+    >
       {isLoading ? (
         <ActivityIndicator />
       ) : (
@@ -34,7 +34,7 @@ const ButtonComponent = (props: Props) => {
           text={text}
           flex={0}
           size={16}
-          styles={{textTransform: 'uppercase'}}
+          styles={{ textTransform: 'uppercase' }}
         />
       )}
     </TouchableOpacity>

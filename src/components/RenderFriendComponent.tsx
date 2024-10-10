@@ -1,7 +1,15 @@
-import React, { useState } from "react";
-import { Image, Modal, StyleSheet, Text, TouchableOpacity, View, FlatList } from "react-native";
-import { fontFamilies } from "../constants/fontFamily";
-import ProfileModalComponent from "./ProfileFriend";
+import React, { useState } from 'react';
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  FlatList,
+} from 'react-native';
+import { fontFamilies } from '../constants/fontFamily';
+import ProfileModalComponent from './ProfileFriend';
 
 interface Props {
   length: number;
@@ -13,57 +21,85 @@ const RenderFriend = (props: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <>
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.text}>{length} friends</Text>
-      <TouchableOpacity  onPress={() => setModalVisible(true)} style={{ flexDirection: 'row' }}>
-        {friend.slice(0, 2).map((item: any, index: number) =>
-          item.url ? (
-            <Image key={index} source={{ uri: item.url }} style={styles.image} />
-          ) : (
-            <Image key={index} source={require('../asset/image/avatar.png')} style={styles.image} />
-          )
-        )}
-        {friend.length > 2 && (
-          <View style={[styles.image,{backgroundColor:'white',alignItems:'center'}]}>
-            <Text style={styles.moreText}>+{length-2}</Text>
-          </View>
-        )}
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.text}>{length} friends</Text>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={{ flexDirection: 'row' }}
+        >
+          {friend
+            .slice(0, 2)
+            .map((item: any, index: number) =>
+              item.url ? (
+                <Image
+                  key={index}
+                  source={{ uri: item.url }}
+                  style={styles.image}
+                />
+              ) : (
+                <Image
+                  key={index}
+                  source={require('../asset/image/avatar.png')}
+                  style={styles.image}
+                />
+              ),
+            )}
+          {friend.length > 2 && (
+            <View
+              style={[
+                styles.image,
+                { backgroundColor: 'white', alignItems: 'center' },
+              ]}
+            >
+              <Text style={styles.moreText}>+{length - 2}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
 
-      {/* Modal for showing all friends */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>All Friends</Text>
-            <FlatList
-              data={friend}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.friendContainer}>
-                  {item.url ? (
-                    <Image source={{ uri: item.url }} style={styles.modalImage} />
-                  ) : (
-                    <Image source={require('../asset/image/avatar.png')} style={styles.modalImage} />
-                  )}
-                  <Text style={styles.friendName}>{item.username || 'Friend'}</Text>
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-              showsVerticalScrollIndicator={false}
-            />
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
+        {/* Modal for showing all friends */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>All Friends</Text>
+              <FlatList
+                data={friend}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.friendContainer}>
+                    {item.url ? (
+                      <Image
+                        source={{ uri: item.url }}
+                        style={styles.modalImage}
+                      />
+                    ) : (
+                      <Image
+                        source={require('../asset/image/avatar.png')}
+                        style={styles.modalImage}
+                      />
+                    )}
+                    <Text style={styles.friendName}>
+                      {item.username || 'Friend'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                showsVerticalScrollIndicator={false}
+              />
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
-    </View>
-    
-        </>
+        </Modal>
+      </View>
+    </>
   );
 };
 
@@ -74,7 +110,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.regular,
     fontSize: 18,
     color: 'black',
-    marginRight:40
+    marginRight: 40,
   },
   image: {
     width: 40,
@@ -87,19 +123,18 @@ const styles = StyleSheet.create({
   moreText: {
     fontSize: 18,
     color: 'black',
-    lineHeight:40,
-    
+    lineHeight: 40,
   },
   modalBackground: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.6)", // Adjust transparency for a better background effect
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Adjust transparency for a better background effect
   },
   modalView: {
     width: '90%', // Make modal width responsive
     maxHeight: '80%', // Limit modal height
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
     elevation: 5,
@@ -110,13 +145,13 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
   },
   friendContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginVertical: 10,
   },
   modalImage: {

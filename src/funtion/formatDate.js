@@ -1,6 +1,6 @@
-export const formatDate=date=>{
- var day=date.getDate()
- var monthName=[
+export const formatDate = date => {
+  var day = date.getDate();
+  var monthName = [
     'Jan',
     'Feb',
     'Mar',
@@ -13,8 +13,8 @@ export const formatDate=date=>{
     'Oct',
     'Nov',
     'Dec',
-]
-var month=monthName[date.getMonth()]
-var formatedDate=day+' '+month
-return formatedDate
-}
+  ];
+  var month = monthName[date.getMonth()];
+  var formatedDate = day + ' ' + month;
+  return formatedDate;
+};
