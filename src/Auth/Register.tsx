@@ -8,7 +8,7 @@ import SpaceComponent from '../components/SpaceComponent';
 import InputComponent from '../components/InputComponent';
 import { Lock, Sms, User } from 'iconsax-react-native';
 import TitleComponent from '../components/TitleComponent';
-import { Alert, Image, Text } from 'react-native';
+import { Alert, Image, ImageBackground, Text } from 'react-native';
 import TextComponent from '../components/TextComponent';
 import { validateEmail, validatePassword } from './validate';
 import firestore from '@react-native-firebase/firestore';
@@ -69,7 +69,11 @@ const RegisterScreen = ({ navigation }: any) => {
     }
   };
   return (
-    <Container>
+    <ImageBackground
+      resizeMode="cover"
+      source={require('../asset/image/bg.png')}
+      style={{ width: '100%', height: '100%' }}
+    >
       <SectionComponent
         styles={{
           flex: 1,
@@ -77,7 +81,7 @@ const RegisterScreen = ({ navigation }: any) => {
         }}
       >
         <Image
-          source={require('../asset/image/login.png')}
+          source={require('../asset/image/register.png')}
           style={globalStyles.imag}
         />
         <InputComponent
@@ -135,7 +139,7 @@ const RegisterScreen = ({ navigation }: any) => {
           </Text>
         </RowComponent>
       </SectionComponent>
-    </Container>
+    </ImageBackground>
   );
 };
 

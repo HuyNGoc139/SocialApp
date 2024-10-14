@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Modal, View, Alert, TouchableOpacity } from 'react-native';
+import {
+  Modal,
+  View,
+  Alert,
+  TouchableOpacity,
+  ImageBackground,
+  Text,
+} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import RowComponent from './RowComponent';
 import TextComponent from './TextComponent';
@@ -7,6 +14,7 @@ import ButtonComponent from './ButtonComponent';
 import Container from './Container';
 import InputComponent from './InputComponent';
 import { Designtools, Lock1, LockSlash } from 'iconsax-react-native'; // Import biểu tượng Lock
+import { fontFamilies } from '../constants/fontFamily';
 
 interface ChangePasswordModalProps {
   isVisible: boolean;
@@ -74,35 +82,52 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={onClose}>
-      <Container>
-        <InputComponent
-          prefix={<LockSlash size="32" color="#FAFAFA" />}
-          title="Current Password"
-          onChange={val => setOldPassword(val)}
-          isPassword
-          placeholder="Current Password"
-          value={oldPassword}
-        />
+      <ImageBackground
+        resizeMode="cover"
+        source={require('../asset/image/bg.png')}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <View style={{ margin: 20, flex: 1, justifyContent: 'center' }}>
+          <View>
+            <Text
+              style={{
+                fontFamily: fontFamilies.bold,
+                fontSize: 24,
+                textAlign: 'center',
+                color: 'white',
+              }}
+            >
+              Change PassWord
+            </Text>
+          </View>
+          <InputComponent
+            prefix={<LockSlash size="32" color="#FAFAFA" />}
+            title="Current Password"
+            onChange={val => setOldPassword(val)}
+            isPassword
+            placeholder="Current Password"
+            value={oldPassword}
+          />
 
-        <InputComponent
-          prefix={<Lock1 size="32" color="#FAFAFA" />}
-          title="Password"
-          onChange={val => setNewPassword(val)}
-          placeholder="Password"
-          isPassword
-          value={newPassword}
-        />
+          <InputComponent
+            prefix={<Lock1 size="32" color="#FAFAFA" />}
+            title="Password"
+            onChange={val => setNewPassword(val)}
+            placeholder="Password"
+            isPassword
+            value={newPassword}
+          />
 
-        <InputComponent
-          prefix={<Lock1 size="32" color="#FAFAFA" />}
-          title="Confirm PassWord"
-          onChange={val => setConfirmPassword(val)}
-          placeholder="Confirm PassWord"
-          isPassword
-          value={confirmPassword}
-        />
-
-        <RowComponent>
+          <InputComponent
+            prefix={<Lock1 size="32" color="#FAFAFA" />}
+            title="Confirm PassWord"
+            onChange={val => setConfirmPassword(val)}
+            placeholder="Confirm PassWord"
+            isPassword
+            value={confirmPassword}
+          />
+        </View>
+        <RowComponent styles={{ marginBottom: 20 }}>
           <View
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           >
@@ -117,7 +142,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             />
           </View>
         </RowComponent>
-      </Container>
+      </ImageBackground>
     </Modal>
   );
 };

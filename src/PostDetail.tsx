@@ -105,9 +105,14 @@ const PostDetail = ({ navigation, route }: any) => {
           <ArrowSquareLeft size="28" color="white" />
         </TouchableOpacity>
         <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingRight: 20,
+          }}
         >
-          <Text style={[globalStyles.textHeader]}>Detail</Text>
+          <Text style={[globalStyles.textHeader]}>Post Details</Text>
         </View>
       </View>
       <View style={{ flex: 1, margin: 12 }}>

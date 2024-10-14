@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { fontFamilies } from '../constants/fontFamily';
 import ProfileModalComponent from './ProfileFriend';
+import { useNavigation } from '@react-navigation/native';
+import auth from '@react-native-firebase/auth';
 
 interface Props {
   length: number;
@@ -19,6 +21,19 @@ interface Props {
 const RenderFriend = (props: Props) => {
   const { friend, length } = props;
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation<any>();
+  const userCurrent = auth().currentUser;
+  const handleProfileFr = (item: any) => {
+    if (item.userId == userCurrent?.uid) {
+      navigation.navigate('Profile');
+    } else {
+      navigation.navigate('ProfileModalComponent', {
+        userId: item.userId,
+      });
+    }
+    setModalVisible(false);
+  };
+
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -69,7 +84,10 @@ const RenderFriend = (props: Props) => {
               <FlatList
                 data={friend}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.friendContainer}>
+                  <TouchableOpacity
+                    onPress={() => handleProfileFr(item)}
+                    style={styles.friendContainer}
+                  >
                     {item.url ? (
                       <Image
                         source={{ uri: item.url }}

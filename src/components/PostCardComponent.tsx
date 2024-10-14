@@ -27,6 +27,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { WebView } from 'react-native-webview';
 import HTMLView from 'react-native-htmlview';
+import RenderHtml from 'react-native-render-html';
 import { memo } from 'react';
 import {
   Menu,
@@ -64,7 +65,7 @@ const PostCardComponent = ({
     };
   }, []);
   //hom nay sua o day
-  const sendLikeNotification = async () => {
+  const sendLikeNotification = useCallback(async () => {
     try {
       const notificationRef = firestore().collection('notifi');
 
@@ -81,10 +82,10 @@ const PostCardComponent = ({
     } catch (error) {
       console.log('Error sending notification:', error);
     }
-  };
+  }, [post.id, userCurrent.username, userCurrent.userId, post.userId]);
   //hom nay sua o day
 
-  const subscribeLikes = () => {
+  const subscribeLikes = useCallback(() => {
     const docRef = firestore().collection('Posts').doc(post.id);
     const likeRef = docRef.collection('like');
 
@@ -112,9 +113,9 @@ const PostCardComponent = ({
         setLike(false);
       }
     });
-  };
+  }, [post.id, userCurrent.userId]);
 
-  const subscribeComments = () => {
+  const subscribeComments = useCallback(() => {
     const docRef = firestore().collection('Posts').doc(post.id);
     const commentRef = docRef.collection('comments');
 
@@ -131,7 +132,7 @@ const PostCardComponent = ({
         setUserComment([]);
       }
     });
-  };
+  }, [post.id]);
 
   const sendLike = useCallback(async () => {
     const docRef = firestore().collection('Posts').doc(post.id);
@@ -211,7 +212,7 @@ const PostCardComponent = ({
       </View>
     );
   };
-  const handleDeletePost = async () => {
+  const handleDeletePost = useCallback(async () => {
     try {
       Alert.alert('Delete Post', 'Do you want delete post?', [
         {
@@ -232,7 +233,7 @@ const PostCardComponent = ({
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [post.id]);
 
   return (
     <>
@@ -302,15 +303,17 @@ const PostCardComponent = ({
         <View style={{ flex: 1 }}>
           <View style={{ marginLeft: 8, marginBottom: 4 }}>
             {post.body ? (
-              <MemoizedRenderHTML
-                source={{ html: post.body }}
-                contentWidth={100}
-                tagsStyles={{
-                  body: { color: 'black', fontSize: 18 },
-                  h1: { fontSize: 36, fontWeight: 'bold' },
-                  h4: { fontSize: 20, fontWeight: 'bold' },
-                }}
-              />
+              <>
+                <MemoizedRenderHTML
+                  source={{ html: post.body }}
+                  contentWidth={100}
+                  tagsStyles={{
+                    body: { color: 'black', fontSize: 18 },
+                    h1: { fontSize: 36, fontWeight: 'bold' },
+                    h4: { fontSize: 20, fontWeight: 'bold' },
+                  }}
+                />
+              </>
             ) : (
               <></>
             )}

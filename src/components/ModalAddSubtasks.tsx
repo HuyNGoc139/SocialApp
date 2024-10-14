@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   Modal,
@@ -24,7 +25,7 @@ import { Designtools, Sms } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
 import DateTimePickerComponent from './DateTimePickerComponent';
 import storage from '@react-native-firebase/storage';
-
+import auth from '@react-native-firebase/auth';
 interface Props {
   // visible: boolean;
   // onClose: () => void;
@@ -86,7 +87,9 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           console.log('Updated Profile');
         });
       // handldeCloseModal();
-      navigation.goBack();
+      // navigation.goBack();
+      Alert.alert('Cập nhật thành công, Vui lòng đăng nhập lại!');
+      auth().signOut();
       setISLoading(false);
     } catch (error) {
       setISLoading(false);

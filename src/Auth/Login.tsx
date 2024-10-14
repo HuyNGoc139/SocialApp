@@ -1,4 +1,5 @@
 import {
+  ImageBackground,
   StyleSheet,
   Text,
   TextInput,
@@ -60,7 +61,11 @@ const LoginScreen = ({ navigation }: any) => {
   }, [email, password, navigation]);
 
   return (
-    <Container>
+    <ImageBackground
+      resizeMode="cover"
+      source={require('../asset/image/bg.png')}
+      style={{ width: '100%', height: '100%' }}
+    >
       <Image source={require('../asset/image/login.png')} style={Style.imag} />
       <SectionComponent styles={{ justifyContent: 'center', marginTop: 12 }}>
         <InputComponent
@@ -109,7 +114,7 @@ const LoginScreen = ({ navigation }: any) => {
           </Text>
         </RowComponent>
       </SectionComponent>
-    </Container>
+    </ImageBackground>
   );
 };
 
