@@ -33,13 +33,17 @@ const PostDetail = ({ navigation, route }: any) => {
       .collection('comments')
       .orderBy('createdAt', 'desc');
 
-    const unsubscribe = commentRef.onSnapshot(snapshot => {
+    const unsubscribe = commentRef.onSnapshot(async snapshot => {
       if (!snapshot.empty) {
+        //sua o day
         const comment = snapshot.docs.map(doc => {
           return {
             ...doc.data(),
           };
         });
+        
+          
+          
         setUserComment(comment); // Cập nhật danh sách bình luận
       } else {
         setUserComment([]);
