@@ -5,20 +5,22 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import LoginScreen from './src/Auth/Login';
 import RegisterScreen from './src/Auth/Register';
-import FriendScreen from './src/Friend';
-import ProfileScreen from './src/ProfileScreen';
-import HomeScreen from './src/HomeScreen';
-import ChatScreen from './src/ChatScreen';
+import FriendScreen from './src/screen/Friend';
+import ProfileScreen from './src/screen/ProfileScreen';
+import HomeScreen from './src/screen/HomeScreen';
+import ChatScreen from './src/screen/ChatScreen';
 import { Home, Profile2User, Menu, Message } from 'iconsax-react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore'; // Nhập firestore
-import RoomScreen from './src/RoomScreen';
-import CreatePostScreen from './src/CreatePostScreen';
-import PostDetail from './src/PostDetail';
+import RoomScreen from './src/screen/RoomScreen';
+import CreatePostScreen from './src/screen/CreatePostScreen';
+import PostDetail from './src/screen/PostDetail';
 import { MenuProvider } from 'react-native-popup-menu';
-import NotificationScreen from './src/NotificationScreen';
+import NotificationScreen from './src/screen/NotificationScreen';
 import ModalAddSubtasks from './src/components/ModalAddSubtasks';
 import ProfileModalComponent from './src/components/ProfileFriend';
+import { Provider } from 'react-redux';
+import store from './src/redux/store';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -123,6 +125,7 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
   return (
+    <Provider store={store}>
     <MenuProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
@@ -163,6 +166,7 @@ const App: React.FC = () => {
         </NavigationContainer>
       </SafeAreaView>
     </MenuProvider>
+    </Provider>
   );
 };
 

@@ -14,14 +14,20 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { AddSquare, Heart, Like, Velas } from 'iconsax-react-native';
-import SpaceComponent from './components/SpaceComponent';
-import { User } from './models/user';
-import { fontFamilies } from './constants/fontFamily';
-import { posts } from './models/user';
-import PostCardComponent from './components/PostCardComponent';
+import SpaceComponent from '../components/SpaceComponent';
+import { User } from '../models/user';
+import { fontFamilies } from '../constants/fontFamily';
+import { posts } from '../models/user';
+import PostCardComponent from '../components/PostCardComponent';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 const HomeScreen = ({ navigation }: any) => {
   const [unReadCount, setUnreadCount] = useState<number>(0);
+  const user3 = useSelector((state: RootState) => state.auth.user);
+  console.log('====================================');
+  console.log(user3);
+  console.log('====================================');
   useEffect(() => {
     const unsubscribeUser = getUser();
     const unsubscribePosts = getAllPost();
@@ -159,7 +165,7 @@ const HomeScreen = ({ navigation }: any) => {
             ) : (
               <Image
                 style={styles.image}
-                source={require('./asset/image/avatar.png')}
+                source={require('../asset/image/avatar.png')}
               />
             )}
           </TouchableOpacity>

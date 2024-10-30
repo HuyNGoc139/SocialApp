@@ -7,13 +7,13 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import { globalStyles } from './styles/globalStyles';
+import { globalStyles } from '../styles/globalStyles';
 import { SearchNormal1 } from 'iconsax-react-native';
-import SpaceComponent from './components/SpaceComponent';
-import FriendComponent from './components/FriendsComponent';
+import SpaceComponent from '../components/SpaceComponent';
+import FriendComponent from '../components/FriendsComponent';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { SelectModel } from './models/SelectModal';
+import { SelectModel } from '../models/SelectModal';
 
 const FriendScreen = ({ navigation }: any) => {
   const [search, setSearch] = useState('');

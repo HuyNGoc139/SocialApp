@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import ChatItem from './components/ChatItem';
-import { SelectModel } from './models/SelectModal';
+import ChatItem from '../components/ChatItem';
+import { SelectModel } from '../models/SelectModal';
 import { SearchNormal1 } from 'iconsax-react-native';
-import { fontFamilies } from './constants/fontFamily';
-import { colors } from './constants/color';
-import { User } from './models/user';
+import { fontFamilies } from '../constants/fontFamily';
+import { colors } from '../constants/color';
+import { User } from '../models/user';
 
 const ChatScreen = ({ navigation }: any) => {
   const [userSelect, setUserSelect] = useState<SelectModel[]>([]);
@@ -103,7 +103,7 @@ const ChatScreen = ({ navigation }: any) => {
                 borderRadius: 100,
                 marginRight: 12,
               }}
-              source={require('./asset/image/avatar.png')}
+              source={require('../asset/image/avatar.png')}
             />
           )}
         </TouchableOpacity>

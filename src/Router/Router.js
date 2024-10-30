@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import auth from '@react-native-firebase/auth'
 import LoginScreen from '../Auth/Login';
 import RegisterScreen from '../Auth/Register';
-import HomeScreen from '../HomeScreen';
+import HomeScreen from '../screen/HomeScreen';
 
 const Router = () => {
   const Stack = createNativeStackNavigator();

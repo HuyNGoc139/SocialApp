@@ -14,37 +14,41 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import ButtonComponent from './components/ButtonComponent';
-import { globalStyles } from './styles/globalStyles';
-import TextComponent from './components/TextComponent';
-import { colors } from './constants/color';
-import TitleComponent from './components/TitleComponent';
-import { fontFamilies } from './constants/fontFamily';
-import RowComponent from './components/RowComponent';
+import ButtonComponent from '../components/ButtonComponent';
+import { globalStyles } from '../styles/globalStyles';
+import TextComponent from '../components/TextComponent';
+import { colors } from '../constants/color';
+import TitleComponent from '../components/TitleComponent';
+import { fontFamilies } from '../constants/fontFamily';
+import RowComponent from '../components/RowComponent';
 import {
   Information,
   Logout,
   MoreSquare,
   PasswordCheck,
 } from 'iconsax-react-native';
-import SpaceComponent from './components/SpaceComponent';
-import { handleDateTime } from './funtion/handleDateTime';
-import ModalAddSubtasks from './components/ModalAddSubtasks';
-import { User } from './models/user';
-import PostCardComponent from './components/PostCardComponent';
+import SpaceComponent from '../components/SpaceComponent';
+import { handleDateTime } from '../funtion/handleDateTime';
+import ModalAddSubtasks from '../components/ModalAddSubtasks';
+import { User } from '../models/user';
+import PostCardComponent from '../components/PostCardComponent';
 import {
   Menu,
   MenuOptions,
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import ChangePasswordModal from './components/ChangePasswordModal';
-import RenderFriend from './components/RenderFriendComponent';
+import ChangePasswordModal from '../components/ChangePasswordModal';
+import RenderFriend from '../components/RenderFriendComponent';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { logoutUser } from '../redux/authAction';
 interface FirebaseTimestamp {
   seconds: number;
   nanoseconds: number;
 }
 const ProfileScreen = ({ navigation }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [isVisibleModalSubTasks, setIsVisibleModalSubTasks] = useState(false);
   const userCurrent = auth().currentUser;
   const [user, setUser] = useState<User>();
@@ -194,14 +198,7 @@ const ProfileScreen = ({ navigation }: any) => {
       });
   };
   const handleLogout = () => {
-    auth()
-      .signOut()
-      .then(() => {
-        Alert.alert('Đăng xuất thành công!');
-      })
-      .catch(error => {
-        Alert.alert('Đăng xuất thất bại!', error.message);
-      });
+    dispatch(logoutUser())
   };
 
   const getFormattedDate = (timestamp: FirebaseTimestamp) => {
@@ -232,7 +229,7 @@ const ProfileScreen = ({ navigation }: any) => {
             ) : (
               <Image
                 style={{ borderRadius: 5000, width: 300, height: 300 }}
-                source={require('./asset/image/avatar.png')}
+                source={require('../asset/image/avatar.png')}
               />
             )}
             <Text

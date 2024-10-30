@@ -13,9 +13,9 @@ import { ArrowSquareLeft, Back, UserAdd } from 'iconsax-react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { globalStyles } from './styles/globalStyles';
-import Notificomponent from './components/Notificomponent';
-import { fontFamilies } from './constants/fontFamily';
+import { globalStyles } from '../styles/globalStyles';
+import Notificomponent from '../components/Notificomponent';
+import { fontFamilies } from '../constants/fontFamily';
 
 interface Notification {
   id: string;

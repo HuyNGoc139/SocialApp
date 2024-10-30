@@ -20,19 +20,19 @@ import {
   Forbidden2,
   VideoAdd,
 } from 'iconsax-react-native';
-import { globalStyles } from './styles/globalStyles';
-import { fontFamilies } from './constants/fontFamily';
+import { globalStyles } from '../styles/globalStyles';
+import { fontFamilies } from '../constants/fontFamily';
 import {
   RichEditor,
   RichToolbar,
   actions,
 } from 'react-native-pell-rich-editor';
-import SpaceComponent from './components/SpaceComponent';
+import SpaceComponent from '../components/SpaceComponent';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 import Video from 'react-native-video';
-import { posts } from './models/user';
-import ButtonComponent from './components/ButtonComponent';
+import { posts } from '../models/user';
+import ButtonComponent from '../components/ButtonComponent';
 const initialValue: posts = {
   id: '',
   url: '',
@@ -164,7 +164,7 @@ const CreatePostScreen = ({ navigation, route }: any) => {
                   borderRadius: 12,
                   marginRight: 12,
                 }}
-                source={require('./asset/image/avatar.png')}
+                source={require('../asset/image/avatar.png')}
               />
             )}
           </View>

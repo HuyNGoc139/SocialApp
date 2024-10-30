@@ -21,15 +21,15 @@ import {
   Video,
   VideoAdd,
 } from 'iconsax-react-native';
-import RowComponent from './components/RowComponent';
-import { colors } from './constants/color';
-import { globalStyles } from './styles/globalStyles';
-import SpaceComponent from './components/SpaceComponent';
+import RowComponent from '../components/RowComponent';
+import { colors } from '../constants/color';
+import { globalStyles } from '../styles/globalStyles';
+import SpaceComponent from '../components/SpaceComponent';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import MessageList from './components/MessageList';
-import { fontFamilies } from './constants/fontFamily';
-import { User } from './models/user';
+import MessageList from '../components/MessageList';
+import { fontFamilies } from '../constants/fontFamily';
+import { User } from '../models/user';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 const RoomScreen = ({ navigation, route }: any) => {
@@ -273,7 +273,7 @@ const RoomScreen = ({ navigation, route }: any) => {
                 borderRadius: 100,
                 marginLeft: 12,
               }}
-              source={require('./asset/image/avatar.png')}
+              source={require('../asset/image/avatar.png')}
             />
           )}
           <Text

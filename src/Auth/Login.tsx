@@ -21,6 +21,9 @@ import Container from '../components/Container';
 import { validateEmail, validatePassword } from './validate';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/store';
+import { loginUser } from '../redux/authAction';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
@@ -28,7 +31,7 @@ const LoginScreen = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errText, setErrorText] = useState<string>('');
   const [showPass, setShowPass] = useState(false);
-
+  const dispatch = useDispatch<AppDispatch>();
   // Memoize error message if it's based on computation (for optimization)
   const errorMessage = useMemo(() => errText, [errText]);
 
@@ -42,21 +45,22 @@ const LoginScreen = ({ navigation }: any) => {
       setErrorText('Password must be at least 6 characters');
     } else {
       setErrorText('');
-      setIsLoading(true);
-      await auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const user = userCredential.user;
+      dispatch(loginUser({ email, password }))
+      // setIsLoading(true);
+      // await auth()
+      //   .signInWithEmailAndPassword(email, password)
+      //   .then(userCredential => {
+      //     const user = userCredential.user;
 
-          if (user) {
-            setIsLoading(false);
-            navigation.navigate('HomeTab');
-          }
-        })
-        .catch((error: { message: string }) => {
-          setErrorText(error.message);
-          setIsLoading(false);
-        });
+      //     if (user) {
+      //       setIsLoading(false);
+      //       // navigation.navigate('HomeTab');
+      //     }
+      //   })
+      //   .catch((error: { message: string }) => {
+      //     setErrorText(error.message);
+      //     setIsLoading(false);
+      //   });
     }
   }, [email, password, navigation]);
 

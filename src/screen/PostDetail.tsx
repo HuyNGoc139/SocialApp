@@ -12,15 +12,15 @@ import {
   FlatList,
 } from 'react-native';
 import { ArrowSquareLeft, Send2 } from 'iconsax-react-native';
-import PostCardComponent from './components/PostCardComponent';
-import { globalStyles } from './styles/globalStyles';
-import InputComponent from './components/InputComponent';
-import { fontFamilies } from './constants/fontFamily';
+import PostCardComponent from '../components/PostCardComponent';
+import { globalStyles } from '../styles/globalStyles';
+import InputComponent from '../components/InputComponent';
+import { fontFamilies } from '../constants/fontFamily';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { User } from './models/user';
-import CommentItem from './components/CommentItem';
+import { User } from '../models/user';
+import CommentItem from '../components/CommentItem';
 const PostDetail = ({ navigation, route }: any) => {
   const [textRef, setTextRef] = useState('');
   const { post, userCurrent } = route.params;
