@@ -12,7 +12,7 @@ interface User {
   DateBitrhDay?: any;
   url?: string;
   friends?: string[];
-  // createAt?: any;
+  createAt?: string
   userId?:string;
 }
 interface AuthState {

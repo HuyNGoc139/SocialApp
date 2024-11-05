@@ -21,6 +21,7 @@ import ModalAddSubtasks from './src/components/ModalAddSubtasks';
 import ProfileModalComponent from './src/components/ProfileFriend';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
+import { PaperProvider } from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -125,6 +126,7 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
   return (
+    <PaperProvider>
     <Provider store={store}>
     <MenuProvider>
       <SafeAreaView style={{ flex: 1 }}>
@@ -167,6 +169,7 @@ const App: React.FC = () => {
       </SafeAreaView>
     </MenuProvider>
     </Provider>
+    </PaperProvider>
   );
 };
 

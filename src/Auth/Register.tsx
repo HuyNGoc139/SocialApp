@@ -13,6 +13,9 @@ import TextComponent from '../components/TextComponent';
 import { validateEmail, validatePassword } from './validate';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { registerUser } from '../redux/authAction';
 const RegisterScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +23,7 @@ const RegisterScreen = ({ navigation }: any) => {
   const [errorText, setErrorText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState('');
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     if (email) {
       setErrorText('');
@@ -40,32 +44,33 @@ const RegisterScreen = ({ navigation }: any) => {
     } else if (password !== confirmPassword) {
       setErrorText('Password is not match!!!');
     } else {
-      setIsLoading(true);
-      await auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(async userCredential => {
-          const user = userCredential.user;
+      dispatch(registerUser({email,password,username}))
+      // setIsLoading(true);
+      // await auth()
+      //   .createUserWithEmailAndPassword(email, password)
+      //   .then(async userCredential => {
+      //     const user = userCredential.user;
 
-          if (user) {
-            await user.updateProfile({
-              displayName: username,
-            });
-            await firestore().collection('Users').doc(user.uid).set({
-              username: username, // Thêm trường tên người dùng
-              email: user.email,
-              createAt: new Date(),
-              uid: user.uid,
-              userId: user.uid,
-            });
-            console.log('User registered successfully:', user);
-            Alert.alert('Create Acount Sucess');
-            setIsLoading(false);
-          }
-        })
-        .catch((err: { message: React.SetStateAction<string> }) => {
-          setIsLoading(false);
-          setErrorText(err.message);
-        });
+      //     if (user) {
+      //       await user.updateProfile({
+      //         displayName: username,
+      //       });
+      //       await firestore().collection('Users').doc(user.uid).set({
+      //         username: username, // Thêm trường tên người dùng
+      //         email: user.email,
+      //         createAt: new Date(),
+      //         uid: user.uid,
+      //         userId: user.uid,
+      //       });
+      //       console.log('User registered successfully:', user);
+      //       Alert.alert('Create Acount Sucess');
+      //       setIsLoading(false);
+      //     }
+      //   })
+      //   .catch((err: { message: React.SetStateAction<string> }) => {
+      //     setIsLoading(false);
+      //     setErrorText(err.message);
+      //   });
     }
   };
   return (

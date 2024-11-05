@@ -3,6 +3,7 @@ import {
   Dimensions,
   Image,
   Modal,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -26,6 +27,9 @@ import firestore from '@react-native-firebase/firestore';
 import DateTimePickerComponent from './DateTimePickerComponent';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { logoutUser } from '../redux/authAction';
 interface Props {
   // visible: boolean;
   // onClose: () => void;
@@ -41,11 +45,12 @@ const initialValue = {
 
 const ModalAddSubtasks = ({ navigation, route }: any) => {
   const { userId } = route.params;
-
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     getUser();
   }, [userId]);
-
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   const [user, setUser] = useState(initialValue);
   const [userName, setUserName] = useState('');
   const [isLoading, setISLoading] = useState(false);
@@ -66,11 +71,6 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         }
       });
   }, [userId]);
-
-  // const handldeCloseModal = useCallback(() => {
-  //   onClose();
-  // }, [onClose]);
-
   const handleSaveDataToDatabase = useCallback(async () => {
     const data = {
       ...user,
@@ -86,10 +86,8 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         .then(() => {
           console.log('Updated Profile');
         });
-      // handldeCloseModal();
       // navigation.goBack();
-      Alert.alert('Cập nhật thành công, Vui lòng đăng nhập lại!');
-      auth().signOut();
+      dispatch(logoutUser()) //khong can
       setISLoading(false);
     } catch (error) {
       setISLoading(false);
@@ -151,7 +149,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           justifyContent: 'center',
         }}
       >
-        <RowComponent styles={{ marginBottom: 16 }}>
+        <RowComponent styles={{ marginBottom: 8,justifyContent:'center',alignItems:'center' }}>
           <TitleComponent text="Update information" size={32} />
         </RowComponent>
 
@@ -166,13 +164,20 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         >
           {renderProfileImage}
         </TouchableOpacity>
-
+        <View style={{flexDirection:'row'}}>
+        <Switch
+        trackColor={{ false: '#767577', true: '#81b0ff' }}
+        thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+        ios_backgroundColor="#3e3e3e"
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+      />
+        </View>
         <InputComponent
           prefix={<Sms size="32" color="#FAFAFA" />}
           title="Email"
           onChange={val => {}}
           placeholder="Email"
-          allowClear
           value={user.email}
         />
         <InputComponent

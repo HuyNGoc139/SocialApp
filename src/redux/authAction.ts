@@ -29,9 +29,13 @@ export const loginUser = createAsyncThunk(
 
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async (userDetails: { email: string; password: string; username: string }, { rejectWithValue }) => {
+  async ({
+    email,
+    password,
+    username
+  }: { email: string; password: string; username:string }, { rejectWithValue }) => {
     try {
-      const { email, password, username } = userDetails;
+      
       const userCredential = await auth().createUserWithEmailAndPassword(email, password);
       const uid = userCredential.user.uid;
 
@@ -41,7 +45,8 @@ export const registerUser = createAsyncThunk(
         username,
         friends: [],
         createAt: new Date(),
-        url: "", // URL ảnh nếu có thể được tải lên sau
+        url: "",
+        uid,
       });
 
       return { uid,

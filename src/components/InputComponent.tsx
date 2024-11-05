@@ -23,6 +23,7 @@ interface Props {
   numberOfLine?: number;
   type?: KeyboardTypeOptions;
   isPassword?: boolean;
+  disable?:boolean
 }
 const InputComponent = (props: Props) => {
   const {
@@ -37,6 +38,7 @@ const InputComponent = (props: Props) => {
     numberOfLine,
     type,
     isPassword,
+    disable
   } = props;
   const [showPass, setShowPass] = useState(false);
   return (

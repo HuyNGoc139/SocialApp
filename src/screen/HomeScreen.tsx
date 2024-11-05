@@ -24,40 +24,20 @@ import { RootState } from '../redux/store';
 
 const HomeScreen = ({ navigation }: any) => {
   const [unReadCount, setUnreadCount] = useState<number>(0);
-  const user3 = useSelector((state: RootState) => state.auth.user);
-  console.log('====================================');
-  console.log(user3);
-  console.log('====================================');
+  const user = useSelector((state: RootState) => state.auth.user);
   useEffect(() => {
-    const unsubscribeUser = getUser();
     const unsubscribePosts = getAllPost();
     const unsubscribeNotifications = listenToUnreadNotifications();
 
     return () => {
-      unsubscribeUser();
       unsubscribePosts();
       unsubscribeNotifications();
     };
   }, []);
-  const [user, setUser] = useState<User>();
   const [postsList, setPostsList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const flatListRef = useRef<FlatList<any>>(null);
   const userCurrent = auth().currentUser;
-  const getUser = () => {
-    const unsubscribe = firestore()
-      .doc(`Users/${userCurrent?.uid}`)
-      .onSnapshot((snap: any) => {
-        if (snap && snap.exists) {
-          setUser({
-            ...snap.data(),
-          });
-        } else {
-          console.log('user not found');
-        }
-      });
-    return unsubscribe;
-  };
   const listenToUnreadNotifications = () => {
     const unsubscribe = firestore()
       .collection('notifi')

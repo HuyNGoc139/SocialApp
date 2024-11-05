@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Modal,
   View,
@@ -15,7 +15,10 @@ import Container from './Container';
 import InputComponent from './InputComponent';
 import { Designtools, Lock1, LockSlash } from 'iconsax-react-native'; // Import biểu tượng Lock
 import { fontFamilies } from '../constants/fontFamily';
-
+import { useApp } from '../hook/useAppHook';
+import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { isValidPassword } from '../funtion/ultils';
 interface ChangePasswordModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -25,20 +28,16 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   isVisible,
   onClose,
 }) => {
+  const { toastMessage } = useApp();
   const [oldPassword, setOldPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-
-  // Hàm đổi mật khẩu
   const reauthenticateAndChangePassword = () => {
     const user = auth().currentUser;
-
     if (!user) {
       Alert.alert('Không tìm thấy người dùng hiện tại');
       return;
     }
-
-    // Kiểm tra các điều kiện mật khẩu
     if (!oldPassword || !newPassword || !confirmPassword) {
       Alert.alert('Vui lòng không để trống các ô mật khẩu');
       return;
@@ -58,13 +57,11 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
       Alert.alert('Mật khẩu mới và xác nhận không khớp');
       return;
     }
-
     const credential = auth.EmailAuthProvider.credential(
       user.email ?? '',
       oldPassword,
     );
 
-    // Reauthenticate user
     user
       .reauthenticateWithCredential(credential)
       .then(() => {
@@ -80,21 +77,63 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
       .catch(error => Alert.alert('Lỗi xác thực mật khẩu cũ', error.message));
   };
 
+  const changePasswordSchema = useMemo(
+    () =>
+      yup.object().shape({
+        currentPassword: yup.string().required(('Vui lòng không để trống')),
+        newPassword: yup
+          .string()
+          .required('Vui lòng không để trống các ô mật khẩu')
+          .matches(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%*?&!.-_> </^~`])[A-Za-z\d@#$%*?&!.-_> </^~`]{10,15}$/,
+            'Vui lòng nhập đúng định dạng',
+          )
+          .test(
+            'newPassword',
+            ('Mật khẩu không chính xác'),
+            function (value) {
+              return value !== this.parent.currentPassword;
+            },
+          ),
+        confirmPassword: yup
+          .string()
+          .required(('validation.required'))
+          .oneOf([yup.ref('newPassword')], ('validation.confirm password')),
+      }),
+    [],
+  );
+
+  const {
+    setValue,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
+    resolver: yupResolver(changePasswordSchema),
+    mode: 'all',
+  });
+  const checkOne =
+    watch('newPassword')?.length >= 10 && watch('newPassword')?.length <= 15;
+
+  const checkTwo =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%*?&!.-_> </^~`])/.test(
+      watch('newPassword'),
+    );
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={onClose}>
-      <ImageBackground
-        resizeMode="cover"
-        source={require('../asset/image/bg.png')}
-        style={{ width: '100%', height: '100%' }}
-      >
-        <View style={{ margin: 20, flex: 1, justifyContent: 'center' }}>
+        <View style={{ margin: 20, flex: 1,}}>
           <View>
             <Text
               style={{
                 fontFamily: fontFamilies.bold,
                 fontSize: 24,
                 textAlign: 'center',
-                color: 'white',
+                color: 'black',
               }}
             >
               Change PassWord
@@ -142,9 +181,12 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             />
           </View>
         </RowComponent>
-      </ImageBackground>
     </Modal>
   );
 };
 
 export default ChangePasswordModal;
+function yupResolver(changePasswordSchema: yup.ObjectSchema<{ currentPassword: string; newPassword: string; confirmPassword: string; }, yup.AnyObject, { currentPassword: undefined; newPassword: undefined; confirmPassword: undefined; }, "">): import("react-hook-form").Resolver<{ currentPassword: string; newPassword: string; confirmPassword: string; }, any> | undefined {
+  throw new Error('Function not implemented.');
+}
+

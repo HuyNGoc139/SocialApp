@@ -24,6 +24,8 @@ import auth from '@react-native-firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
 import { loginUser } from '../redux/authAction';
+import { FloatingLabelInput } from '../components/FloatingLabelInput';
+import { Colors } from '../styles';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
@@ -32,10 +34,8 @@ const LoginScreen = ({ navigation }: any) => {
   const [errText, setErrorText] = useState<string>('');
   const [showPass, setShowPass] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  // Memoize error message if it's based on computation (for optimization)
   const errorMessage = useMemo(() => errText, [errText]);
 
-  // Memoize handleLogin function using useCallback to prevent re-creation on every render
   const handleLogin = useCallback(async () => {
     if (!email || !password) {
       setErrorText('Please enter your email and password!!!');
@@ -46,21 +46,6 @@ const LoginScreen = ({ navigation }: any) => {
     } else {
       setErrorText('');
       dispatch(loginUser({ email, password }))
-      // setIsLoading(true);
-      // await auth()
-      //   .signInWithEmailAndPassword(email, password)
-      //   .then(userCredential => {
-      //     const user = userCredential.user;
-
-      //     if (user) {
-      //       setIsLoading(false);
-      //       // navigation.navigate('HomeTab');
-      //     }
-      //   })
-      //   .catch((error: { message: string }) => {
-      //     setErrorText(error.message);
-      //     setIsLoading(false);
-      //   });
     }
   }, [email, password, navigation]);
 
@@ -87,6 +72,16 @@ const LoginScreen = ({ navigation }: any) => {
           title="Password"
           isPassword
         />
+        {/* <FloatingLabelInput
+          label={'Email'}
+          isSecure
+          wrapperStyle={{ marginTop: 16 }}
+          outlineColor={Colors.black23}
+          value={email}
+          style={{ height: 52 }}
+          onChangeText={(text) => setEmail}
+          errorMessages={errText}
+        /> */}
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           {errorMessage && (
             <Text
