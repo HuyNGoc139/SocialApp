@@ -46,6 +46,7 @@ const PostCardComponent = ({
 }: any) => {
   const MemoizedRenderHTML = memo(RenderHTML);
   // const { post, userCurrent,navigation } = props;
+
   const user = post.user;
   const [like, setLike] = useState(false);
   const [userLike, setUserLike] = useState<any[]>([]);
@@ -73,9 +74,9 @@ const PostCardComponent = ({
         postId: post.id,
         senderName: userCurrent.username,
         senderId: userCurrent.userId,
-        type: 'like', // loại thông báo (like hoặc comment)
+        type: 'like',
         createdAt: new Date(),
-        receiverId: post.userId, // người đăng bài viết
+        receiverId: post.userId,
         isRead: false,
       });
       console.log('Notification sent successfully');
@@ -88,19 +89,31 @@ const PostCardComponent = ({
   const subscribeLikes = useCallback(() => {
     const docRef = firestore().collection('Posts').doc(post.id);
     const likeRef = docRef.collection('like');
-
-    // Lắng nghe sự thay đổi trong collection 'like'
-    return likeRef.onSnapshot(snapshot => {
+    return likeRef.onSnapshot(async snapshot => {
       if (!snapshot.empty) {
-        const likes = snapshot.docs.map(doc => ({
-          userId: doc.id,
-          ...doc.data(),
-        }));
-
-        setUserLike(likes);
-
-        // Kiểm tra xem userCurrent đã like hay chưa
-        const currentUserLike = likes.find(
+        const likesWithUserInfo = await Promise.all(
+          snapshot.docs.map(async (doc) => {
+            const likeData = doc.data();
+            const userId = doc.id;
+  
+            // Lấy thông tin người dùng từ userId
+            const userSnapshot = await firestore()
+              .collection('Users')
+              .doc(userId)
+              .get();
+  
+            const userData = userSnapshot.exists ? userSnapshot.data() : null;
+  
+            return {
+              userId,
+              ...likeData,
+              user: userData,
+            };
+          })
+        );
+          
+        setUserLike(likesWithUserInfo);
+        const currentUserLike = likesWithUserInfo.find(
           like => like.userId === userCurrent.userId,
         );
         if (currentUserLike) {
@@ -177,7 +190,7 @@ const PostCardComponent = ({
   const renderUserLike = ({ item }: any) => {
     return (
       <View style={[styles.userItem, { flexDirection: 'row', flex: 1 }]}>
-        {item?.url ? (
+        {item?.user.url ? (
           <Image
             style={{
               height: 36,
@@ -185,7 +198,7 @@ const PostCardComponent = ({
               borderRadius: 100,
               marginRight: 12,
             }}
-            source={{ uri: item.url }}
+            source={{ uri: item.user.url }}
           />
         ) : (
           <Image
@@ -195,7 +208,7 @@ const PostCardComponent = ({
               borderRadius: 100,
               marginRight: 12,
             }}
-            source={require('../asset/image/avatar.png')}
+            source={require('../assets/image/avatar.png')}
           />
         )}
         <Text
@@ -206,7 +219,7 @@ const PostCardComponent = ({
             flex: 1,
           }}
         >
-          {item.senderName}
+          {item.user.username}
         </Text>
         <Heart size="32" variant="Bold" color="red" />
       </View>
@@ -244,7 +257,7 @@ const PostCardComponent = ({
           ) : (
             <Image
               style={styles.imagUser}
-              source={require('../asset/image/avatar.png')}
+              source={require('../assets/image/avatar.png')}
             />
           )}
 

@@ -54,7 +54,7 @@ const RenderFriend = (props: Props) => {
               ) : (
                 <Image
                   key={index}
-                  source={require('../asset/image/avatar.png')}
+                  source={require('../assets/image/avatar.png')}
                   style={styles.image}
                 />
               ),
@@ -95,7 +95,7 @@ const RenderFriend = (props: Props) => {
                       />
                     ) : (
                       <Image
-                        source={require('../asset/image/avatar.png')}
+                        source={require('../assets/image/avatar.png')}
                         style={styles.modalImage}
                       />
                     )}

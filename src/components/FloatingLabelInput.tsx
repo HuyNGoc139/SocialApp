@@ -44,7 +44,7 @@ export const FloatingLabelInput = ({
           isSecure ? (
             <TextInput.Icon
               forceTextInputFocus={false}
-              icon={() => (!show ? <Eye size="32" color="#FAFAFA" /> : <EyeSlash size="32" color="#FAFAFA" />)}
+              icon={() => (!show ? <Eye size="20" color="black" /> : <EyeSlash size="20" color="black" />)}
               onPress={() => setShow(!show)}
             />
           ) : undefined

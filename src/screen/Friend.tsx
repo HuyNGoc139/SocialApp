@@ -164,7 +164,7 @@ const FriendScreen = ({ navigation }: any) => {
           )}
         </View>
 
-        <View>
+        <View style={{flex:1}}>
           <Text style={styles.textH1}>People you may know</Text>
           {isLoading ? (
             <ActivityIndicator size="large" color="blue" />
@@ -185,11 +185,13 @@ const FriendScreen = ({ navigation }: any) => {
                 />
               )}
             />
+            
           ) : (
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
               <Text style={styles.textnotfound}>No Users Found</Text>
             </View>
           )}
+          
         </View>
       </View>
     </View>

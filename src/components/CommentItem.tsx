@@ -45,20 +45,20 @@ const CommentItem = (props: any) => {
   };
   return (
     <View style={styles.container}>
-      {cmt?.profileUrl ? (
+      {cmt?.user.url ? (
         <Image
           style={{ height: 42, width: 42, borderRadius: 12, marginRight: 12 }}
-          source={{ uri: cmt.profileUrl }}
+          source={{ uri: cmt.user.url }}
         />
       ) : (
         <Image
           style={{ height: 48, width: 48, borderRadius: 12, marginRight: 12 }}
-          source={require('../asset/image/avatar.png')}
+          source={require('../assets/image/avatar.png')}
         />
       )}
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row' }}>
-          <Text style={styles.textUser}>{cmt.senderName}</Text>
+          <Text style={styles.textUser}>{cmt.user.username}</Text>
           <SpaceComponent width={10} />
           <Text>{handleDateTime.GetHour(cmt.createdAt)}</Text>
         </View>

@@ -273,7 +273,7 @@ const RoomScreen = ({ navigation, route }: any) => {
                 borderRadius: 100,
                 marginLeft: 12,
               }}
-              source={require('../asset/image/avatar.png')}
+              source={require('../assets/image/avatar.png')}
             />
           )}
           <Text

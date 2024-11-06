@@ -229,7 +229,7 @@ const ProfileScreen = ({ navigation }: any) => {
             ) : (
               <Image
                 style={{ borderRadius: 5000, width: 300, height: 300 }}
-                source={require('../asset/image/avatar.png')}
+                source={require('../assets/image/avatar.png')}
               />
             )}
             <Text
@@ -252,27 +252,32 @@ const ProfileScreen = ({ navigation }: any) => {
           <View
             style={{
               flex: 1,
-              backgroundColor: '#ababab',
+              backgroundColor: '#d3e6e6',
               borderRadius: 20,
               justifyContent: 'center',
               alignItems: 'center',
               margin: 12,
             }}
-          >
+          > 
             <View style={{ width: '90%' }}>
-              <SpaceComponent height={12}></SpaceComponent>
+            <SpaceComponent height={10}></SpaceComponent>
+            <View style={{flexDirection:'row'}}>
+            <Text style={styles.text}>Two-factor authentication:</Text>
+            <Text style={[styles.text,{textAlign:'right',flex:1,color:user?.twoFA?'green':'black'}]}>{user?.twoFA?'ACTIVE':'INACTIVE'}</Text>
+            </View>
+              <SpaceComponent height={10}></SpaceComponent>
               <Text style={styles.text}>Email: {user?.email}</Text>
-              <SpaceComponent height={12}></SpaceComponent>
+              <SpaceComponent height={10}></SpaceComponent>
               <Text style={styles.text}>
                 Date Of Birth: {getFormattedDate(user?.DateBitrhDay)}
               </Text>
-              <SpaceComponent height={12}></SpaceComponent>
+              <SpaceComponent height={10}></SpaceComponent>
               <Text style={styles.text}>
                 createAt:{' '}
                 {handleDateTime.DateString(userCurrent?.metadata.creationTime)}
               </Text>
             </View>
-            <SpaceComponent height={12}></SpaceComponent>
+            <SpaceComponent height={10}></SpaceComponent>
             <View style={{ flex: 1 }}>
               <RowComponent styles={{ width: '90%' }}>
                 <Text style={[styles.text, { flex: 1 }]}>
@@ -286,21 +291,21 @@ const ProfileScreen = ({ navigation }: any) => {
                   <Information size="28" color="black" />
                 </TouchableOpacity>
               </RowComponent>
-              <SpaceComponent height={12}></SpaceComponent>
+              <SpaceComponent height={10}></SpaceComponent>
               <RowComponent styles={{ width: '90%' }}>
                 <Text style={[styles.text, { flex: 1 }]}>Change Password</Text>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                   <PasswordCheck size="28" color="black" />
                 </TouchableOpacity>
               </RowComponent>
-              <SpaceComponent height={12}></SpaceComponent>
+              <SpaceComponent height={10}></SpaceComponent>
               <RowComponent styles={{ width: '90%' }}>
                 <Text style={[styles.text, { flex: 1 }]}>LogOut</Text>
                 <TouchableOpacity onPress={handleLogout}>
                   <Logout size="28" color="black" />
                 </TouchableOpacity>
               </RowComponent>
-              <SpaceComponent height={12}></SpaceComponent>
+              <SpaceComponent height={10}></SpaceComponent>
             </View>
           </View>
         </View>

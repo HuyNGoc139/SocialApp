@@ -24,7 +24,6 @@ import CommentItem from '../components/CommentItem';
 const PostDetail = ({ navigation, route }: any) => {
   const [textRef, setTextRef] = useState('');
   const { post, userCurrent } = route.params;
-  //do phai cho truyen nen render lau
   const [userComment, setUserComment] = useState<any[]>([]);
   const [user, setUser] = useState<User>();
   useEffect(() => {
@@ -32,25 +31,29 @@ const PostDetail = ({ navigation, route }: any) => {
     const commentRef = docRef
       .collection('comments')
       .orderBy('createdAt', 'desc');
-
+  
     const unsubscribe = commentRef.onSnapshot(async snapshot => {
       if (!snapshot.empty) {
-        //sua o day
-        const comment = snapshot.docs.map(doc => {
-          return {
-            ...doc.data(),
-          };
-        });
-        
-          
-          
-        setUserComment(comment); // Cập nhật danh sách bình luận
+        const commentsWithUserInfo = await Promise.all(
+          snapshot.docs.map(async doc => {
+            const commentData = doc.data();
+            
+            const userSnapshot = await firestore().collection('Users').doc(commentData.userId).get();
+            const userInfo = userSnapshot.exists ? userSnapshot.data() : {};
+  
+            return {
+              ...commentData,
+              user: userInfo, 
+            };
+          })
+        );
+        setUserComment(commentsWithUserInfo);
       } else {
         setUserComment([]);
       }
     });
-
-    return () => unsubscribe(); // Hủy lắng nghe khi component bị unmount
+  
+    return () => unsubscribe(); // Cleanup listener on unmount
   }, []);
   const sendCommentNotification = async (comment: string) => {
     try {

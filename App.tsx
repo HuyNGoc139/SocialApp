@@ -22,7 +22,7 @@ import ProfileModalComponent from './src/components/ProfileFriend';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import { PaperProvider } from 'react-native-paper';
-
+import RNBootSplash from "react-native-bootsplash";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -114,7 +114,10 @@ const HomeTab = () => (
 
 const App: React.FC = () => {
   const [isLogin, setIsLogin] = useState(false);
-
+  useEffect(() => {
+    // Ẩn màn hình khởi động sau khi ứng dụng đã tải xong
+    RNBootSplash.hide({ fade: true });
+  }, []);
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(user => {
       if (user) {

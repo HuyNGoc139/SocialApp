@@ -93,7 +93,7 @@ const ChatItem = (props: Props) => {
       ) : (
         <Image
           style={styles.image}
-          source={require('../asset/image/avatar.png')}
+          source={require('../assets/image/avatar.png')}
         />
       )}
       <View style={{ flex: 1, marginLeft: 10 }}>

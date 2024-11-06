@@ -153,7 +153,7 @@ const ModalEditPost = (props: Props) => {
                       borderRadius: 12,
                       marginRight: 12,
                     }}
-                    source={require('../asset/image/avatar.png')}
+                    source={require('../assets/image/avatar.png')}
                   />
                 )}
               </View>

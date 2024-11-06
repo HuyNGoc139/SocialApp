@@ -6,6 +6,7 @@ export interface User {
   url?: string;
   friends?: string[];
   createAt?: any;
+  twoFA?:boolean;
 }
 export interface posts {
   id?: string;

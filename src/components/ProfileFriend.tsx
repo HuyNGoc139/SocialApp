@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import { globalStyles } from '../styles/globalStyles';
 import SpaceComponent from '../components/SpaceComponent';
@@ -321,7 +322,8 @@ const ProfileModalComponent: React.FC<any> = React.memo(
       });
     };
     return (
-      <View style={styles.modalContainer}>
+      <ScrollView style={styles.modalContainer}>
+        <View style={{flex:1,marginHorizontal:10}}>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <ArrowSquareLeft size="32" color="black" />
@@ -344,7 +346,7 @@ const ProfileModalComponent: React.FC<any> = React.memo(
           ) : (
             <Image
               style={styles.avatar}
-              source={require('../asset/image/avatar.png')}
+              source={require('../assets/image/avatar.png')}
             />
           )}
           <Text
@@ -439,22 +441,19 @@ const ProfileModalComponent: React.FC<any> = React.memo(
           </View>
         </View>
 
-        <FlatList
-          data={postsList}
-          renderItem={({ item }) => (
-            <View key={item.id}>
-              <PostCardComponent
-                post={item}
-                userCurrent={user}
-                isEdit={false}
-                isSelect={true}
-                navigation={navigation}
-              />
-            </View>
-          )}
-          keyExtractor={item => item.id}
-        />
-      </View>
+        {postsList.map(item => (
+        <View key={item.id}>
+          <PostCardComponent
+            post={item}
+            userCurrent={user}
+            isEdit={false}
+            isSelect={true}
+            navigation={navigation}
+          />
+        </View>
+      ))}
+        </View>
+      </ScrollView>
     );
   },
 );

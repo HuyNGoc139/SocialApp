@@ -135,7 +135,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
     ) : (
       <Image
         style={{ borderRadius: 5000, width: 300, height: 300 }}
-        source={require('../asset/image/avatar.png')}
+        source={require('../assets/image/avatar.png')}
       />
     );
   }, [urlprofile, user.url]);

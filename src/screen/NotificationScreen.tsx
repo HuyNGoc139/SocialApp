@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 import { ArrowSquareLeft, Back, UserAdd } from 'iconsax-react-native';
 import storage from '@react-native-firebase/storage';
@@ -16,6 +17,7 @@ import auth from '@react-native-firebase/auth';
 import { globalStyles } from '../styles/globalStyles';
 import Notificomponent from '../components/Notificomponent';
 import { fontFamilies } from '../constants/fontFamily';
+import SpaceComponent from '../components/SpaceComponent';
 
 interface Notification {
   id: string;
@@ -96,7 +98,7 @@ const NotificationScreen = ({ navigation, route }: any) => {
     return () => unsubscribe();
   }, []);
   return (
-    <View style={{ flex: 1, padding: 12, backgroundColor: '#c5d6d6' }}>
+    <ScrollView style={{ flex: 1, padding: 12, backgroundColor: '#c5d6d6' }}>
       <View
         style={{
           flexDirection: 'row',
@@ -163,11 +165,12 @@ const NotificationScreen = ({ navigation, route }: any) => {
               </Text>
             </View>
           )}
+          <SpaceComponent height={20}/>
         </View>
       ) : (
         <ActivityIndicator size={'large'} />
       )}
-    </View>
+    </ScrollView>
   );
 };
 

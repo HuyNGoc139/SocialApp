@@ -33,6 +33,8 @@
 		A928C435DFE647DBB8E7DF18 /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7FCEAF94A3824D8E93FBB000 /* Poppins-Thin.ttf */; };
 		9FCC40FAB59340F5945F621B /* Poppins-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C44B6B339C39456E80F992FB /* Poppins-ThinItalic.ttf */; };
 		6CB435699E2C40AB94D6BFBD /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = C2539BC6534043BB973B7664 /* OFL.txt */; };
+		71E9C031A4DE46818A2E5F0D /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 89F3896EA61B4097A2144799 /* BootSplash.storyboard */; };
+		52F8D659B14E4E72B2C6F0E3 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9E57BA9153E0428A89F1B7BF /* Colors.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +85,8 @@
 		7FCEAF94A3824D8E93FBB000 /* Poppins-Thin.ttf */ = {isa = PBXFileReference; name = "Poppins-Thin.ttf"; path = "../assets/fonts/Poppins-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		C44B6B339C39456E80F992FB /* Poppins-ThinItalic.ttf */ = {isa = PBXFileReference; name = "Poppins-ThinItalic.ttf"; path = "../assets/fonts/Poppins-ThinItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		C2539BC6534043BB973B7664 /* OFL.txt */ = {isa = PBXFileReference; name = "OFL.txt"; path = "../assets/fonts/OFL.txt"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		89F3896EA61B4097A2144799 /* BootSplash.storyboard */ = {isa = PBXFileReference; name = "BootSplash.storyboard"; path = "socialApp/BootSplash.storyboard"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9E57BA9153E0428A89F1B7BF /* Colors.xcassets */ = {isa = PBXFileReference; name = "Colors.xcassets"; path = "socialApp/Colors.xcassets"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = folder.assetcatalog; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +136,8 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+				89F3896EA61B4097A2144799 /* BootSplash.storyboard */,
+				9E57BA9153E0428A89F1B7BF /* Colors.xcassets */,
 			);
 			name = socialApp;
 			sourceTree = "<group>";
@@ -330,6 +336,8 @@
 				A928C435DFE647DBB8E7DF18 /* Poppins-Thin.ttf in Resources */,
 				9FCC40FAB59340F5945F621B /* Poppins-ThinItalic.ttf in Resources */,
 				6CB435699E2C40AB94D6BFBD /* OFL.txt in Resources */,
+				71E9C031A4DE46818A2E5F0D /* BootSplash.storyboard in Resources */,
+				52F8D659B14E4E72B2C6F0E3 /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

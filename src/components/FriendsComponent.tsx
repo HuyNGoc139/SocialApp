@@ -174,7 +174,7 @@ const FriendComponent = (props: Props) => {
           ) : (
             <Image
               style={{ height: 80, width: 80, borderRadius: 100 }}
-              source={require('../asset/image/avatar.png')}
+              source={require('../assets/image/avatar.png')}
             />
           )}
         </TouchableOpacity>

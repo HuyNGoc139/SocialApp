@@ -145,7 +145,7 @@ const HomeScreen = ({ navigation }: any) => {
             ) : (
               <Image
                 style={styles.image}
-                source={require('../asset/image/avatar.png')}
+                source={require('../assets/image/avatar.png')}
               />
             )}
           </TouchableOpacity>

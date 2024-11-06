@@ -98,7 +98,7 @@ const Notificomponent = (props: any) => {
       onPress={handlePress}
       style={[
         styles.container,
-        { backgroundColor: data.isRead ? 'white' : '#babfbf' },
+        { backgroundColor: data.isRead ? 'white' : '#d3d4f0' },
       ]}
     >
       <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -110,7 +110,7 @@ const Notificomponent = (props: any) => {
         ) : (
           <Image
             style={{ height: 56, width: 56, borderRadius: 12, marginRight: 12 }}
-            source={require('../asset/image/avatar.png')}
+            source={require('../assets/image/avatar.png')}
           />
         )}
         <View>

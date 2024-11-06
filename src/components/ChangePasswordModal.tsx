@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Text,
+  StyleSheet,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import RowComponent from './RowComponent';
@@ -13,12 +14,15 @@ import TextComponent from './TextComponent';
 import ButtonComponent from './ButtonComponent';
 import Container from './Container';
 import InputComponent from './InputComponent';
-import { Designtools, Lock1, LockSlash } from 'iconsax-react-native'; // Import biểu tượng Lock
+import { Designtools, Lock1, LockSlash, TickCircle } from 'iconsax-react-native'; // Import biểu tượng Lock
 import { fontFamilies } from '../constants/fontFamily';
 import { useApp } from '../hook/useAppHook';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
-import { isValidPassword } from '../funtion/ultils';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { FloatingLabelInput } from './FloatingLabelInput';
+import { Colors } from '../styles';
+import { AppText } from './AppText';
 interface ChangePasswordModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -29,37 +33,15 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   onClose,
 }) => {
   const { toastMessage } = useApp();
-  const [oldPassword, setOldPassword] = useState<string>('');
-  const [newPassword, setNewPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const reauthenticateAndChangePassword = () => {
     const user = auth().currentUser;
     if (!user) {
       Alert.alert('Không tìm thấy người dùng hiện tại');
       return;
     }
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      Alert.alert('Vui lòng không để trống các ô mật khẩu');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      Alert.alert('Mật khẩu mới phải dài hơn 6 ký tự');
-      return;
-    }
-
-    if (newPassword === oldPassword) {
-      Alert.alert('Mật khẩu mới không được trùng với mật khẩu cũ');
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Alert.alert('Mật khẩu mới và xác nhận không khớp');
-      return;
-    }
     const credential = auth.EmailAuthProvider.credential(
       user.email ?? '',
-      oldPassword,
+      watch('currentPassword'),
     );
 
     user
@@ -67,7 +49,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
       .then(() => {
         // Đổi mật khẩu
         user
-          .updatePassword(newPassword)
+          .updatePassword(watch('newPassword'))
           .then(() => {
             Alert.alert('Đổi mật khẩu thành công, Vui lòng đăng nhập lại!');
             auth().signOut(); // Đăng xuất sau khi đổi mật khẩu
@@ -76,7 +58,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
       })
       .catch(error => Alert.alert('Lỗi xác thực mật khẩu cũ', error.message));
   };
-
+  
   const changePasswordSchema = useMemo(
     () =>
       yup.object().shape({
@@ -85,7 +67,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
           .string()
           .required('Vui lòng không để trống các ô mật khẩu')
           .matches(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%*?&!.-_> </^~`])[A-Za-z\d@#$%*?&!.-_> </^~`]{10,15}$/,
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%*?&!.-_> </^~`])[A-Za-z\d@#$%*?&!.-_> </^~`]{6,15}$/,
             'Vui lòng nhập đúng định dạng',
           )
           .test(
@@ -102,7 +84,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
       }),
     [],
   );
-
+  
   const {
     setValue,
     watch,
@@ -117,16 +99,29 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
     resolver: yupResolver(changePasswordSchema),
     mode: 'all',
   });
+
   const checkOne =
-    watch('newPassword')?.length >= 10 && watch('newPassword')?.length <= 15;
+    watch('newPassword')?.length >= 6 && watch('newPassword')?.length <= 15;
 
   const checkTwo =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%*?&!.-_> </^~`])/.test(
       watch('newPassword'),
     );
+
+  const onSubmit = (data: any) => {
+    if (checkOne && checkTwo) {
+      reauthenticateAndChangePassword()
+    }
+  };
+  const textColor = (check: boolean) =>
+  watch('newPassword')
+    ? check
+      ? Colors.kellyGreen
+      : Colors.mediumCarmine
+    : Colors.nero;
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={onClose}>
-        <View style={{ margin: 20, flex: 1,}}>
+        <View style={{ margin: 20}}>
           <View>
             <Text
               style={{
@@ -139,54 +134,128 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               Change PassWord
             </Text>
           </View>
-          <InputComponent
-            prefix={<LockSlash size="32" color="#FAFAFA" />}
-            title="Current Password"
-            onChange={val => setOldPassword(val)}
-            isPassword
-            placeholder="Current Password"
-            value={oldPassword}
-          />
+          <FloatingLabelInput
+              label={'Current password'}
+              isRequired
+              isSecure
+              value={watch('currentPassword')}
+              onChangeText={(text) => setValue('currentPassword', text)}
+              errorMessages={errors?.currentPassword?.message}
+            />
 
-          <InputComponent
-            prefix={<Lock1 size="32" color="#FAFAFA" />}
-            title="Password"
-            onChange={val => setNewPassword(val)}
-            placeholder="Password"
-            isPassword
-            value={newPassword}
-          />
+            <FloatingLabelInput
+              label={'New password'}
+              isRequired
+              isSecure
+              wrapperStyle={{ marginTop: 10 }}
+              value={watch('newPassword')}
+              onChangeText={(text) => setValue('newPassword', text)}
+              errorMessages={errors?.newPassword?.message}
+            />
 
-          <InputComponent
-            prefix={<Lock1 size="32" color="#FAFAFA" />}
-            title="Confirm PassWord"
-            onChange={val => setConfirmPassword(val)}
-            placeholder="Confirm PassWord"
-            isPassword
-            value={confirmPassword}
-          />
+            <FloatingLabelInput
+              label={'Confirm password'}
+              isRequired
+              isSecure
+              wrapperStyle={{ marginTop: 10 }}
+              value={watch('confirmPassword')}
+              onChangeText={(text) => setValue('confirmPassword', text)}
+              errorMessages={errors?.confirmPassword?.message}
+            />
         </View>
+        <View style={styles.validationTextContainer}>
+            <View style={styles.validationTextRow}>
+              <TickCircle color={textColor(checkOne)} />
+
+              <AppText
+                style={[styles.validationText, { color: textColor(checkOne) }]}
+              >
+                {'Độ dài mật khẩu phải từ 6 đến 15 ký tự'}
+              </AppText>
+            </View>
+
+            <View style={styles.validationTextRow}>
+              <TickCircle color={textColor(checkTwo)} />
+
+              <AppText
+                style={[styles.validationText, { color: textColor(checkTwo) }]}
+              >
+                {'Mật khẩu phải bao gồm chữ viết hoa, chữ viết thường, số và ít nhất 1 kí tự đặc biệt.'} {'\n'}
+                {'@#$%*?&!.-_> </^~`'}{' '}
+              </AppText>
+            </View>
+          </View>
         <RowComponent styles={{ marginBottom: 20 }}>
           <View
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           >
             <TouchableOpacity onPress={onClose}>
-              <TextComponent flex={0} text="Đóng" color="white" />
+              <TextComponent size={16} flex={0} text="Đóng" color="black" styles={{ textTransform: 'uppercase' }}/>
             </TouchableOpacity>
           </View>
           <View style={{ flex: 1 }}>
             <ButtonComponent
               text="Đổi mật khẩu"
-              onPress={reauthenticateAndChangePassword}
+              onPress={handleSubmit(onSubmit)}
             />
           </View>
         </RowComponent>
     </Modal>
   );
 };
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
 
+  contentListStyle: {
+    flex: 1,
+  },
+
+  inputWrapper: {
+    marginTop: 20,
+    padding: 16,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#00000026',
+  },
+
+  validationTextContainer: {
+    flex:1,
+    marginTop: 20,
+    marginHorizontal:10,
+  },
+
+  validationTextRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 15,
+  },
+
+  validationText: {
+    fontSize: 14,
+    flex: 1,
+    color: Colors.nero,
+    marginLeft: 15,
+    textAlign: 'justify',
+    lineHeight: 20,
+  },
+
+  button: {
+    alignSelf: 'center',
+    width: '100%',
+    borderRadius: 14,
+    backgroundColor: Colors.primary,
+    marginTop: 'auto',
+    padding: 2,
+    marginBottom: 10,
+  },
+
+  textBtn: {
+    fontSize: 14,
+    color: Colors.white,
+  },
+});
 export default ChangePasswordModal;
-function yupResolver(changePasswordSchema: yup.ObjectSchema<{ currentPassword: string; newPassword: string; confirmPassword: string; }, yup.AnyObject, { currentPassword: undefined; newPassword: undefined; confirmPassword: undefined; }, "">): import("react-hook-form").Resolver<{ currentPassword: string; newPassword: string; confirmPassword: string; }, any> | undefined {
-  throw new Error('Function not implemented.');
-}
-

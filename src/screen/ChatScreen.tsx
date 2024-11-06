@@ -103,7 +103,7 @@ const ChatScreen = ({ navigation }: any) => {
                 borderRadius: 100,
                 marginRight: 12,
               }}
-              source={require('../asset/image/avatar.png')}
+              source={require('../assets/image/avatar.png')}
             />
           )}
         </TouchableOpacity>

@@ -76,7 +76,7 @@ const RegisterScreen = ({ navigation }: any) => {
   return (
     <ImageBackground
       resizeMode="cover"
-      source={require('../asset/image/bg.png')}
+      source={require('../assets/image/bg.png')}
       style={{ width: '100%', height: '100%' }}
     >
       <SectionComponent
@@ -86,7 +86,7 @@ const RegisterScreen = ({ navigation }: any) => {
         }}
       >
         <Image
-          source={require('../asset/image/register.png')}
+          source={require('../assets/image/register.png')}
           style={globalStyles.imag}
         />
         <InputComponent

@@ -52,10 +52,10 @@ const LoginScreen = ({ navigation }: any) => {
   return (
     <ImageBackground
       resizeMode="cover"
-      source={require('../asset/image/bg.png')}
+      source={require('../assets/image/bg.png')}
       style={{ width: '100%', height: '100%' }}
     >
-      <Image source={require('../asset/image/login.png')} style={Style.imag} />
+      <Image source={require('../assets/image/login.png')} style={Style.imag} />
       <SectionComponent styles={{ justifyContent: 'center', marginTop: 12 }}>
         <InputComponent
           value={email}

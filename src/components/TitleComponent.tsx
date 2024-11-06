@@ -1,5 +1,5 @@
 import React, { PureComponent, ReactNode } from 'react';
-import { StyleProp, Text, View, ViewStyle } from 'react-native';
+import { StyleProp, Text, View, ViewStyle,TextStyle } from 'react-native';
 import { globalStyles } from '../styles/globalStyles';
 import { fontFamilies } from '../constants/fontFamily';
 import { colors } from '../constants/color';
@@ -9,7 +9,7 @@ interface Props {
   size?: number;
   font?: string;
   color?: string;
-  styles?: StyleProp<ViewStyle>;
+  styles?: StyleProp<TextStyle>;
 }
 const TitleComponent = (props: Props) => {
   const { text, size, font, color, styles } = props;
@@ -19,7 +19,7 @@ const TitleComponent = (props: Props) => {
       font={font ?? fontFamilies.semiBold}
       color={color}
       text={text}
-      styles
+      
     />
   );
 };
