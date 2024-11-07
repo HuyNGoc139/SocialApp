@@ -282,9 +282,10 @@ const RoomScreen = ({ navigation, route }: any) => {
               fontSize: 20,
               color: 'black',
               marginLeft: 10,
+              textAlign: 'center',
             }}
           >
-            {userSelect.userName}
+            {userSelect.username}
           </Text>
         </View>
         <View
@@ -312,6 +313,7 @@ const RoomScreen = ({ navigation, route }: any) => {
             alignItems: 'center',
             borderWidth: 1,
             borderRadius: 50,
+            marginHorizontal: 10,
           }}
         >
           <TouchableOpacity

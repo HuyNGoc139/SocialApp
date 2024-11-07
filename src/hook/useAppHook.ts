@@ -1,4 +1,3 @@
-
 import { useNotifications } from 'react-native-notificated';
 import { NotificationOwnProps } from 'react-native-notificated/lib/typescript/defaultConfig/types';
 import { NotificationConfigBase } from 'react-native-notificated/lib/typescript/types';

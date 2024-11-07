@@ -151,7 +151,7 @@ const HomeScreen = ({ navigation }: any) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{ flex: 1, margin: 16 }}>
+      <View style={{ flex: 1, marginHorizontal: 16 }}>
         {isLoading ? (
           <ActivityIndicator size="large" color="black" />
         ) : (
@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
   },
   textNoti: {
     color: 'black',
-
     lineHeight: 20,
   },
   viewNoti: {

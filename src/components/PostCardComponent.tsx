@@ -66,7 +66,7 @@ const PostCardComponent = ({
     };
   }, []);
   //hom nay sua o day
-  const sendLikeNotification = useCallback(async () => {
+  const sendLikeNotification = async () => {
     try {
       const notificationRef = firestore().collection('notifi');
 
@@ -83,35 +83,35 @@ const PostCardComponent = ({
     } catch (error) {
       console.log('Error sending notification:', error);
     }
-  }, [post.id, userCurrent.username, userCurrent.userId, post.userId]);
+  };
   //hom nay sua o day
 
-  const subscribeLikes = useCallback(() => {
+  const subscribeLikes = () => {
     const docRef = firestore().collection('Posts').doc(post.id);
     const likeRef = docRef.collection('like');
     return likeRef.onSnapshot(async snapshot => {
       if (!snapshot.empty) {
         const likesWithUserInfo = await Promise.all(
-          snapshot.docs.map(async (doc) => {
+          snapshot.docs.map(async doc => {
             const likeData = doc.data();
             const userId = doc.id;
-  
+
             // Lấy thông tin người dùng từ userId
             const userSnapshot = await firestore()
               .collection('Users')
               .doc(userId)
               .get();
-  
+
             const userData = userSnapshot.exists ? userSnapshot.data() : null;
-  
+
             return {
               userId,
               ...likeData,
               user: userData,
             };
-          })
+          }),
         );
-          
+
         setUserLike(likesWithUserInfo);
         const currentUserLike = likesWithUserInfo.find(
           like => like.userId === userCurrent.userId,
@@ -126,7 +126,7 @@ const PostCardComponent = ({
         setLike(false);
       }
     });
-  }, [post.id, userCurrent.userId]);
+  };
 
   const subscribeComments = useCallback(() => {
     const docRef = firestore().collection('Posts').doc(post.id);

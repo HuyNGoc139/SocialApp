@@ -6,37 +6,43 @@ import { User } from '../models/user';
 
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async ({
-    email,
-    password,
-  }: { email: string; password: string; },
-  { rejectWithValue }) => {
+  async (
+    { email, password }: { email: string; password: string },
+    { rejectWithValue },
+  ) => {
     try {
-      const userCredential = await auth().signInWithEmailAndPassword(email, password);
+      const userCredential = await auth().signInWithEmailAndPassword(
+        email,
+        password,
+      );
       const uid = userCredential.user.uid;
       const userDoc = await firestore().collection('Users').doc(uid).get();
       if (userDoc.exists) {
-        return { uid,
-          ...userDoc.data() as User};
+        return { uid, ...(userDoc.data() as User) };
       } else {
         throw new Error('User not found');
       }
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async ({
-    email,
-    password,
-    username
-  }: { email: string; password: string; username:string }, { rejectWithValue }) => {
+  async (
+    {
+      email,
+      password,
+      username,
+    }: { email: string; password: string; username: string },
+    { rejectWithValue },
+  ) => {
     try {
-      
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
       const uid = userCredential.user.uid;
 
       await firestore().collection('Users').doc(uid).set({
@@ -45,16 +51,15 @@ export const registerUser = createAsyncThunk(
         username,
         friends: [],
         createAt: new Date(),
-        url: "",
+        url: '',
         uid,
       });
 
-      return { uid,
-         email, username,friends: [] };
+      return { uid, email, username, friends: [] };
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const logoutUser = createAsyncThunk(
@@ -66,10 +71,9 @@ export const logoutUser = createAsyncThunk(
         .then(() => {
           Alert.alert('Đăng xuất thành công!');
         })
-        .catch((error) => {
-        });
+        .catch(error => {});
     } catch (error) {
       return rejectWithValue('Logout failed!');
     }
-  }
+  },
 );

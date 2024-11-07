@@ -31,28 +31,31 @@ const PostDetail = ({ navigation, route }: any) => {
     const commentRef = docRef
       .collection('comments')
       .orderBy('createdAt', 'desc');
-  
+
     const unsubscribe = commentRef.onSnapshot(async snapshot => {
       if (!snapshot.empty) {
         const commentsWithUserInfo = await Promise.all(
           snapshot.docs.map(async doc => {
             const commentData = doc.data();
-            
-            const userSnapshot = await firestore().collection('Users').doc(commentData.userId).get();
+
+            const userSnapshot = await firestore()
+              .collection('Users')
+              .doc(commentData.userId)
+              .get();
             const userInfo = userSnapshot.exists ? userSnapshot.data() : {};
-  
+
             return {
               ...commentData,
-              user: userInfo, 
+              user: userInfo,
             };
-          })
+          }),
         );
         setUserComment(commentsWithUserInfo);
       } else {
         setUserComment([]);
       }
     });
-  
+
     return () => unsubscribe(); // Cleanup listener on unmount
   }, []);
   const sendCommentNotification = async (comment: string) => {

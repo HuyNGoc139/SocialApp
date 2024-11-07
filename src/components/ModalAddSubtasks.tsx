@@ -49,13 +49,13 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
   useEffect(() => {
     getUser();
   }, [userId]);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
   const [user, setUser] = useState(initialValue);
   const [userName, setUserName] = useState('');
   const [isLoading, setISLoading] = useState(false);
   const [urlprofile, seturlprofile] = useState('');
-
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(!isEnabled);
   const getUser = useCallback(() => {
     firestore()
       .doc(`Users/${userId}`)
@@ -75,8 +75,8 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
     const data = {
       ...user,
       updatedAt: Date.now(),
-      url: urlprofile,
       uid: userId,
+      TwoFA: isEnabled,
     };
     setISLoading(true);
     try {
@@ -87,12 +87,12 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           console.log('Updated Profile');
         });
       // navigation.goBack();
-      dispatch(logoutUser()) //khong can
+      dispatch(logoutUser()); //khong can
       setISLoading(false);
     } catch (error) {
       setISLoading(false);
     }
-  }, [user, urlprofile, userId]);
+  }, [user, urlprofile, userId, isEnabled]);
 
   const handleChangeValue = useCallback(
     (id: string, value: string | Date | string[]) => {
@@ -141,7 +141,6 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
   }, [urlprofile, user.url]);
 
   return (
-    // <Modal visible={visible} transparent animationType="slide">
     <Container>
       <SectionComponent
         styles={{
@@ -149,7 +148,13 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           justifyContent: 'center',
         }}
       >
-        <RowComponent styles={{ marginBottom: 8,justifyContent:'center',alignItems:'center' }}>
+        <RowComponent
+          styles={{
+            marginBottom: 8,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <TitleComponent text="Update information" size={32} />
         </RowComponent>
 
@@ -164,14 +169,15 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         >
           {renderProfileImage}
         </TouchableOpacity>
-        <View style={{flexDirection:'row'}}>
-        <Switch
-        trackColor={{ false: '#767577', true: '#81b0ff' }}
-        thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleSwitch}
-        value={isEnabled}
-      />
+        <View style={{ flexDirection: 'row' }}>
+          <TitleComponent text={'Two-factor Authentication'} />
+          <Switch
+            trackColor={{ false: '#767577', true: '#81b0ff' }}
+            thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
         </View>
         <InputComponent
           prefix={<Sms size="32" color="#FAFAFA" />}

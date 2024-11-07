@@ -1,5 +1,5 @@
 export interface SelectModel {
-  userName: string;
+  username: string;
   uid: string;
   lastmesage?: any;
   url?: string;

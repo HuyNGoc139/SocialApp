@@ -23,16 +23,19 @@ import auth from '@react-native-firebase/auth';
 import Video from 'react-native-video';
 // Định nghĩa type cho props của MessageItem
 interface MessageItemProps {
-  mess: any; // Thay 'any' bằng type cụ thể cho tin nhắn nếu có
-  currenUser: any; // Thay 'any' bằng type cụ thể cho người dùng hiện tại nếu có
+  mess: any;
+  currenUser: any;
+  type?: string;
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
-  //my message
-  const [isEditing, setIsEditing] = useState(false); // Trạng thái để kiểm tra đang sửa hay không
-  const [editedText, setEditedText] = useState(mess.text); // Lưu trữ nội dung sửa đổi
+const MessageItem: React.FC<MessageItemProps> = ({
+  mess,
+  currenUser,
+  type,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState(mess.text);
 
-  // Hàm cập nhật tin nhắn trên Firestore
   const handleSaveMessage = () => {
     const messageRef = firestore()
       .collection('Rooms')
@@ -108,7 +111,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
         }}
       >
         <View
-          style={{ backgroundColor: '#a4dede', borderRadius: 25, padding: 20 }}
+          style={{
+            backgroundColor: '#a4dede',
+            borderRadius: 25,
+            padding: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
         >
           <View
             style={{
@@ -194,6 +203,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
                       fontFamily: fontFamilies.regular,
                       fontSize: 16,
                       color: 'black',
+                      marginRight: 10,
                     }}
                   >
                     {mess.text}
@@ -236,72 +246,119 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
     );
   } else {
     return (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-          marginBottom: 12,
-          marginLeft: 12,
-        }}
-      >
+      <View>
+        {type == 'group' ? (
+          <Text
+            style={{
+              marginLeft: 60,
+              marginBottom: 4,
+              fontSize: 14,
+              color: 'gray',
+              fontWeight: '500',
+            }}
+          >
+            {mess.senderName}
+          </Text>
+        ) : (
+          <></>
+        )}
         <View
-          style={{ backgroundColor: '#a4dede', borderRadius: 25, padding: 20 }}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            marginBottom: 12,
+            marginRight: 12,
+            marginLeft: 12,
+          }}
         >
-          {mess.url ? (
-            <>
-              <Image
-                style={{ height: 160, width: 160, borderRadius: 10 }}
-                source={{ uri: mess.url }}
-              />
-              {mess.text ? (
+          {type == 'group' ? (
+            <Image
+              style={{
+                height: 48,
+                width: 48,
+                borderRadius: 100,
+                marginRight: 6,
+              }}
+              source={require('../assets/image/avatar.png')}
+            />
+          ) : (
+            <></>
+          )}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              marginBottom: 12,
+              marginLeft: type == 'group' ? 0 : 12,
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: '#a4dede',
+                borderRadius: 25,
+                padding: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              {mess.url ? (
+                <>
+                  <Image
+                    style={{ height: 160, width: 160, borderRadius: 10 }}
+                    source={{ uri: mess.url }}
+                  />
+                  {mess.text ? (
+                    <Text
+                      style={{
+                        fontFamily: fontFamilies.regular,
+                        fontSize: 16,
+                        color: 'black',
+                        marginTop: 10,
+                      }}
+                    >
+                      {mess.text}
+                    </Text>
+                  ) : null}
+                </>
+              ) : mess.videourl ? (
+                <>
+                  <Text
+                    style={{
+                      fontFamily: fontFamilies.regular,
+                      fontSize: 16,
+                      color: 'black',
+                    }}
+                  >
+                    {mess.text}
+                  </Text>
+                  <Video
+                    source={{ uri: mess.videourl }}
+                    style={{
+                      height: 160,
+                      width: 160,
+                      borderRadius: 10,
+                      marginTop: 10,
+                    }}
+                    controls
+                  />
+                </>
+              ) : (
                 <Text
                   style={{
                     fontFamily: fontFamilies.regular,
                     fontSize: 16,
                     color: 'black',
-                    marginTop: 10,
+                    marginRight: 10,
                   }}
                 >
                   {mess.text}
                 </Text>
-              ) : null}
-            </>
-          ) : mess.videourl ? (
-            <>
-              <Text
-                style={{
-                  fontFamily: fontFamilies.regular,
-                  fontSize: 16,
-                  color: 'black',
-                }}
-              >
-                {mess.text}
+              )}
+              <Text style={{ fontFamily: fontFamilies.regular, fontSize: 12 }}>
+                {handleDateTime.GetHour(mess.createdAt)}
               </Text>
-              <Video
-                source={{ uri: mess.videourl }}
-                style={{
-                  height: 160,
-                  width: 160,
-                  borderRadius: 10,
-                  marginTop: 10,
-                }}
-                controls
-              />
-            </>
-          ) : (
-            <Text
-              style={{
-                fontFamily: fontFamilies.regular,
-                fontSize: 16,
-                color: 'black',
-              }}
-            >
-              {mess.text}
-            </Text>
-          )}
-          <Text style={{ fontFamily: fontFamilies.regular, fontSize: 12 }}>
-            {handleDateTime.GetHour(mess.createdAt)}
-          </Text>
+            </View>
+          </View>
         </View>
       </View>
     );

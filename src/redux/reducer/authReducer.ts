@@ -1,9 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import {
-  loginUser,
-  logoutUser,
-  registerUser,
-} from '../authAction';
+import { loginUser, logoutUser, registerUser } from '../authAction';
 import { Timestamp } from '@react-native-firebase/firestore';
 interface User {
   email: string;
@@ -12,8 +8,8 @@ interface User {
   DateBitrhDay?: any;
   url?: string;
   friends?: string[];
-  createAt?: string
-  userId?:string;
+  createAt?: string;
+  userId?: string;
 }
 interface AuthState {
   isAuthenticated: boolean;
@@ -32,10 +28,10 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       // Xử lý đăng nhập
-      .addCase(loginUser.pending, (state) => {
+      .addCase(loginUser.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -51,7 +47,7 @@ const authSlice = createSlice({
       })
 
       // Xử lý đăng ký
-      .addCase(registerUser.pending, (state) => {
+      .addCase(registerUser.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -66,10 +62,10 @@ const authSlice = createSlice({
         state.error = action.payload as null;
       })
       // Xử lý đăng xuất
-      .addCase(logoutUser.pending, (state) => {
-        state.loading = true; 
+      .addCase(logoutUser.pending, state => {
+        state.loading = true;
       })
-      .addCase(logoutUser.fulfilled, (state) => {
+      .addCase(logoutUser.fulfilled, state => {
         state.isAuthenticated = false;
         state.user = null;
         state.error = null;

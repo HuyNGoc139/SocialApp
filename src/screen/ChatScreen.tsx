@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,11 +12,21 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import ChatItem from '../components/ChatItem';
 import { SelectModel } from '../models/SelectModal';
-import { SearchNormal1 } from 'iconsax-react-native';
+import { Edit, SearchNormal1 } from 'iconsax-react-native';
 import { fontFamilies } from '../constants/fontFamily';
 import { colors } from '../constants/color';
 import { User } from '../models/user';
-
+import ModalAddGroup from '../components/chat/ModalAddGroup';
+import GroupItem from '../components/chat/GroupItem';
+interface Group {
+  id?: string;
+  members: string[]; // Danh sách các thành viên
+  lastMessageAt?: any; // Thời gian gửi tin nhắn cuối cùng
+  // Thêm các thuộc tính khác nếu cần thiết
+  createdAt: any;
+  groupName: string;
+  lastMessage: string;
+}
 const ChatScreen = ({ navigation }: any) => {
   const [userSelect, setUserSelect] = useState<SelectModel[]>([]);
   const [searchKey, setSearchKey] = useState('');
@@ -24,11 +34,14 @@ const ChatScreen = ({ navigation }: any) => {
   const [lastMessage, setLastmessage] = useState<any>(undefined);
   const userCurrent = auth().currentUser;
   const [user, setUser] = useState<User>();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [groups, setGroups] = useState<any[]>([]);
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(user => {
       if (user) {
         setCurrentUser(user);
         handleGetAllUsers(user.uid);
+        listenToGroups(user.uid);
         getUser();
       }
     });
@@ -59,7 +72,7 @@ const ChatScreen = ({ navigation }: any) => {
         snapshot.forEach(item => {
           if (item.id !== currentUserId) {
             items.push({
-              userName: item.data().username,
+              username: item.data().username,
               uid: item.id,
               url: item.data().url,
             });
@@ -71,6 +84,30 @@ const ChatScreen = ({ navigation }: any) => {
       console.log(err);
     }
   };
+
+  const listenToGroups = useCallback((currentUserId: string) => {
+    const unsubscribe = firestore()
+      .collection('Group')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(snapshot => {
+        const updatedGroups: Group[] = snapshot.docs.map(doc => ({
+          id: doc.id,
+          members: doc.data().members || [], // Đảm bảo có members
+          lastMessageAt: doc.data().lastMessageAt || null, // Đảm bảo có lastMessageAt
+          createdAt: doc.data().createdAt || new Date(), // Đảm bảo có createdAt
+          groupName: doc.data().groupName || '', // Đảm bảo có groupName
+          lastMessage: doc.data().lastMessage || '',
+        }));
+        const filteredGroups = updatedGroups.filter(group =>
+          group.members?.includes(currentUserId),
+        );
+
+        setGroups(filteredGroups);
+      });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.chatHeader}>
@@ -115,10 +152,49 @@ const ChatScreen = ({ navigation }: any) => {
           style={{ flex: 1, marginLeft: 10 }}
         />
       </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginHorizontal: 20,
+          alignItems: 'center',
+        }}
+      >
+        <Text style={{ fontSize: 24, color: 'black', flex: 1 }}>Group</Text>
+        <TouchableOpacity
+          style={{ marginLeft: 20 }}
+          onPress={() => setModalVisible(true)}
+        >
+          <Edit size="24" color="black" />
+        </TouchableOpacity>
+      </View>
+      {groups.length > 0 ? (
+        <FlatList
+          data={groups}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <GroupItem
+              onPress={() => navigation.navigate('RoomGroup', { ...item })}
+              key={item.id}
+              currentuser={user}
+              userName={item.groupName}
+              groupid={item.id}
+              url={item.url}
+            />
+          )}
+        />
+      ) : (
+        <Text style={{ textAlign: 'center', color: 'white' }}>
+          Do you want to create Group?
+        </Text>
+      )}
+      <View style={{ flexDirection: 'row', marginLeft: 20 }}>
+        <Text style={{ fontSize: 24, color: 'black' }}>User</Text>
+      </View>
+
       {userSelect.length > 0 ? (
         <FlatList
           data={userSelect.filter(ele =>
-            ele.userName.toLowerCase().includes(searchKey.toLowerCase()),
+            ele.username.toLowerCase().includes(searchKey.toLowerCase()),
           )}
           keyExtractor={item => item.uid}
           renderItem={({ item }) => (
@@ -126,7 +202,7 @@ const ChatScreen = ({ navigation }: any) => {
               onPress={() => navigation.navigate('RoomScreen', { ...item })}
               key={item.uid}
               currentuser={currentUser}
-              userName={item.userName}
+              userName={item.username}
               uid={item.uid}
             />
           )}
@@ -134,6 +210,12 @@ const ChatScreen = ({ navigation }: any) => {
       ) : (
         <Text>No Messages</Text>
       )}
+      <ModalAddGroup
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        users={userSelect} // Danh sách người dùng từ SendScreen
+        currentuser={user}
+      />
     </View>
   );
 };

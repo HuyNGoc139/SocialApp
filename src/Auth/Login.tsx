@@ -45,7 +45,15 @@ const LoginScreen = ({ navigation }: any) => {
       setErrorText('Password must be at least 6 characters');
     } else {
       setErrorText('');
-      dispatch(loginUser({ email, password }))
+      try {
+        await dispatch(loginUser({ email, password })).unwrap();
+      } catch (error) {
+        if (error instanceof Error) {
+          setErrorText(error.message || 'Login failed. Please try again.');
+        } else {
+          setErrorText('An unknown error occurred. Please try again.');
+        }
+      }
     }
   }, [email, password, navigation]);
 
@@ -72,16 +80,6 @@ const LoginScreen = ({ navigation }: any) => {
           title="Password"
           isPassword
         />
-        {/* <FloatingLabelInput
-          label={'Email'}
-          isSecure
-          wrapperStyle={{ marginTop: 16 }}
-          outlineColor={Colors.black23}
-          value={email}
-          style={{ height: 52 }}
-          onChangeText={(text) => setEmail}
-          errorMessages={errText}
-        /> */}
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           {errorMessage && (
             <Text

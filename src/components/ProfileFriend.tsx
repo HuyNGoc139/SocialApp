@@ -323,135 +323,138 @@ const ProfileModalComponent: React.FC<any> = React.memo(
     };
     return (
       <ScrollView style={styles.modalContainer}>
-        <View style={{flex:1,marginHorizontal:10}}>
-        <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <ArrowSquareLeft size="32" color="black" />
-          </TouchableOpacity>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              paddingRight: 32,
-            }}
-          >
-            <Text style={styles.text}>Profile</Text>
-          </View>
-        </View>
-
-        <View style={styles.profilecontainer}>
-          {userfr?.url ? (
-            <Image style={styles.avatar} source={{ uri: userfr.url }} />
-          ) : (
-            <Image
-              style={styles.avatar}
-              source={require('../assets/image/avatar.png')}
-            />
-          )}
-          <Text
-            style={{
-              fontFamily: fontFamilies.bold,
-              fontSize: 24,
-              color: 'black',
-            }}
-          >
-            {userfr?.username}
-          </Text>
-          {friends.length > 0 ? (
-            <RenderFriend friend={friends} length={friends.length} />
-          ) : null}
-        </View>
-        {!noadd ? (
-          <View style={styles.buttonContainer}>
-            {isFriendRequested ? (
-              <>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={handleAcceptRequest}
-                >
-                  <UserTick size="32" color="black" />
-                  <SpaceComponent width={12} />
-                  <Text style={[styles.text, { fontSize: 16 }]}>
-                    Accept Request
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.button} onPress={RejectRequest}>
-                  <UserRemove size="32" color="black" />
-                  <SpaceComponent width={12} />
-                  <Text style={[styles.text, { fontSize: 16 }]}>
-                    Reject Request
-                  </Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={
-                    isfriends
-                      ? handleUnfriend
-                      : !RequestedtoFriend
-                      ? sendFriendRequest
-                      : cancelFriendRequest
-                  }
-                >
-                  {isfriends ? (
-                    <>
-                      <UserRemove size="32" color="black" />
-                      <SpaceComponent width={12} />
-                      <Text style={[styles.text, { fontSize: 16 }]}>
-                        Remove Friend
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <UserAdd size="32" color="black" />
-                      <SpaceComponent width={12} />
-                      <Text style={[styles.text, { fontSize: 16 }]}>
-                        {RequestedtoFriend ? 'Cancel Request' : 'Add Friend'}
-                      </Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              </>
-            )}
-            {/* Nút Message */}
-            <TouchableOpacity style={styles.button} onPress={handlenaviroom}>
-              <Messages1 size="32" color="black" />
-              <SpaceComponent width={12} />
-              <Text style={[styles.text, { fontSize: 16 }]}>Message</Text>
+        <View style={{ flex: 1, marginHorizontal: 10 }}>
+          <View style={styles.headerContainer}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <ArrowSquareLeft size="32" color="black" />
             </TouchableOpacity>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingRight: 32,
+              }}
+            >
+              <Text style={styles.text}>Profile</Text>
+            </View>
           </View>
-        ) : (
-          <></>
-        )}
 
-        <View style={styles.infoContainer}>
-          <View style={{ width: '90%' }}>
-            <SpaceComponent height={12} />
-            <Text style={styles.text}>Email: {userfr?.email}</Text>
-            <SpaceComponent height={12} />
-            {user?.DateBitrhDay ? (
-              <Text style={styles.text}>
-                Date Of Birth: {getFormattedDate(userfr?.DateBitrhDay)}
-              </Text>
+          <View style={styles.profilecontainer}>
+            {userfr?.url ? (
+              <Image style={styles.avatar} source={{ uri: userfr.url }} />
+            ) : (
+              <Image
+                style={styles.avatar}
+                source={require('../assets/image/avatar.png')}
+              />
+            )}
+            <Text
+              style={{
+                fontFamily: fontFamilies.bold,
+                fontSize: 24,
+                color: 'black',
+              }}
+            >
+              {userfr?.username}
+            </Text>
+            {friends.length > 0 ? (
+              <RenderFriend friend={friends} length={friends.length} />
             ) : null}
           </View>
-        </View>
+          {!noadd ? (
+            <View style={styles.buttonContainer}>
+              {isFriendRequested ? (
+                <>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleAcceptRequest}
+                  >
+                    <UserTick size="32" color="black" />
+                    <SpaceComponent width={12} />
+                    <Text style={[styles.text, { fontSize: 16 }]}>
+                      Accept Request
+                    </Text>
+                  </TouchableOpacity>
 
-        {postsList.map(item => (
-        <View key={item.id}>
-          <PostCardComponent
-            post={item}
-            userCurrent={user}
-            isEdit={false}
-            isSelect={true}
-            navigation={navigation}
-          />
-        </View>
-      ))}
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={RejectRequest}
+                  >
+                    <UserRemove size="32" color="black" />
+                    <SpaceComponent width={12} />
+                    <Text style={[styles.text, { fontSize: 16 }]}>
+                      Reject Request
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={
+                      isfriends
+                        ? handleUnfriend
+                        : !RequestedtoFriend
+                        ? sendFriendRequest
+                        : cancelFriendRequest
+                    }
+                  >
+                    {isfriends ? (
+                      <>
+                        <UserRemove size="32" color="black" />
+                        <SpaceComponent width={12} />
+                        <Text style={[styles.text, { fontSize: 16 }]}>
+                          Remove Friend
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <UserAdd size="32" color="black" />
+                        <SpaceComponent width={12} />
+                        <Text style={[styles.text, { fontSize: 16 }]}>
+                          {RequestedtoFriend ? 'Cancel Request' : 'Add Friend'}
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </>
+              )}
+              {/* Nút Message */}
+              <TouchableOpacity style={styles.button} onPress={handlenaviroom}>
+                <Messages1 size="32" color="black" />
+                <SpaceComponent width={12} />
+                <Text style={[styles.text, { fontSize: 16 }]}>Message</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <></>
+          )}
+
+          <View style={styles.infoContainer}>
+            <View style={{ width: '90%' }}>
+              <SpaceComponent height={12} />
+              <Text style={styles.text}>Email: {userfr?.email}</Text>
+              <SpaceComponent height={12} />
+              {user?.DateBitrhDay ? (
+                <Text style={styles.text}>
+                  Date Of Birth: {getFormattedDate(userfr?.DateBitrhDay)}
+                </Text>
+              ) : null}
+            </View>
+          </View>
+
+          {postsList.map(item => (
+            <View key={item.id}>
+              <PostCardComponent
+                post={item}
+                userCurrent={user}
+                isEdit={false}
+                isSelect={true}
+                navigation={navigation}
+              />
+            </View>
+          ))}
         </View>
       </ScrollView>
     );

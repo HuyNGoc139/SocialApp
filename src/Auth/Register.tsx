@@ -44,7 +44,7 @@ const RegisterScreen = ({ navigation }: any) => {
     } else if (password !== confirmPassword) {
       setErrorText('Password is not match!!!');
     } else {
-      dispatch(registerUser({email,password,username}))
+      dispatch(registerUser({ email, password, username }));
       // setIsLoading(true);
       // await auth()
       //   .createUserWithEmailAndPassword(email, password)

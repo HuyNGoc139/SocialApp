@@ -1,4 +1,3 @@
-
 import { Colors, Fonts } from '../styles';
 import React, { useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
@@ -13,7 +12,8 @@ type TLoginInputProps = {
   isSecure?: boolean;
   wrapperStyle?: StyleProp<ViewStyle>;
 } & TextInputProps;
-{/* <FloatingLabelInput
+{
+  /* <FloatingLabelInput
           label={t('auth.password')}
           isSecure
           wrapperStyle={{ marginTop: 16 }}
@@ -22,7 +22,8 @@ type TLoginInputProps = {
           style={{ height: 52 }}
           onChangeText={(text) => setValue('password', text)}
           errorMessages={errors?.password?.message}
-        /> */}
+        /> */
+}
 
 export const FloatingLabelInput = ({
   label,
@@ -44,7 +45,13 @@ export const FloatingLabelInput = ({
           isSecure ? (
             <TextInput.Icon
               forceTextInputFocus={false}
-              icon={() => (!show ? <Eye size="20" color="black" /> : <EyeSlash size="20" color="black" />)}
+              icon={() =>
+                !show ? (
+                  <Eye size="20" color="black" />
+                ) : (
+                  <EyeSlash size="20" color="black" />
+                )
+              }
               onPress={() => setShow(!show)}
             />
           ) : undefined

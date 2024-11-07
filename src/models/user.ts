@@ -1,12 +1,12 @@
 export interface User {
   email: string;
-  uid?: string;
+  uid: string;
   username: string;
   DateBitrhDay?: any;
   url?: string;
   friends?: string[];
   createAt?: any;
-  twoFA?:boolean;
+  TwoFA?: boolean;
 }
 export interface posts {
   id?: string;

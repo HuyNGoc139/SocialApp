@@ -165,7 +165,7 @@ const NotificationScreen = ({ navigation, route }: any) => {
               </Text>
             </View>
           )}
-          <SpaceComponent height={20}/>
+          <SpaceComponent height={20} />
         </View>
       ) : (
         <ActivityIndicator size={'large'} />

@@ -198,7 +198,7 @@ const ProfileScreen = ({ navigation }: any) => {
       });
   };
   const handleLogout = () => {
-    dispatch(logoutUser())
+    dispatch(logoutUser());
   };
 
   const getFormattedDate = (timestamp: FirebaseTimestamp) => {
@@ -258,13 +258,24 @@ const ProfileScreen = ({ navigation }: any) => {
               alignItems: 'center',
               margin: 12,
             }}
-          > 
+          >
             <View style={{ width: '90%' }}>
-            <SpaceComponent height={10}></SpaceComponent>
-            <View style={{flexDirection:'row'}}>
-            <Text style={styles.text}>Two-factor authentication:</Text>
-            <Text style={[styles.text,{textAlign:'right',flex:1,color:user?.twoFA?'green':'black'}]}>{user?.twoFA?'ACTIVE':'INACTIVE'}</Text>
-            </View>
+              <SpaceComponent height={10}></SpaceComponent>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={styles.text}>Two-factor Authentication:</Text>
+                <Text
+                  style={[
+                    styles.text,
+                    {
+                      textAlign: 'right',
+                      flex: 1,
+                      color: user?.TwoFA ? 'green' : 'black',
+                    },
+                  ]}
+                >
+                  {user?.TwoFA ? 'ACTIVE' : 'INACTIVE'}
+                </Text>
+              </View>
               <SpaceComponent height={10}></SpaceComponent>
               <Text style={styles.text}>Email: {user?.email}</Text>
               <SpaceComponent height={10}></SpaceComponent>
