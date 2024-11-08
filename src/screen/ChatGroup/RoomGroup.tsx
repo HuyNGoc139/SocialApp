@@ -5,9 +5,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Colors,
-  Button,
-  ColorPicker,
 } from 'react-native-ui-lib';
 import {
   ArrowSquareLeft,

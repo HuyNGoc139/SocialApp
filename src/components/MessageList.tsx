@@ -6,12 +6,14 @@ interface MessageListProps {
   messages: any[];
   currenUser: any;
   type?: string;
+  url?:string
 }
 
 const MessageList: React.FC<MessageListProps> = ({
   messages,
   currenUser,
   type,
+  url, //url cua ban be
 }) => {
   const scrollViewRef = useRef<ScrollView>(null); // Tạo một ref cho ScrollView
 
@@ -31,11 +33,12 @@ const MessageList: React.FC<MessageListProps> = ({
             mess={mess}
             currenUser={currenUser}
             type={type}
+            url={url}
           />
         ))
       ) : (
         <View>
-          <Text>No messages yet.</Text>
+          <Text style={{textAlign:'center'}}>No messages yet.</Text>
         </View>
       )}
     </ScrollView>

@@ -26,22 +26,30 @@ interface MessageItemProps {
   mess: any;
   currenUser: any;
   type?: string;
+  url?:string
 }
 
 const MessageItem: React.FC<MessageItemProps> = ({
   mess,
   currenUser,
   type,
+  url,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(mess.text);
 
   const handleSaveMessage = () => {
-    const messageRef = firestore()
-      .collection('Rooms')
-      .doc(mess.roomId)
-      .collection('messages')
-      .doc(mess.id);
+    const messageRef = type === 'group'
+                  ? firestore()
+                      .collection('Group')
+                      .doc(mess.groupId)
+                      .collection('messages')
+                      .doc(mess.id)
+                  : firestore()
+                      .collection('Rooms')
+                      .doc(mess.roomId)
+                      .collection('messages')
+                      .doc(mess.id);
 
     messageRef
       .update({
@@ -55,6 +63,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
         console.error('Error updating message:', error);
       });
   };
+
   const renderTime = () => {
     if (mess) {
       let date = new Date(mess?.createdAt?.seconds * 1000);
@@ -74,29 +83,33 @@ const MessageItem: React.FC<MessageItemProps> = ({
           {
             text: 'OK',
             onPress: async () => {
-              const messageRef = firestore()
-                .collection('Rooms')
-                .doc(mess.roomId)
-                .collection('messages')
-                .doc(mess.id);
-
-              messageRef
-                .delete()
-                .then(() => {
-                  console.log('Message deleted successfully');
-                })
-                .catch(error => {
-                  console.error('Error deleting message:', error);
-                });
+              try {
+                const messageRef = type === 'group'
+                  ? firestore()
+                      .collection('Group')
+                      .doc(mess.groupId)
+                      .collection('messages')
+                      .doc(mess.id)
+                  : firestore()
+                      .collection('Rooms')
+                      .doc(mess.roomId)
+                      .collection('messages')
+                      .doc(mess.id);
+  
+                // Thực hiện xóa tin nhắn
+                await messageRef.delete();
+                console.log('Message deleted successfully');
+              } catch (error) {
+                console.error('Error deleting message:', error);
+              }
             },
           },
         ],
       );
     } catch (err) {
-      console.error('Error deleting message:', err);
+      console.error('Error in handleDeleteMessage:', err);
     }
   };
-
   const handleEditMessage = () => {
     setIsEditing(true);
   };
@@ -115,8 +128,8 @@ const MessageItem: React.FC<MessageItemProps> = ({
             backgroundColor: '#a4dede',
             borderRadius: 25,
             padding: 10,
-            flexDirection: 'row',
-            alignItems: 'center',
+            // flexDirection: 'row',
+            alignItems: 'flex-end',
           }}
         >
           <View
@@ -175,6 +188,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
                         fontFamily: fontFamilies.regular,
                         fontSize: 16,
                         color: 'black',
+                        textAlign:'right'
                       }}
                     >
                       {mess.text}
@@ -283,6 +297,27 @@ const MessageItem: React.FC<MessageItemProps> = ({
           ) : (
             <></>
           )}
+          {url ? (
+            <Image
+              style={{
+                height: 48,
+                width: 48,
+                borderRadius: 100,
+                marginRight: 6,
+              }}
+              source={{uri:url}}
+            />
+          ) : (
+            <Image
+              style={{
+                height: 48,
+                width: 48,
+                borderRadius: 100,
+                marginRight: 6,
+              }}
+              source={require('../assets/image/avatar.png')}
+            />
+          )}
           <View
             style={{
               flexDirection: 'row',
@@ -296,8 +331,8 @@ const MessageItem: React.FC<MessageItemProps> = ({
                 backgroundColor: '#a4dede',
                 borderRadius: 25,
                 padding: 10,
-                flexDirection: 'row',
-                alignItems: 'center',
+                // flexDirection: 'row',
+                // alignItems: 'center',
               }}
             >
               {mess.url ? (

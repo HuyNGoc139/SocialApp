@@ -302,7 +302,11 @@ const RoomScreen = ({ navigation, route }: any) => {
       </View>
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <View style={{ flex: 1 }}>
-          <MessageList messages={message} currenUser={userCurrent} />
+          <MessageList 
+          messages={message} 
+          currenUser={userCurrent} 
+          url={userSelect?.url}
+          />
         </View>
       </View>
       <View style={{ marginBottom: 16 }}>
