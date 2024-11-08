@@ -21,12 +21,12 @@ import SpaceComponent from '../components/SpaceComponent';
 
 interface Notification {
   id: string;
-  postId?: string; // Thêm postId với dấu hỏi để nó có thể là undefined
+  postId?: string; 
   senderName: string;
   senderId: string;
   commentText: string;
-  type: string; // loại thông báo (comment, like, ...)
-  createdAt: any; // Thay đổi kiểu này nếu có thể
+  type: string; 
+  createdAt: any; 
   receiverId: string;
   isRead: boolean;
   post?: any;
@@ -60,23 +60,18 @@ const NotificationScreen = ({ navigation, route }: any) => {
             id: doc.id,
             ...doc.data(),
           })) as Notification[];
-
-          // Lọc thông báo dựa trên receiverId
           const filteredNotifications = notiList.filter(
             notification => notification.receiverId === user.userId,
           );
 
-          // Lấy thông tin bài viết và người gửi cho từng thông báo
           const postPromises = filteredNotifications.map(async notification => {
             const postId = notification.postId;
-            const senderId = notification.senderId; // Lấy senderId
-
-            // const post = postId ? await getPostById(postId) : null;
+            const senderId = notification.senderId;
+;
             const UserSender = senderId ? await getUserById(senderId) : null;
 
             return {
               ...notification,
-              // post,
               UserSender,
             };
           });
@@ -138,9 +133,6 @@ const NotificationScreen = ({ navigation, route }: any) => {
           </Text>
         </View>
       </TouchableOpacity>
-      {/* {!loading?<View style={{flex:1}}>
-            {notifications.map((item,index)=><Notificomponent key={index} data={item} userCurrent={user} navigation={navigation}/>)}
-            </View>:<ActivityIndicator size={'large'} />} */}
       {!loading ? (
         <View style={{ flex: 1 }}>
           {notifications.length > 0 ? (

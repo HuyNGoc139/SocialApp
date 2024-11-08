@@ -58,14 +58,12 @@ const PostCardComponent = ({
   useEffect(() => {
     const unsubscribeLikes = subscribeLikes();
     const unsubscribeComments = subscribeComments();
-
-    // Cleanup subscription khi component unmount
     return () => {
       unsubscribeLikes();
       unsubscribeComments();
     };
   }, []);
-  //hom nay sua o day
+
   const sendLikeNotification = async () => {
     try {
       const notificationRef = firestore().collection('notifi');
@@ -84,9 +82,8 @@ const PostCardComponent = ({
       console.log('Error sending notification:', error);
     }
   };
-  //hom nay sua o day
 
-  const subscribeLikes = () => {
+  const subscribeLikes = useCallback(() => {
     const docRef = firestore().collection('Posts').doc(post.id);
     const likeRef = docRef.collection('like');
     return likeRef.onSnapshot(async snapshot => {
@@ -95,15 +92,11 @@ const PostCardComponent = ({
           snapshot.docs.map(async doc => {
             const likeData = doc.data();
             const userId = doc.id;
-
-            // Lấy thông tin người dùng từ userId
             const userSnapshot = await firestore()
               .collection('Users')
               .doc(userId)
               .get();
-
             const userData = userSnapshot.exists ? userSnapshot.data() : null;
-
             return {
               userId,
               ...likeData,
@@ -111,7 +104,6 @@ const PostCardComponent = ({
             };
           }),
         );
-
         setUserLike(likesWithUserInfo);
         const currentUserLike = likesWithUserInfo.find(
           like => like.userId === userCurrent.userId,
@@ -126,13 +118,12 @@ const PostCardComponent = ({
         setLike(false);
       }
     });
-  };
+  }, [post.id]);
 
   const subscribeComments = useCallback(() => {
     const docRef = firestore().collection('Posts').doc(post.id);
     const commentRef = docRef.collection('comments');
 
-    // Lắng nghe sự thay đổi trong collection 'comments'
     return commentRef.onSnapshot(snapshot => {
       if (!snapshot.empty) {
         const comments = snapshot.docs.map(doc => ({
@@ -154,21 +145,17 @@ const PostCardComponent = ({
       .collection('notifi')
       .where('postId', '==', post.id)
       .where('senderId', '==', userCurrent?.userId)
-      .where('type', '==', 'like'); // Tìm thông báo "like" cho bài post này
-
+      .where('type', '==', 'like');
     if (like) {
-      // Nếu user đã like, xóa like khỏi Firestore
       await likeRef.delete();
 
-      // Xóa thông báo like tương ứng
       const notificationsSnapshot = await notificationRef.get();
       notificationsSnapshot.forEach(async doc => {
-        await doc.ref.delete(); // Xóa từng thông báo
+        await doc.ref.delete();
       });
 
       setLike(false);
     } else {
-      // Nếu user chưa like, thêm like vào Firestore
       await likeRef.set(
         {
           userId: userCurrent.userId,
@@ -178,8 +165,6 @@ const PostCardComponent = ({
         },
         { merge: true },
       );
-
-      // Thêm thông báo mới vào collection 'notifications'
       if (userCurrent.userId !== post.userId) {
         await sendLikeNotification();
       }
@@ -238,7 +223,6 @@ const PostCardComponent = ({
             const postRef = firestore().collection('Posts').doc(post.id);
             const notificationRef = firestore().collection('notifi');
             try { 
-              // Tìm và xóa các thông báo liên quan đến post này
               const notificationsSnapshot = await notificationRef.where('postId', '==', post.id).get();
               
               const batch = firestore().batch();
@@ -249,14 +233,10 @@ const PostCardComponent = ({
             likesSnapshot.forEach(doc => {
               batch.delete(doc.ref);
             });
-
-            // Xóa tất cả các comment liên quan trong subcollection Comments của post này
             const commentsSnapshot = await postRef.collection('comments').get();
             commentsSnapshot.forEach(doc => {
               batch.delete(doc.ref);
             });
-
-            // Xóa document Post chính
              batch.delete(postRef);
               await batch.commit();
               console.log('Related notifications deleted successfully');
@@ -295,7 +275,7 @@ const PostCardComponent = ({
                 });
               }
             }}
-            disabled={isSelect} // Sử dụng disabled để vô hiệu hóa nút
+            disabled={isSelect}
           >
             <Text
               style={{
@@ -452,12 +432,6 @@ const PostCardComponent = ({
         onClose={() => setIsVisibleModal(false)}
         post={post}
       />
-      {/* <ProfileModalComponent isVisible={isModalFriendVisible}
-        onClose={()=>setModalFriendVisible(false)}
-        userId={post.userId}
-        navigation={navigation}
-        url={post.url}
-        /> */}
     </>
   );
 };

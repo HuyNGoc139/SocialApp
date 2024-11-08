@@ -20,9 +20,8 @@ import ModalAddGroup from '../components/chat/ModalAddGroup';
 import GroupItem from '../components/chat/GroupItem';
 interface Group {
   id?: string;
-  members: string[]; // Danh sách các thành viên
-  lastMessageAt?: any; // Thời gian gửi tin nhắn cuối cùng
-  // Thêm các thuộc tính khác nếu cần thiết
+  members: string[];
+  lastMessageAt?: any;
   createdAt: any;
   groupName: string;
   lastMessage: string;
@@ -45,7 +44,7 @@ const ChatScreen = ({ navigation }: any) => {
         getUser();
       }
     });
-    return () => unsubscribe(); // Clean up the subscription on unmount
+    return () => unsubscribe(); 
   }, []);
 
   const getUser = () => {
@@ -92,10 +91,10 @@ const ChatScreen = ({ navigation }: any) => {
       .onSnapshot(snapshot => {
         const updatedGroups: Group[] = snapshot.docs.map(doc => ({
           id: doc.id,
-          members: doc.data().members || [], // Đảm bảo có members
-          lastMessageAt: doc.data().lastMessageAt || null, // Đảm bảo có lastMessageAt
-          createdAt: doc.data().createdAt || new Date(), // Đảm bảo có createdAt
-          groupName: doc.data().groupName || '', // Đảm bảo có groupName
+          members: doc.data().members || [],
+          lastMessageAt: doc.data().lastMessageAt || null,
+          createdAt: doc.data().createdAt || new Date(),
+          groupName: doc.data().groupName || '',
           lastMessage: doc.data().lastMessage || '',
         }));
         const filteredGroups = updatedGroups.filter(group =>
@@ -183,9 +182,11 @@ const ChatScreen = ({ navigation }: any) => {
           )}
         />
       ) : (
-        <Text style={{ textAlign: 'center', color: 'white' }}>
+        <TouchableOpacity onPress={()=>setModalVisible(true)}>
+          <Text style={{ textAlign: 'center', color: 'coral' }}>
           Do you want to create Group?
         </Text>
+        </TouchableOpacity>
       )}
       <View style={{ flexDirection: 'row', marginLeft: 20 }}>
         <Text style={{ fontSize: 24, color: 'black' }}>User</Text>
@@ -213,7 +214,7 @@ const ChatScreen = ({ navigation }: any) => {
       <ModalAddGroup
         visible={isModalVisible}
         onClose={() => setModalVisible(false)}
-        users={userSelect} // Danh sách người dùng từ SendScreen
+        users={userSelect}
         currentuser={user}
       />
     </View>
