@@ -266,7 +266,6 @@ const MessageItem: React.FC<MessageItemProps> = ({
           style={{
             flexDirection: 'row',
             justifyContent: 'flex-start',
-            marginBottom: 12,
             marginRight: 12,
             marginLeft: 12,
           }}

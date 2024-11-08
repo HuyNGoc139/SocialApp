@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { AppState, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import LoginScreen from './src/Auth/Login';
 import RegisterScreen from './src/Auth/Register';
 import FriendScreen from './src/screen/Friend';
@@ -24,6 +24,7 @@ import store from './src/redux/store';
 import { PaperProvider } from 'react-native-paper';
 import RNBootSplash from 'react-native-bootsplash';
 import RoomGroup from './src/screen/ChatGroup/RoomGroup';
+import { updateUserStatus } from './src/funtion/updateUserStatus';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -115,6 +116,19 @@ const HomeTab = () => (
 
 const App: React.FC = () => {
   const [isLogin, setIsLogin] = useState(false);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        updateUserStatus('online');
+      } else {
+        updateUserStatus('offline');
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
   useEffect(() => {
     // Ẩn màn hình khởi động sau khi ứng dụng đã tải xong
     RNBootSplash.hide({ fade: true });

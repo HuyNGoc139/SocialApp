@@ -235,11 +235,34 @@ const PostCardComponent = ({
         {
           text: 'Ok',
           onPress: async () => {
-            const postref = firestore().collection('Posts').doc(post.id);
-            postref
-              .delete()
-              .then(() => console.log('Post deleted successfully'))
-              .catch(error => console.log(error));
+            const postRef = firestore().collection('Posts').doc(post.id);
+            const notificationRef = firestore().collection('notifi');
+            try { 
+              // Tìm và xóa các thông báo liên quan đến post này
+              const notificationsSnapshot = await notificationRef.where('postId', '==', post.id).get();
+              
+              const batch = firestore().batch();
+              notificationsSnapshot.forEach(doc => {
+                batch.delete(doc.ref);
+              });
+              const likesSnapshot = await postRef.collection('like').get();
+            likesSnapshot.forEach(doc => {
+              batch.delete(doc.ref);
+            });
+
+            // Xóa tất cả các comment liên quan trong subcollection Comments của post này
+            const commentsSnapshot = await postRef.collection('comments').get();
+            commentsSnapshot.forEach(doc => {
+              batch.delete(doc.ref);
+            });
+
+            // Xóa document Post chính
+             batch.delete(postRef);
+              await batch.commit();
+              console.log('Related notifications deleted successfully');
+            } catch (error) {
+              console.log('Error deleting post or notifications:', error);
+            }
           },
         },
       ]);

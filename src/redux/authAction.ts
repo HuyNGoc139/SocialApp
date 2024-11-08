@@ -3,6 +3,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { Alert } from 'react-native';
 import { User } from '../models/user';
+import { updateUserStatus } from '../funtion/updateUserStatus';
 
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
@@ -18,7 +19,8 @@ export const loginUser = createAsyncThunk(
       const uid = userCredential.user.uid;
       const userDoc = await firestore().collection('Users').doc(uid).get();
       if (userDoc.exists) {
-        return { uid, ...(userDoc.data() as User) };
+        updateUserStatus('online');
+        return { ...(userDoc.data() as User) };
       } else {
         throw new Error('User not found');
       }
@@ -54,7 +56,7 @@ export const registerUser = createAsyncThunk(
         url: '',
         uid,
       });
-
+      updateUserStatus('online');
       return { uid, email, username, friends: [] };
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -66,6 +68,7 @@ export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
+      updateUserStatus('offline');
       auth()
         .signOut()
         .then(() => {

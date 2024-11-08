@@ -27,8 +27,8 @@ import firestore from '@react-native-firebase/firestore';
 import DateTimePickerComponent from './DateTimePickerComponent';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/store';
 import { logoutUser } from '../redux/authAction';
 interface Props {
   // visible: boolean;
@@ -49,12 +49,12 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
   useEffect(() => {
     getUser();
   }, [userId]);
-
+  const user2 = useSelector((state: RootState) => state.auth.user);
   const [user, setUser] = useState(initialValue);
   const [userName, setUserName] = useState('');
   const [isLoading, setISLoading] = useState(false);
   const [urlprofile, seturlprofile] = useState('');
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(user2?.TwoFA?true:false);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
   const getUser = useCallback(() => {
     firestore()
