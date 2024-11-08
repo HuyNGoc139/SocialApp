@@ -17,7 +17,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 const CommentItem = (props: any) => {
-  const { cmt, userCurrent, postid } = props;
+  const { cmt, userCurrent, postid,postUserId } = props;
   const handelDeleteComment = async () => {
     try {
       Alert.alert(
@@ -28,13 +28,20 @@ const CommentItem = (props: any) => {
           {
             text: 'OK',
             onPress: async () => {
-              const postRef = firestore().collection('Posts').doc(postid); // Tham chiếu đến document của post
+              const postRef = firestore().collection('Posts').doc(postid);
+              const notifiRef = firestore().collection('notifi');
               const commentRef = postRef
                 .collection('comments')
                 .doc(cmt.commentId);
 
               await commentRef.delete();
-              // console.log('Comment deleted successfully');
+              const notifiQuerySnapshot = await notifiRef
+      .where('commentId', '==', cmt.commentId)
+      .get();
+
+    const deletePromises = notifiQuerySnapshot.docs.map(doc => doc.ref.delete());
+    await Promise.all(deletePromises);
+
             },
           },
         ],
@@ -68,7 +75,7 @@ const CommentItem = (props: any) => {
           </Text>
         </View>
       </View>
-      {cmt.userId == userCurrent.uid || cmt.userId == userCurrent.userId ? (
+      {cmt.userId == userCurrent.uid|| postUserId==userCurrent.uid ? (
         <TouchableOpacity onPress={handelDeleteComment}>
           <Trash size="24" color="rgb(237, 7, 61)" />
         </TouchableOpacity>
