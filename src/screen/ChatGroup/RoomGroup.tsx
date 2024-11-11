@@ -1,31 +1,32 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-} from 'react-native-ui-lib';
+import { View, Text, Image, TouchableOpacity } from 'react-native-ui-lib';
 import {
   ArrowSquareLeft,
   Call,
+  Edit2,
   MessageRemove,
   Send2,
   Video,
+  VideoAdd,
 } from 'iconsax-react-native';
-
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import SpaceComponent from '../../components/SpaceComponent';
 import MessageList from '../../components/MessageList';
+import MessageGroupList from '../../components/chat/MessageGroupList';
+import ModalChangeName from '../../components/chat/ModalChangeName';
 
 const RoomGroup = ({ navigation, route }: any) => {
   const group = route.params;
   const [message, setMessage] = useState<any[]>([]);
   const user = useSelector((state: RootState) => state.auth.user);
   const [textRef, setTextRef] = useState('');
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
     getAllMessage();
   }, [user?.uid]);
@@ -79,6 +80,53 @@ const RoomGroup = ({ navigation, route }: any) => {
     return unsubscribe;
   }, [group.id]);
 
+  const handleSelectImage = async () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+      mediaType: 'any',
+    })
+      .then(async image => {
+        const filename = image.path.substring(image.path.lastIndexOf('/') + 1);
+        const reference = storage().ref(`Images/${filename}`);
+        await reference.putFile(image.path);
+        const url = await reference.getDownloadURL();
+        const docRef = firestore().collection('Group').doc(group.id);
+        const messagesRef = docRef.collection('messages');
+        await messagesRef.add({
+          userId: user?.uid,
+          url: url,
+          senderName: user?.username,
+          createdAt: new Date(),
+        });
+      })
+      .catch(error => {
+        console.log('Error selecting image:', error);
+      });
+  };
+  const handleSelectMedia = async () => {
+    try {
+      const media = await ImagePicker.openPicker({
+        mediaType: 'video',
+      });
+      const filename = media.path.substring(media.path.lastIndexOf('/') + 1);
+      const reference = storage().ref(`Media/${filename}`);
+      await reference.putFile(media.path);
+      const url = await reference.getDownloadURL();
+      const docRef = firestore().collection('Group').doc(group.id);
+      const messagesRef = docRef.collection('messages');
+      await messagesRef.add({
+        userId: user?.uid,
+        videourl: url,
+        senderName: user?.username,
+        createdAt: new Date(),
+      });
+    } catch (error) {
+      console.log('Error selecting media:', error);
+    }
+  };
+
   return (
     <View flex style={{ backgroundColor: 'white' }}>
       <View
@@ -97,7 +145,7 @@ const RoomGroup = ({ navigation, route }: any) => {
           <ArrowSquareLeft size={28} color="black" />
         </TouchableOpacity>
         <View style={{ flex: 1, flexDirection: 'row' }}>
-          {group?.photo ? (
+          {group?.url ? (
             <Image
               style={{
                 height: 48,
@@ -105,7 +153,7 @@ const RoomGroup = ({ navigation, route }: any) => {
                 borderRadius: 100,
                 marginLeft: 12,
               }}
-              source={{ uri: group.photo }}
+              source={{ uri: group.url }}
             />
           ) : (
             <Image
@@ -137,15 +185,14 @@ const RoomGroup = ({ navigation, route }: any) => {
           <SpaceComponent width={20} />
           <Video size="28" color="black" />
           <SpaceComponent width={20} />
-          {/* <TouchableOpacity onPress={confirmDeleteMessages}> */}
-          <TouchableOpacity>
-            <MessageRemove size="28" color="black" />
+          <TouchableOpacity onPress={() => setVisible(true)}>
+            <Edit2 size="28" color="black" />
           </TouchableOpacity>
         </View>
       </View>
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <View style={{ flex: 1 }}>
-          <MessageList messages={message} currenUser={user} type="group" />
+          <MessageGroupList messages={message} currenUser={user} />
         </View>
       </View>
       <View style={{ marginBottom: 16 }}>
@@ -167,6 +214,21 @@ const RoomGroup = ({ navigation, route }: any) => {
             onChangeText={val => setTextRef(val)}
           />
           <TouchableOpacity
+            style={{ marginLeft: 10 }}
+            onPress={handleSelectImage}
+          >
+            <Image
+              source={require('../../assets/image.png')}
+              style={{ width: 28, height: 28 }}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ marginLeft: 10 }}
+            onPress={handleSelectMedia}
+          >
+            <VideoAdd size="28" color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={handleSendMessage}
             style={{ marginRight: 10 }}
           >
@@ -174,6 +236,11 @@ const RoomGroup = ({ navigation, route }: any) => {
           </TouchableOpacity>
         </View>
       </View>
+      <ModalChangeName
+        isVisible={visible}
+        onClose={() => setVisible(false)}
+        group={group}
+      />
     </View>
   );
 };

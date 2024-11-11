@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,7 @@ import {
   Button,
   TouchableOpacity,
 } from 'react-native';
-import { fontFamilies } from '../constants/fontFamily';
-import { handleDateTime } from '../funtion/handleDateTime';
-import { formatDate } from '../funtion/formatDate';
+
 import {
   Menu,
   MenuOptions,
@@ -21,21 +19,33 @@ import { More, Save2 } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Video from 'react-native-video';
-// Định nghĩa type cho props của MessageItem
+import { fontFamilies } from '../../constants/fontFamily';
+import { handleDateTime } from '../../funtion/handleDateTime';
+import { formatDate } from '../../funtion/formatDate';
 interface MessageItemProps {
   mess: any;
   currenUser: any;
-  url?: string;
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
+const MessageGroupItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(mess.text);
-
+  const [userSender, setUserSender] = useState<any>();
+  useEffect(() => {
+    getSenderUser();
+  }, [mess.userId]);
+  const getSenderUser = useCallback(async () => {
+    if (mess.userId != currenUser.uid) {
+      const userDoc = await firestore().doc(`Users/${mess.userId}`).get();
+      if (userDoc.exists) {
+        setUserSender(userDoc.data());
+      }
+    }
+  }, [mess.userId]);
   const handleSaveMessage = () => {
     const messageRef = firestore()
-      .collection('Rooms')
-      .doc(mess.roomId)
+      .collection('Group')
+      .doc(mess.groupId)
       .collection('messages')
       .doc(mess.id);
 
@@ -52,17 +62,8 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
       });
   };
 
-  const renderTime = () => {
-    if (mess) {
-      let date = new Date(mess?.createdAt?.seconds * 1000);
-      return formatDate(date);
-    } else {
-      return 'Time';
-    }
-  };
   const handleDeleteMessage = async () => {
     try {
-      // Hiển thị hộp thoại xác nhận trước khi xóa
       Alert.alert(
         'Delete Comment',
         'Are you sure you want to delete this message?',
@@ -73,12 +74,10 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
             onPress: async () => {
               try {
                 const messageRef = firestore()
-                  .collection('Rooms')
-                  .doc(mess.roomId)
+                  .collection('Group')
+                  .doc(mess.groupId)
                   .collection('messages')
                   .doc(mess.id);
-
-                // Thực hiện xóa tin nhắn
                 await messageRef.delete();
                 console.log('Message deleted successfully');
               } catch (error) {
@@ -243,15 +242,27 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
   } else {
     return (
       <View>
+        <Text
+          style={{
+            marginLeft: 60,
+            marginBottom: 4,
+            fontSize: 14,
+            color: 'black',
+            fontWeight: '500',
+          }}
+        >
+          {userSender?.username}
+        </Text>
+
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'flex-start',
-            marginRight: 12,
+            // marginRight: 12,
             marginLeft: 12,
           }}
         >
-          {url ? (
+          {userSender?.url ? (
             <Image
               style={{
                 height: 40,
@@ -259,7 +270,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
                 borderRadius: 100,
                 marginRight: 6,
               }}
-              source={{ uri: url }}
+              source={{ uri: userSender.url }}
             />
           ) : (
             <Image
@@ -269,14 +280,14 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
                 borderRadius: 100,
                 marginRight: 6,
               }}
-              source={require('../assets/image/avatar.png')}
+              source={require('../../assets/image/avatar.png')}
             />
           )}
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'flex-start',
-              marginBottom: 12,
+              marginBottom: 6,
               marginLeft: 0,
             }}
           >
@@ -285,8 +296,6 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
                 backgroundColor: '#a4dede',
                 borderRadius: 25,
                 padding: 10,
-                // flexDirection: 'row',
-                // alignItems: 'center',
               }}
             >
               {mess.url ? (
@@ -353,4 +362,4 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
   }
 };
 
-export default memo(MessageItem);
+export default memo(MessageGroupItem);

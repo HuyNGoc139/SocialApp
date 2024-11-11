@@ -21,12 +21,12 @@ import SpaceComponent from '../components/SpaceComponent';
 
 interface Notification {
   id: string;
-  postId?: string; 
+  postId?: string;
   senderName: string;
   senderId: string;
   commentText: string;
-  type: string; 
-  createdAt: any; 
+  type: string;
+  createdAt: any;
   receiverId: string;
   isRead: boolean;
   post?: any;
@@ -67,7 +67,6 @@ const NotificationScreen = ({ navigation, route }: any) => {
           const postPromises = filteredNotifications.map(async notification => {
             const postId = notification.postId;
             const senderId = notification.senderId;
-;
             const UserSender = senderId ? await getUserById(senderId) : null;
 
             return {

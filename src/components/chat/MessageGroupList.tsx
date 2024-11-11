@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef } from 'react';
 import { ScrollView, View, Text } from 'react-native';
-import MessageItem from './MessageItem';
+import MessGroupItem from './MessGroupItem';
 
 interface MessageListProps {
   messages: any[];
@@ -26,12 +26,7 @@ const MessageList: React.FC<MessageListProps> = ({
     <ScrollView ref={scrollViewRef}>
       {messages.length > 0 ? (
         messages.map((mess, index) => (
-          <MessageItem
-            key={index}
-            mess={mess}
-            currenUser={currenUser}
-            url={url}
-          />
+          <MessGroupItem key={index} mess={mess} currenUser={currenUser} />
         ))
       ) : (
         <View>

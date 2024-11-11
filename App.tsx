@@ -117,7 +117,7 @@ const HomeTab = () => (
 const App: React.FC = () => {
   const [isLogin, setIsLogin] = useState(false);
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState === 'active') {
         updateUserStatus('online');
       } else {

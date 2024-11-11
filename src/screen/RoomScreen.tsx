@@ -302,10 +302,10 @@ const RoomScreen = ({ navigation, route }: any) => {
       </View>
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <View style={{ flex: 1 }}>
-          <MessageList 
-          messages={message} 
-          currenUser={userCurrent} 
-          url={userSelect?.url}
+          <MessageList
+            messages={message}
+            currenUser={userCurrent}
+            url={userSelect?.url}
           />
         </View>
       </View>
@@ -324,7 +324,10 @@ const RoomScreen = ({ navigation, route }: any) => {
             style={{ marginLeft: 10 }}
             onPress={handleSelectImage}
           >
-            <Camera size="28" color="black" />
+            <Image
+              source={require('../assets/image.png')}
+              style={{ width: 28, height: 28 }}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={{ marginLeft: 10 }}

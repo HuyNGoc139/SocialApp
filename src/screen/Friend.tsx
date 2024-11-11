@@ -20,45 +20,30 @@ const FriendScreen = ({ navigation }: any) => {
   const [userSelect, setUserSelect] = useState<SelectModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [friendRequests, setFriendRequests] = useState<SelectModel[]>([]);
-  const [friends, setFriends] = useState<SelectModel[]>([]); // Danh sách bạn bè
+  const [friends, setFriends] = useState<SelectModel[]>([]);
   const [isLoadingfr, setIsLoadingfr] = useState(false);
-  // useEffect(() => {
-  //     const unsubscribe = auth().onAuthStateChanged((user) => {
-  //         if (user) {
-  //             handleGetFriendRequests(user.uid);
-  //             handleGetAllUsers(user.uid);
-  //         }
-  //     });
-  //     return () => unsubscribe(); // Clean up the subscription on unmount
-  // }, []);
   useEffect(() => {
     const handleInitialData = async (uid: string) => {
-      // Chờ `handleGetFriendRequests` hoàn thành
       await handleGetFriendRequests(uid);
-
-      // Sau đó mới thực thi `handleGetAllUsers`
       handleGetAllUsers(uid);
     };
 
     const unsubscribe = auth().onAuthStateChanged(user => {
       if (user) {
-        handleInitialData(user.uid); // Gọi hàm async
+        handleInitialData(user.uid);
       }
     });
 
-    return () => unsubscribe(); // Clean up the subscription on unmount
+    return () => unsubscribe();
   }, []);
 
   const handleGetAllUsers = (currentUserId: string) => {
-    setIsLoadingfr(true); // Bắt đầu quá trình tải
+    setIsLoadingfr(true);
     try {
-      // Lấy thông tin người dùng hiện tại
       const unsubscribeCurrentUser = firestore()
         .doc(`Users/${currentUserId}`)
         .onSnapshot(currentUserDoc => {
-          const currentUserFriends = currentUserDoc.data()?.friends || []; // Lấy danh sách bạn bè
-
-          // Lắng nghe thay đổi trong collection Users
+          const currentUserFriends = currentUserDoc.data()?.friends || [];
           const unsubscribeUsers = firestore()
             .collection('Users')
             .onSnapshot(snapshot => {
@@ -71,9 +56,8 @@ const FriendScreen = ({ navigation }: any) => {
                     item.id !== currentUserId &&
                     !currentUserFriends.includes(item.id)
                   ) {
-                    // Loại bỏ những người bạn đã có
                     items.push({
-                      userName: item.data().username,
+                      username: item.data().username,
                       uid: item.id,
                     });
                   }
@@ -81,21 +65,17 @@ const FriendScreen = ({ navigation }: any) => {
                 setUserSelect(items);
               }
             });
-
-          // Cleanup function
           return () => {
-            unsubscribeUsers(); // Ngừng lắng nghe khi component unmount
+            unsubscribeUsers();
           };
         });
-
-      // Cleanup function cho unsubscribeCurrentUser
       return () => {
-        unsubscribeCurrentUser(); // Ngừng lắng nghe thông tin người dùng hiện tại
+        unsubscribeCurrentUser();
       };
     } catch (err) {
       console.log(err);
     } finally {
-      setIsLoadingfr(false); // Kết thúc quá trình tải
+      setIsLoadingfr(false);
     }
   };
 
@@ -116,12 +96,9 @@ const FriendScreen = ({ navigation }: any) => {
         setIsLoading(false);
       });
 
-    return () => unsubscribe(); // Clean up the subscription on unmount
+    return () => unsubscribe();
   };
-
-  // Lấy danh sách uid của những người đã gửi yêu cầu kết bạn
   const requestUids = friendRequests.map(request => request.uid);
-  // Lấy danh sách uid của những người bạn
   const friendUids = friends.map(friend => friend.uid);
   return (
     <View style={{ flex: 1 }}>
@@ -174,7 +151,7 @@ const FriendScreen = ({ navigation }: any) => {
                 ele =>
                   !requestUids.includes(ele.uid) && // Kiểm tra xem uid có nằm trong requestUids không
                   !friendUids.includes(ele.uid) && // Kiểm tra xem uid có nằm trong friendUids không
-                  ele.userName.toLowerCase().includes(search.toLowerCase()),
+                  ele.username.toLowerCase().includes(search.toLowerCase()),
               )}
               keyExtractor={item => item.uid}
               renderItem={({ item }) => (

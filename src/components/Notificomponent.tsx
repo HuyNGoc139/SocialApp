@@ -2,7 +2,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { fontFamilies } from '../constants/fontFamily';
 import { formatDate } from '../funtion/formatDate';
 import { handleDateTime } from '../funtion/handleDateTime';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -179,7 +179,7 @@ const Notificomponent = (props: any) => {
     </TouchableOpacity>
   );
 };
-export default Notificomponent;
+export default memo(Notificomponent);
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,

@@ -58,7 +58,10 @@ const PostDetail = ({ navigation, route }: any) => {
 
     return () => unsubscribe(); // Cleanup listener on unmount
   }, []);
-  const sendCommentNotification = async (comment: string,commentId:string) => {
+  const sendCommentNotification = async (
+    comment: string,
+    commentId: string,
+  ) => {
     try {
       const notificationRef = firestore().collection('notifi');
 
@@ -71,7 +74,7 @@ const PostDetail = ({ navigation, route }: any) => {
         createdAt: new Date(),
         receiverId: post.user.userId,
         isRead: false,
-        commentId:commentId
+        commentId: commentId,
       });
     } catch (error) {
       console.log('Error sending notification:', error);
@@ -95,7 +98,7 @@ const PostDetail = ({ navigation, route }: any) => {
         createdAt: new Date(),
       });
       if (userCurrent.userId !== post.user.userId) {
-        await sendCommentNotification(comment,newCommentRef.id );
+        await sendCommentNotification(comment, newCommentRef.id);
       }
       console.log('Comments sent successfully');
       setTextRef('');

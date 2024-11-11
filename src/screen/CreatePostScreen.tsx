@@ -265,11 +265,14 @@ const CreatePostScreen = ({ navigation, route }: any) => {
               Add your Post
             </Text>
             <TouchableOpacity onPress={handleSelectImage}>
-              <Camera size="32" color="#FF8A65" />
+              <Image
+                source={require('../assets/image.png')}
+                style={{ width: 32, height: 32 }}
+              />
             </TouchableOpacity>
             <SpaceComponent width={10} />
             <TouchableOpacity onPress={handleSelectMedia}>
-              <VideoAdd size="32" color="#FF8A65" />
+              <VideoAdd size="32" color="black" />
             </TouchableOpacity>
           </View>
         </View>

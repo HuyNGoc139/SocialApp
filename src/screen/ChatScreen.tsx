@@ -25,6 +25,7 @@ interface Group {
   createdAt: any;
   groupName: string;
   lastMessage: string;
+  url?: string;
 }
 const ChatScreen = ({ navigation }: any) => {
   const [userSelect, setUserSelect] = useState<SelectModel[]>([]);
@@ -44,7 +45,7 @@ const ChatScreen = ({ navigation }: any) => {
         getUser();
       }
     });
-    return () => unsubscribe(); 
+    return () => unsubscribe();
   }, []);
 
   const getUser = () => {
@@ -96,6 +97,7 @@ const ChatScreen = ({ navigation }: any) => {
           createdAt: doc.data().createdAt || new Date(),
           groupName: doc.data().groupName || '',
           lastMessage: doc.data().lastMessage || '',
+          url: doc.data().url || '',
         }));
         const filteredGroups = updatedGroups.filter(group =>
           group.members?.includes(currentUserId),
@@ -182,10 +184,10 @@ const ChatScreen = ({ navigation }: any) => {
           )}
         />
       ) : (
-        <TouchableOpacity onPress={()=>setModalVisible(true)}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={{ textAlign: 'center', color: 'coral' }}>
-          Do you want to create Group?
-        </Text>
+            Do you want to create Group?
+          </Text>
         </TouchableOpacity>
       )}
       <View style={{ flexDirection: 'row', marginLeft: 20 }}>

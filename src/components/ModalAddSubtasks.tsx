@@ -54,7 +54,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
   const [userName, setUserName] = useState('');
   const [isLoading, setISLoading] = useState(false);
   const [urlprofile, seturlprofile] = useState('');
-  const [isEnabled, setIsEnabled] = useState(user2?.TwoFA?true:false);
+  const [isEnabled, setIsEnabled] = useState(user2?.TwoFA ? true : false);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
   const getUser = useCallback(() => {
     firestore()

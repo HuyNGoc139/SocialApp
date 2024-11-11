@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   View,
   Text,
-  Button,
   StyleSheet,
   TouchableOpacity,
   Image,
@@ -15,9 +12,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { AddSquare, Heart, Like, Velas } from 'iconsax-react-native';
 import SpaceComponent from '../components/SpaceComponent';
-import { User } from '../models/user';
 import { fontFamilies } from '../constants/fontFamily';
-import { posts } from '../models/user';
 import PostCardComponent from '../components/PostCardComponent';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
@@ -158,6 +153,7 @@ const HomeScreen = ({ navigation }: any) => {
           <FlatList
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
+            initialNumToRender={5}
             ref={flatListRef}
             data={postsList}
             keyExtractor={item => item.id.toString()}

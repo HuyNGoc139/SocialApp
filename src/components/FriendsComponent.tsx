@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -224,18 +224,11 @@ const FriendComponent = (props: Props) => {
           </View>
         </View>
       </View>
-      {/* <ProfileModalComponent
-        isVisible={isModalFriendVisible}
-        onClose={() => setModalFriendVisible(false)}
-        userId={uid}
-        navigation={navigation}
-        noadd={true}
-      /> */}
     </>
   );
 };
 
-export default FriendComponent;
+export default memo(FriendComponent);
 
 const styles = StyleSheet.create({
   username: {

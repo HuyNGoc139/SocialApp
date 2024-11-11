@@ -10,7 +10,7 @@ interface User {
   friends?: string[];
   createAt?: string;
   userId?: string;
-  TwoFA?:boolean;
+  TwoFA?: boolean;
 }
 interface AuthState {
   isAuthenticated: boolean;

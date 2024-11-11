@@ -222,22 +222,26 @@ const PostCardComponent = ({
           onPress: async () => {
             const postRef = firestore().collection('Posts').doc(post.id);
             const notificationRef = firestore().collection('notifi');
-            try { 
-              const notificationsSnapshot = await notificationRef.where('postId', '==', post.id).get();
-              
+            try {
+              const notificationsSnapshot = await notificationRef
+                .where('postId', '==', post.id)
+                .get();
+
               const batch = firestore().batch();
               notificationsSnapshot.forEach(doc => {
                 batch.delete(doc.ref);
               });
               const likesSnapshot = await postRef.collection('like').get();
-            likesSnapshot.forEach(doc => {
-              batch.delete(doc.ref);
-            });
-            const commentsSnapshot = await postRef.collection('comments').get();
-            commentsSnapshot.forEach(doc => {
-              batch.delete(doc.ref);
-            });
-             batch.delete(postRef);
+              likesSnapshot.forEach(doc => {
+                batch.delete(doc.ref);
+              });
+              const commentsSnapshot = await postRef
+                .collection('comments')
+                .get();
+              commentsSnapshot.forEach(doc => {
+                batch.delete(doc.ref);
+              });
+              batch.delete(postRef);
               await batch.commit();
               console.log('Related notifications deleted successfully');
             } catch (error) {
@@ -417,7 +421,6 @@ const PostCardComponent = ({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            {/* <Text style={styles.modalTitle}>Danh sách người đã like</Text> */}
             <FlatList
               data={userLike}
               renderItem={renderUserLike}
@@ -436,7 +439,7 @@ const PostCardComponent = ({
   );
 };
 
-export default PostCardComponent;
+export default memo(PostCardComponent);
 
 const styles = StyleSheet.create({
   container: {
