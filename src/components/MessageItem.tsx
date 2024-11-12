@@ -17,9 +17,8 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import { More, Save2 } from 'iconsax-react-native';
+import { Save2 } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import Video from 'react-native-video';
 // Định nghĩa type cho props của MessageItem
 interface MessageItemProps {

@@ -1,23 +1,10 @@
-import {
-  Alert,
-  Dimensions,
-  Image,
-  Modal,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { globalStyles } from '../styles/globalStyles';
+import { Image, Switch, TouchableOpacity, View } from 'react-native';
 import RowComponent from './RowComponent';
 import TextComponent from './TextComponent';
 import ButtonComponent from './ButtonComponent';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import TitleComponent from './TitleComponent';
 import InputComponent from './InputComponent';
-import { colors } from '../constants/color';
-import { fontFamilies } from '../constants/fontFamily';
 import SectionComponent from './SectionComponent';
 import Container from './Container';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -26,16 +13,9 @@ import { Designtools, Sms } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
 import DateTimePickerComponent from './DateTimePickerComponent';
 import storage from '@react-native-firebase/storage';
-import auth from '@react-native-firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
 import { logoutUser } from '../redux/authAction';
-interface Props {
-  // visible: boolean;
-  // onClose: () => void;
-  userId: string;
-}
-
 const initialValue = {
   email: '',
   username: '',

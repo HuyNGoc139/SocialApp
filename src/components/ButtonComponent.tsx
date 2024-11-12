@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { ReactNode } from 'react';
 import TextComponent from './TextComponent';
 import { colors } from '../constants/color';

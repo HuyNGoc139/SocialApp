@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Animated,
-  Modal,
   View,
   Text,
   Image,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   ScrollView,
 } from 'react-native';
-import { globalStyles } from '../styles/globalStyles';
 import SpaceComponent from '../components/SpaceComponent';
 import { fontFamilies } from '../constants/fontFamily';
 import RenderFriend from '../components/RenderFriendComponent';
@@ -268,14 +264,11 @@ const ProfileModalComponent: React.FC<any> = React.memo(
     const handleUnfriend = async () => {
       try {
         setIsFriends(false);
-        // Xóa người bạn khỏi danh sách bạn bè của người dùng hiện tại
         await firestore()
           .doc(`Users/${userCurrent?.uid}`)
           .update({
             friends: firestore.FieldValue.arrayRemove(userId),
           });
-
-        // Xóa người dùng hiện tại khỏi danh sách bạn bè của người bạn
         await firestore()
           .doc(`Users/${userId}`)
           .update({
@@ -283,11 +276,7 @@ const ProfileModalComponent: React.FC<any> = React.memo(
           });
 
         console.log('Unfriend operation completed and friends updated');
-
-        // Tải lại danh sách bạn bè
         await getUserFriends();
-
-        // Kiểm tra lại trạng thái bạn bè
       } catch (error) {
         console.log('Error unfriend:', error);
       }
@@ -444,17 +433,23 @@ const ProfileModalComponent: React.FC<any> = React.memo(
             </View>
           </View>
 
-          {postsList.map(item => (
-            <View key={item.id}>
-              <PostCardComponent
-                post={item}
-                userCurrent={user}
-                isEdit={false}
-                isSelect={true}
-                navigation={navigation}
-              />
-            </View>
-          ))}
+          {postsList.length ? (
+            postsList.map(item => (
+              <View key={item.id}>
+                <PostCardComponent
+                  post={item}
+                  userCurrent={user}
+                  isEdit={false}
+                  isSelect={true}
+                  navigation={navigation}
+                />
+              </View>
+            ))
+          ) : (
+            <Text style={{ textAlign: 'center', color: 'red', flex: 1 }}>
+              User has not posted any posts yet.
+            </Text>
+          )}
         </View>
       </ScrollView>
     );

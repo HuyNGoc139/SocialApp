@@ -10,9 +10,6 @@ import {
 import RowComponent from './RowComponent';
 import ButtonComponent from './ButtonComponent';
 import SpaceComponent from './SpaceComponent';
-import Container from './Container';
-import SectionComponent from './SectionComponent';
-import TitleComponent from './TitleComponent';
 import { useEffect, useRef, useState } from 'react';
 import TextComponent from './TextComponent';
 import { fontFamilies } from '../constants/fontFamily';
@@ -25,7 +22,6 @@ import {
 } from 'react-native-pell-rich-editor';
 import { globalStyles } from '../styles/globalStyles';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 interface Props {

@@ -1,31 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   View,
   Text,
-  Button,
   TouchableOpacity,
   ScrollView,
   TextInput,
   StyleSheet,
-  FlatList,
 } from 'react-native';
 import { ArrowSquareLeft, Send2 } from 'iconsax-react-native';
 import PostCardComponent from '../components/PostCardComponent';
 import { globalStyles } from '../styles/globalStyles';
-import InputComponent from '../components/InputComponent';
 import { fontFamilies } from '../constants/fontFamily';
-import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import { User } from '../models/user';
 import CommentItem from '../components/CommentItem';
 const PostDetail = ({ navigation, route }: any) => {
   const [textRef, setTextRef] = useState('');
   const { post, userCurrent } = route.params;
   const [userComment, setUserComment] = useState<any[]>([]);
-  const [user, setUser] = useState<User>();
   useEffect(() => {
     const docRef = firestore().collection('Posts').doc(post.id);
     const commentRef = docRef
@@ -56,7 +47,7 @@ const PostDetail = ({ navigation, route }: any) => {
       }
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
   const sendCommentNotification = async (
     comment: string,

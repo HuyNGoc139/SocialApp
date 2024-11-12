@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
-  Button,
   Alert,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
@@ -15,7 +14,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { SelectModel } from '../../models/SelectModal';
 import CheckBox from '@react-native-community/checkbox';
-import { useApp } from '../../hook/useAppHook';
 
 interface ModalAddGroupProps {
   visible: boolean;

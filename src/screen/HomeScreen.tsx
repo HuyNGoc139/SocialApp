@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { AddSquare, Heart, Like, Velas } from 'iconsax-react-native';
+import { AddSquare, Heart } from 'iconsax-react-native';
 import SpaceComponent from '../components/SpaceComponent';
 import { fontFamilies } from '../constants/fontFamily';
 import PostCardComponent from '../components/PostCardComponent';

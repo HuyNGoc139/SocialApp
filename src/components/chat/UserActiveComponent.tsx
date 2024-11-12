@@ -8,10 +8,9 @@ interface Props {
 }
 const OnlineUsers = () => {
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
-
   useEffect(() => {
     const unsubscribe = firestore()
-      .collection('User')
+      .collection('Users')
       .where('status', '==', 'online')
       .onSnapshot(snapshot => {
         const users = snapshot.docs.map(doc => ({
@@ -25,7 +24,7 @@ const OnlineUsers = () => {
   }, []);
   return (
     <View style={{ paddingHorizontal: 16 }}>
-      <Text style={{ fontSize: 18, color: 'white' }}>Active User</Text>
+      <Text style={{ fontSize: 18, color: 'green' }}>Active User</Text>
       {onlineUsers.length > 0 ? (
         <FlatList
           horizontal
@@ -33,7 +32,7 @@ const OnlineUsers = () => {
           keyExtractor={item => item.uid}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => console.log(item)}
+              onPress={() => {}}
               style={{
                 marginVertical: 10,
                 alignItems: 'center',
@@ -53,7 +52,7 @@ const OnlineUsers = () => {
                 />
               ) : (
                 <Image
-                  source={require('../../assets/avatar.png')}
+                  source={require('../../assets/image/avatar.png')}
                   style={{
                     width: 48,
                     height: 48,
@@ -70,11 +69,14 @@ const OnlineUsers = () => {
                   height: 12,
                   borderRadius: 24,
                   position: 'absolute',
-                  right: 10,
-                  top: 32,
+                  bottom: 20,
+                  right: 28,
                 }}
               />
-              <Text style={{ fontSize: 16, color: 'white' }}>
+              <Text
+                numberOfLines={1}
+                style={{ fontSize: 16, color: 'black', width: 86 }}
+              >
                 {item.username}
               </Text>
             </TouchableOpacity>

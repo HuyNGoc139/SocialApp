@@ -12,12 +12,13 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import ChatItem from '../components/ChatItem';
 import { SelectModel } from '../models/SelectModal';
-import { Edit, SearchNormal1 } from 'iconsax-react-native';
+import { SearchNormal1 } from 'iconsax-react-native';
 import { fontFamilies } from '../constants/fontFamily';
 import { colors } from '../constants/color';
 import { User } from '../models/user';
 import ModalAddGroup from '../components/chat/ModalAddGroup';
 import GroupItem from '../components/chat/GroupItem';
+import OnlineUsers from '../components/chat/UserActiveComponent';
 interface Group {
   id?: string;
   members: string[];
@@ -153,6 +154,7 @@ const ChatScreen = ({ navigation }: any) => {
           style={{ flex: 1, marginLeft: 10 }}
         />
       </View>
+      <OnlineUsers />
       <View
         style={{
           flexDirection: 'row',
@@ -165,12 +167,16 @@ const ChatScreen = ({ navigation }: any) => {
           style={{ marginLeft: 20 }}
           onPress={() => setModalVisible(true)}
         >
-          <Edit size="24" color="black" />
+          <Image
+            style={{ height: 26, width: 26 }}
+            source={require('../assets/addgroup.png')}
+          />
         </TouchableOpacity>
       </View>
       {groups.length > 0 ? (
         <FlatList
           data={groups}
+          style={{ height: 286 }}
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <GroupItem

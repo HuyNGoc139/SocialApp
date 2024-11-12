@@ -1,7 +1,6 @@
 import { ReactNode, useState } from 'react';
 import {
   KeyboardTypeOptions,
-  Text,
   TextInput,
   TouchableOpacity,
   View,

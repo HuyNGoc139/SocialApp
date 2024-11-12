@@ -21,9 +21,6 @@ import {
   Video,
   VideoAdd,
 } from 'iconsax-react-native';
-import RowComponent from '../components/RowComponent';
-import { colors } from '../constants/color';
-import { globalStyles } from '../styles/globalStyles';
 import SpaceComponent from '../components/SpaceComponent';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';

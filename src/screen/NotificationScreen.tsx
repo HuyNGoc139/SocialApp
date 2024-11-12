@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   View,
   Text,
-  Button,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
   ScrollView,
 } from 'react-native';
 import { ArrowSquareLeft, Back, UserAdd } from 'iconsax-react-native';
-import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import { globalStyles } from '../styles/globalStyles';
 import Notificomponent from '../components/Notificomponent';
 import { fontFamilies } from '../constants/fontFamily';
@@ -38,13 +33,8 @@ const NotificationScreen = ({ navigation, route }: any) => {
   const { user } = route.params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const getPostById = async (postId: string) => {
-    const postDoc = await firestore().collection('Posts').doc(postId).get();
-    return postDoc.exists ? { id: postDoc.id, ...postDoc.data() } : null;
-  };
-
   const getUserById = async (senderId: string) => {
-    const userDoc = await firestore().collection('Users').doc(senderId).get(); // Thay 'Users' với tên bộ sưu tập của bạn
+    const userDoc = await firestore().collection('Users').doc(senderId).get();
     return userDoc.exists ? { id: userDoc.id, ...userDoc.data() } : null;
   };
   useEffect(() => {

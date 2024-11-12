@@ -5,7 +5,6 @@ import {
   Image,
   Alert,
   TextInput,
-  Button,
   TouchableOpacity,
 } from 'react-native';
 
@@ -15,13 +14,12 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import { More, Save2 } from 'iconsax-react-native';
+import { Save2 } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import Video from 'react-native-video';
 import { fontFamilies } from '../../constants/fontFamily';
 import { handleDateTime } from '../../funtion/handleDateTime';
-import { formatDate } from '../../funtion/formatDate';
+
 interface MessageItemProps {
   mess: any;
   currenUser: any;

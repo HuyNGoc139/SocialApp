@@ -11,7 +11,6 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth'; // Để lấy thông tin người dùng hiện tại
 import { fontFamilies } from '../constants/fontFamily';
 import SpaceComponent from './SpaceComponent';
-import ProfileModalComponent from './ProfileFriend';
 
 interface Props {
   uid: string; // Người dùng mục tiêu (người nhận yêu cầu)

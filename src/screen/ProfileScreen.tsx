@@ -1,43 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   View,
   Text,
-  Button,
-  Alert,
   Image,
   TouchableOpacity,
   ScrollView,
-  FlatList,
   StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import ButtonComponent from '../components/ButtonComponent';
 import { globalStyles } from '../styles/globalStyles';
-import TextComponent from '../components/TextComponent';
-import { colors } from '../constants/color';
-import TitleComponent from '../components/TitleComponent';
 import { fontFamilies } from '../constants/fontFamily';
 import RowComponent from '../components/RowComponent';
-import {
-  Information,
-  Logout,
-  MoreSquare,
-  PasswordCheck,
-} from 'iconsax-react-native';
+import { Information, Logout, PasswordCheck } from 'iconsax-react-native';
 import SpaceComponent from '../components/SpaceComponent';
 import { handleDateTime } from '../funtion/handleDateTime';
-import ModalAddSubtasks from '../components/ModalAddSubtasks';
 import { User } from '../models/user';
 import PostCardComponent from '../components/PostCardComponent';
-import {
-  Menu,
-  MenuOptions,
-  MenuOption,
-  MenuTrigger,
-} from 'react-native-popup-menu';
 import ChangePasswordModal from '../components/ChangePasswordModal';
 import RenderFriend from '../components/RenderFriendComponent';
 import { useDispatch } from 'react-redux';

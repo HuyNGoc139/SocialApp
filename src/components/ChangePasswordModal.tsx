@@ -4,7 +4,6 @@ import {
   View,
   Alert,
   TouchableOpacity,
-  ImageBackground,
   Text,
   StyleSheet,
 } from 'react-native';
@@ -12,14 +11,7 @@ import auth from '@react-native-firebase/auth';
 import RowComponent from './RowComponent';
 import TextComponent from './TextComponent';
 import ButtonComponent from './ButtonComponent';
-import Container from './Container';
-import InputComponent from './InputComponent';
-import {
-  Designtools,
-  Lock1,
-  LockSlash,
-  TickCircle,
-} from 'iconsax-react-native'; // Import biểu tượng Lock
+import { TickCircle } from 'iconsax-react-native'; // Import biểu tượng Lock
 import { fontFamilies } from '../constants/fontFamily';
 import { useApp } from '../hook/useAppHook';
 import * as yup from 'yup';

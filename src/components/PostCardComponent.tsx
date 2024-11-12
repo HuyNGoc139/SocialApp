@@ -12,22 +12,11 @@ import {
 } from 'react-native';
 import { fontFamilies } from '../constants/fontFamily';
 import { formatDate } from '../funtion/formatDate';
-import {
-  Heart,
-  Message,
-  More,
-  MoreSquare,
-  Send2,
-  User,
-} from 'iconsax-react-native';
+import { Heart, Message, More, MoreSquare, Send2 } from 'iconsax-react-native';
 import RenderHTML from 'react-native-render-html';
 import Video from 'react-native-video';
 import SpaceComponent from './SpaceComponent';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import { WebView } from 'react-native-webview';
-import HTMLView from 'react-native-htmlview';
-import RenderHtml from 'react-native-render-html';
 import { memo } from 'react';
 import {
   Menu,
@@ -36,7 +25,6 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import ModalEditPost from './ModalEditPost';
-import ProfileModalComponent from './ProfileFriend';
 const PostCardComponent = ({
   post = {},
   userCurrent = {},

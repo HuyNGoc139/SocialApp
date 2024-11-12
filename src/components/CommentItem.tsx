@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   View,
   Text,
@@ -78,7 +78,7 @@ const CommentItem = (props: any) => {
       </View>
       {cmt.userId == userCurrent.uid || postUserId == userCurrent.uid ? (
         <TouchableOpacity onPress={handelDeleteComment}>
-          <Trash size="24" color="rgb(237, 7, 61)" />
+          <Image tintColor={'red'} source={require('../assets/delete.png')} />
         </TouchableOpacity>
       ) : (
         <></>
@@ -87,7 +87,7 @@ const CommentItem = (props: any) => {
   );
 };
 
-export default CommentItem;
+export default memo(CommentItem);
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -5,7 +5,6 @@ import {
   ArrowSquareLeft,
   Call,
   Edit2,
-  MessageRemove,
   Send2,
   Video,
   VideoAdd,
@@ -17,7 +16,6 @@ import firestore from '@react-native-firebase/firestore';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import SpaceComponent from '../../components/SpaceComponent';
-import MessageList from '../../components/MessageList';
 import MessageGroupList from '../../components/chat/MessageGroupList';
 import ModalChangeName from '../../components/chat/ModalChangeName';
 

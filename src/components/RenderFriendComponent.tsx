@@ -9,7 +9,6 @@ import {
   FlatList,
 } from 'react-native';
 import { fontFamilies } from '../constants/fontFamily';
-import ProfileModalComponent from './ProfileFriend';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 
@@ -147,11 +146,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Adjust transparency for a better background effect
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalView: {
-    width: '90%', // Make modal width responsive
-    maxHeight: '80%', // Limit modal height
+    width: '90%',
+    maxHeight: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
@@ -187,7 +186,7 @@ const styles = StyleSheet.create({
   closeButton: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: '#FF6347', // Tomato color
+    backgroundColor: '#FF6347',
     borderRadius: 5,
     alignSelf: 'center',
   },

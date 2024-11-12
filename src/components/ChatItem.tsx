@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {
-  View,
-  Text,
-  Button,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-} from 'react-native';
-import { colors } from '../constants/color';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { fontFamilies } from '../constants/fontFamily';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import { handleDateTime } from '../funtion/handleDateTime';
 import { formatDate } from '../funtion/formatDate';
 import { User } from '../models/user';
 interface Props {

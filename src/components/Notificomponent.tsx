@@ -1,11 +1,8 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { fontFamilies } from '../constants/fontFamily';
-import { formatDate } from '../funtion/formatDate';
 import { handleDateTime } from '../funtion/handleDateTime';
 import { memo, useEffect, useState } from 'react';
-import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import {
   Menu,
   MenuOption,
