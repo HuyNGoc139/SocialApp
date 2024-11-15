@@ -28,7 +28,7 @@ const HomeScreen = ({ navigation }: any) => {
       unsubscribePosts();
       unsubscribeNotifications();
     };
-  }, []);
+  }, [user]);
   const [postsList, setPostsList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const flatListRef = useRef<FlatList<any>>(null);
@@ -69,14 +69,25 @@ const HomeScreen = ({ navigation }: any) => {
               const postData = doc.data();
 
               // Truy vấn thông tin người dùng dựa trên userId
-              const userSnapshot = await firestore()
+              if(postData.userId==user?.uid){
+                const userData=user
+                return {
+                  id: doc.id,
+                  url: postData.url,
+                  createAt: postData.createAt.toDate(),
+                  body: postData.body,
+                  userId: postData.userId,
+                  type: postData.type,
+                  user: userData || null,
+                };
+              }
+              else{
+                const userSnapshot = await firestore()
                 .collection('Users')
                 .doc(postData.userId)
                 .get();
 
               const userData = userSnapshot.data();
-
-              // Kết hợp dữ liệu bài đăng và thông tin người dùng
               return {
                 id: doc.id,
                 url: postData.url,
@@ -86,6 +97,9 @@ const HomeScreen = ({ navigation }: any) => {
                 type: postData.type,
                 user: userData || null,
               };
+              }
+
+              // Kết hợp dữ liệu bài đăng và thông tin người dùng
             }),
           );
 

@@ -10,7 +10,7 @@ import DateTimePickerComponent from './DateTimePickerComponent';
 import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
-import { logoutUser } from '../../redux/authAction';
+import { logoutUser, updateUser } from '../../redux/authAction';
 import Container from '../Container';
 import SectionComponent from '../SectionComponent';
 import RowComponent from '../RowComponent';
@@ -19,60 +19,67 @@ import InputComponent from '../InputComponent';
 import TextComponent from '../TextComponent';
 import ButtonComponent from '../ButtonComponent';
 import SpaceComponent from '../SpaceComponent';
-const user2 = useSelector((state: RootState) => state.auth.user);
+import { User } from '../../models/user';
+import { handleDateTime } from '../../funtion/handleDateTime';
+
 const initialValue = {
   email: '',
   username: '',
   DateBitrhDay: new Date(),
   url: '',
+  uid:'',
 };
 
 const ModalAddSubtasks = ({ navigation, route }: any) => {
   const { userId } = route.params;
   const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => {
-    getUser();
-  }, [userId]);
+  const user2 = useSelector((state: RootState) => state.auth.user);
+  
+  // useEffect(() => {
+  //   getUser();
+  // }, [userId]);
  
-  const [user, setUser] = useState(initialValue);
-  const [userName, setUserName] = useState('');
+  const [user, setUser] = useState<User|null>(user2);
+  const [userName, setUserName] = useState<any>(user2?.username);
   const [isLoading, setISLoading] = useState(false);
-  const [urlprofile, seturlprofile] = useState('');
+  const [urlprofile, seturlprofile] = useState<any>(user2?.url);
   const [isEnabled, setIsEnabled] = useState(user2?.TwoFA ? true : false);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
-  const getUser = useCallback(() => {
-    firestore()
-      .doc(`Users/${userId}`)
-      .onSnapshot((snap: any) => {
-        if (snap.exists) {
-          setUser({
-            userId,
-            ...snap.data(),
-          });
-          setUserName(snap.data().username);
-        } else {
-          console.log('task not found');
-        }
-      });
-  }, [userId]);
+  // const getUser = useCallback(() => {
+  //   firestore()
+  //     .doc(`Users/${userId}`)
+  //     .onSnapshot((snap: any) => {
+  //       if (snap.exists) {
+  //         setUser({
+  //           userId,
+  //           ...snap.data(),
+  //         });
+  //         setUserName(snap.data().username);
+  //       } else {
+  //         console.log('task not found');
+  //       }
+  //     });
+  // }, [userId]);
   const handleSaveDataToDatabase = useCallback(async () => {
-    const data = {
-      ...user,
-      updatedAt: Date.now(),
-      uid: userId,
-      TwoFA: isEnabled,
-      url:urlprofile,
-    };
+    // const data = {
+    //   ...user,
+    //   updatedAt: Date.now(),
+    //   uid: userId,
+    //   TwoFA: isEnabled,
+    //   url:urlprofile,
+    // };
     setISLoading(true);
     try {
-      await firestore()
-        .doc(`Users/${userId}`)
-        .update(data)
-        .then(() => {
-          console.log('Updated Profile');
-        });
-      // navigation.goBack();
-      dispatch(logoutUser())
+      // await firestore()
+      //   .doc(`Users/${userId}`)
+      //   .update(data)
+      //   .then(() => {
+      //     console.log('Updated Profile');
+      //   });
+      dispatch(updateUser({userId, user:user??initialValue, isEnabled,urlprofile}
+      ))
+      navigation.goBack();
+      // dispatch(logoutUser())
       setISLoading(false);
     } catch (error) {
       setISLoading(false);
@@ -112,7 +119,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         style={{ borderRadius: 5000, width: 300, height: 300 }}
         source={{ uri: urlprofile }}
       />
-    ) : user.url ? (
+    ) : user?.url ? (
       <Image
         style={{ borderRadius: 5000, width: 300, height: 300 }}
         source={{ uri: user.url }}
@@ -123,7 +130,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         source={require('../../assets/image/avatar.png')}
       />
     );
-  }, [urlprofile, user.url]);
+  }, [urlprofile, user?.url]);
 
   return (
     <Container>
@@ -169,7 +176,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           title="Email"
           onChange={val => {}}
           placeholder="Email"
-          value={user.email}
+          value={user2?.email??''}
         />
         <InputComponent
           prefix={<Designtools size="32" color="#FAFAFA" />}
@@ -184,7 +191,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         />
         <DateTimePickerComponent
           selected={
-            user.DateBitrhDay instanceof Date ? user.DateBitrhDay : new Date()
+            user?.DateBitrhDay instanceof Date ? user.DateBitrhDay : new Date()
           }
           onSelect={val => handleChangeValue('DateBitrhDay', val)}
           placeholder="Choice"

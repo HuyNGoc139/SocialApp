@@ -17,8 +17,8 @@ import SpaceComponent from '../components/SpaceComponent';
 import { handleDateTime } from '../funtion/handleDateTime';
 import { User } from '../models/user';
 
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/store';
 import { logoutUser } from '../redux/authAction';
 import RenderFriend from '../components/friend/RenderFriendComponent';
 import PostCardComponent from '../components/post/PostCardComponent';
@@ -29,12 +29,13 @@ interface FirebaseTimestamp {
 }
 const ProfileScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [isVisibleModalSubTasks, setIsVisibleModalSubTasks] = useState(false);
   const userCurrent = auth().currentUser;
   const [user, setUser] = useState<User>();
   const [postsList, setPostsList] = useState<any[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [friends, setFriends] = useState<any[]>([]);
+  const user2 = useSelector((state: RootState) => state.auth.user);
+  
   useEffect(() => {
     const fetchData = async () => {
       await getUser();
@@ -46,7 +47,7 @@ const ProfileScreen = ({ navigation }: any) => {
         getAllPost();
       }
     });
-  }, [user?.uid]);
+  }, [user2]);
   const getUserFriends = () => {
     try {
       firestore()
@@ -133,12 +134,12 @@ const ProfileScreen = ({ navigation }: any) => {
             snapshot.docs.map(async doc => {
               const postData = doc.data();
               if (postData.userId === userCurrent?.uid) {
-                const userSnapshot = await firestore()
-                  .doc(`Users/${postData.userId}`)
-                  .get();
-                const userData = userSnapshot.exists
-                  ? userSnapshot.data()
-                  : null;
+                // const userSnapshot = await firestore()
+                //   .doc(`Users/${postData.userId}`)
+                //   .get();
+                // const userData = userSnapshot.exists
+                //   ? userSnapshot.data()
+                //   : null;
 
                 return {
                   id: doc.id,
@@ -147,7 +148,7 @@ const ProfileScreen = ({ navigation }: any) => {
                   body: postData.body,
                   userId: postData.userId,
                   type: postData.type,
-                  user: userData || null, // Thông tin người dùng
+                  user: user2 || null, // Thông tin người dùng
                 };
               } else {
                 return null; // Nếu không khớp, trả về null

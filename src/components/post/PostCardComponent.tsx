@@ -25,6 +25,8 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import ModalEditPost from './ModalEditPost';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 const PostCardComponent = ({
   post = {},
   userCurrent = {},
@@ -40,6 +42,8 @@ const PostCardComponent = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [userComment, setUserComment] = useState<any[]>([]);
   const [isVisibleModal, setIsVisibleModal] = useState(false);
+  const user2 = useSelector((state: RootState) => state.auth.user);
+  
   useEffect(() => {
     const unsubscribeLikes = subscribeLikes();
     const unsubscribeComments = subscribeComments();
