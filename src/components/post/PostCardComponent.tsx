@@ -10,12 +10,12 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import { fontFamilies } from '../constants/fontFamily';
-import { formatDate } from '../funtion/formatDate';
+import { fontFamilies } from '../../constants/fontFamily';
+import { formatDate } from '../../funtion/formatDate';
 import { Heart, Message, More, MoreSquare, Send2 } from 'iconsax-react-native';
 import RenderHTML from 'react-native-render-html';
 import Video from 'react-native-video';
-import SpaceComponent from './SpaceComponent';
+import SpaceComponent from '../SpaceComponent';
 import firestore from '@react-native-firebase/firestore';
 import { memo } from 'react';
 import {
@@ -33,14 +33,11 @@ const PostCardComponent = ({
   navigation = () => {},
 }: any) => {
   const MemoizedRenderHTML = memo(RenderHTML);
-  // const { post, userCurrent,navigation } = props;
 
   const user = post.user;
   const [like, setLike] = useState(false);
   const [userLike, setUserLike] = useState<any[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [url, setUrl] = useState('');
-  const [isModalFriendVisible, setModalFriendVisible] = useState(false);
   const [userComment, setUserComment] = useState<any[]>([]);
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   useEffect(() => {
@@ -181,7 +178,7 @@ const PostCardComponent = ({
               borderRadius: 100,
               marginRight: 12,
             }}
-            source={require('../assets/image/avatar.png')}
+            source={require('../../assets/image/avatar.png')}
           />
         )}
         <Text
@@ -252,7 +249,7 @@ const PostCardComponent = ({
           ) : (
             <Image
               style={styles.imagUser}
-              source={require('../assets/image/avatar.png')}
+              source={require('../../assets/image/avatar.png')}
             />
           )}
 

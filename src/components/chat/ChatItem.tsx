@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { fontFamilies } from '../constants/fontFamily';
+import { fontFamilies } from '../../constants/fontFamily';
 import firestore from '@react-native-firebase/firestore';
-import { formatDate } from '../funtion/formatDate';
-import { User } from '../models/user';
+import { formatDate } from '../../funtion/formatDate';
+import { User } from '../../models/user';
 interface Props {
   userName: string;
   uid: string;
@@ -81,7 +81,7 @@ const ChatItem = (props: Props) => {
       ) : (
         <Image
           style={styles.image}
-          source={require('../assets/image/avatar.png')}
+          source={require('../../assets/image/avatar.png')}
         />
       )}
       <View style={{ flex: 1, marginLeft: 10 }}>

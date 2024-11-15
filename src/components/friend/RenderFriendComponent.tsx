@@ -8,7 +8,7 @@ import {
   View,
   FlatList,
 } from 'react-native';
-import { fontFamilies } from '../constants/fontFamily';
+import { fontFamilies } from '../../constants/fontFamily';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 
@@ -53,7 +53,7 @@ const RenderFriend = (props: Props) => {
               ) : (
                 <Image
                   key={index}
-                  source={require('../assets/image/avatar.png')}
+                  source={require('../../assets/image/avatar.png')}
                   style={styles.image}
                 />
               ),
@@ -94,7 +94,7 @@ const RenderFriend = (props: Props) => {
                       />
                     ) : (
                       <Image
-                        source={require('../assets/image/avatar.png')}
+                        source={require('../../assets/image/avatar.png')}
                         style={styles.modalImage}
                       />
                     )}

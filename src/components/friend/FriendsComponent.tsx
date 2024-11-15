@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth'; // Để lấy thông tin người dùng hiện tại
-import { fontFamilies } from '../constants/fontFamily';
-import SpaceComponent from './SpaceComponent';
+import { fontFamilies } from '../../constants/fontFamily';
+import SpaceComponent from '../SpaceComponent';
 
 interface Props {
   uid: string; // Người dùng mục tiêu (người nhận yêu cầu)
@@ -173,7 +173,7 @@ const FriendComponent = (props: Props) => {
           ) : (
             <Image
               style={{ height: 80, width: 80, borderRadius: 100 }}
-              source={require('../assets/image/avatar.png')}
+              source={require('../../assets/image/avatar.png')}
             />
           )}
         </TouchableOpacity>

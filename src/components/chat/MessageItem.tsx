@@ -8,9 +8,9 @@ import {
   Button,
   TouchableOpacity,
 } from 'react-native';
-import { fontFamilies } from '../constants/fontFamily';
-import { handleDateTime } from '../funtion/handleDateTime';
-import { formatDate } from '../funtion/formatDate';
+import { fontFamilies } from '../../constants/fontFamily';
+import { handleDateTime } from '../../funtion/handleDateTime';
+import { formatDate } from '../../funtion/formatDate';
 import {
   Menu,
   MenuOptions,
@@ -268,7 +268,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ mess, currenUser, url }) => {
                 borderRadius: 100,
                 marginRight: 6,
               }}
-              source={require('../assets/image/avatar.png')}
+              source={require('../../assets/image/avatar.png')}
             />
           )}
           <View

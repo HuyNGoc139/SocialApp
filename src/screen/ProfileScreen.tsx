@@ -16,12 +16,13 @@ import { Information, Logout, PasswordCheck } from 'iconsax-react-native';
 import SpaceComponent from '../components/SpaceComponent';
 import { handleDateTime } from '../funtion/handleDateTime';
 import { User } from '../models/user';
-import PostCardComponent from '../components/PostCardComponent';
-import ChangePasswordModal from '../components/ChangePasswordModal';
-import RenderFriend from '../components/RenderFriendComponent';
+
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { logoutUser } from '../redux/authAction';
+import RenderFriend from '../components/friend/RenderFriendComponent';
+import PostCardComponent from '../components/post/PostCardComponent';
+import ChangePasswordModal from '../components/account/ChangePasswordModal';
 interface FirebaseTimestamp {
   seconds: number;
   nanoseconds: number;

@@ -8,18 +8,18 @@ import {
   StyleSheet,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import RowComponent from './RowComponent';
-import TextComponent from './TextComponent';
-import ButtonComponent from './ButtonComponent';
+import RowComponent from '../RowComponent';
+import TextComponent from '../TextComponent';
+import ButtonComponent from '../ButtonComponent';
 import { TickCircle } from 'iconsax-react-native'; // Import biểu tượng Lock
-import { fontFamilies } from '../constants/fontFamily';
-import { useApp } from '../hook/useAppHook';
+import { fontFamilies } from '../../constants/fontFamily';
+import { useApp } from '../../hook/useAppHook';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FloatingLabelInput } from './FloatingLabelInput';
-import { Colors } from '../styles';
-import { AppText } from './AppText';
+import { FloatingLabelInput } from '../FloatingLabelInput';
+import { Colors } from '../../styles';
+import { AppText } from '../AppText';
 interface ChangePasswordModalProps {
   isVisible: boolean;
   onClose: () => void;

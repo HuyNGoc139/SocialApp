@@ -10,7 +10,7 @@ import {
 import { ArrowSquareLeft, Back, UserAdd } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
 import { globalStyles } from '../styles/globalStyles';
-import Notificomponent from '../components/Notificomponent';
+import Notificomponent from '../components/notifi/Notificomponent';
 import { fontFamilies } from '../constants/fontFamily';
 import SpaceComponent from '../components/SpaceComponent';
 
@@ -81,6 +81,7 @@ const NotificationScreen = ({ navigation, route }: any) => {
 
     return () => unsubscribe();
   }, []);
+
   return (
     <ScrollView style={{ flex: 1, padding: 12, backgroundColor: '#c5d6d6' }}>
       <View

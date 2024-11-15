@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import SpaceComponent from '../components/SpaceComponent';
-import { fontFamilies } from '../constants/fontFamily';
-import RenderFriend from '../components/RenderFriendComponent';
+import SpaceComponent from '../SpaceComponent';
+import { fontFamilies } from '../../constants/fontFamily';
+import RenderFriend from './RenderFriendComponent';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { handleDateTime } from '../funtion/handleDateTime';
+import { handleDateTime } from '../../funtion/handleDateTime';
 import {
   ArrowSquareLeft,
   Messages1,
@@ -20,7 +20,7 @@ import {
   UserRemove,
   UserTick,
 } from 'iconsax-react-native';
-import PostCardComponent from './PostCardComponent';
+import PostCardComponent from '../post/PostCardComponent';
 
 interface FirebaseTimestamp {
   seconds: number;
@@ -335,7 +335,7 @@ const ProfileModalComponent: React.FC<any> = React.memo(
             ) : (
               <Image
                 style={styles.avatar}
-                source={require('../assets/image/avatar.png')}
+                source={require('../../assets/image/avatar.png')}
               />
             )}
             <Text

@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { fontFamilies } from '../constants/fontFamily';
-import { handleDateTime } from '../funtion/handleDateTime';
+import { fontFamilies } from '../../constants/fontFamily';
+import { handleDateTime } from '../../funtion/handleDateTime';
 import { memo, useEffect, useState } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {
@@ -101,19 +101,17 @@ const Notificomponent = (props: any) => {
       <View style={{ flex: 1, flexDirection: 'row' }}>
         {data.UserSender?.url ? (
           <Image
-            style={{ height: 56, width: 56, borderRadius: 12, marginRight: 12 }}
+            style={{ height: 56, width: 56, borderRadius: 1000, marginRight: 12 }}
             source={{ uri: data.UserSender?.url }}
           />
         ) : (
           <Image
-            style={{ height: 56, width: 56, borderRadius: 12, marginRight: 12 }}
-            source={require('../assets/image/avatar.png')}
+            style={{ height: 56, width: 56, borderRadius: 1000, marginRight: 12 }}
+            source={require('../../assets/image/avatar.png')}
           />
         )}
         <View>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {/* <Text style={{fontFamily:fontFamilies.bold,fontSize:16,color:'black'}}>{data.UserSender.username} 
-            </Text> */}
             {data.type === 'like' ? (
               <Text style={styles.text}>
                 <Text style={styles.textBold}>{data.UserSender.username} </Text>

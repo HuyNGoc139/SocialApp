@@ -7,13 +7,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, { useState } from 'react';
-import TitleComponent from './TitleComponent';
-import RowComponent from './RowComponent';
-import TextComponent from './TextComponent';
+import TitleComponent from '../TitleComponent';
+import RowComponent from '../RowComponent';
+import TextComponent from '../TextComponent';
 import { ArrowDown2 } from 'iconsax-react-native';
-import { globalStyles } from '../styles/globalStyles';
-import SpaceComponent from './SpaceComponent';
-import { colors } from '../constants/color';
+import { globalStyles } from '../../styles/globalStyles';
+import SpaceComponent from '../SpaceComponent';
+import { colors } from '../../constants/color';
 import DatePicker from 'react-native-date-picker';
 
 interface Props {

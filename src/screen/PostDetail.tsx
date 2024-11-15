@@ -8,11 +8,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import { ArrowSquareLeft, Send2 } from 'iconsax-react-native';
-import PostCardComponent from '../components/PostCardComponent';
+import PostCardComponent from '../components/post/PostCardComponent';
 import { globalStyles } from '../styles/globalStyles';
 import { fontFamilies } from '../constants/fontFamily';
 import firestore from '@react-native-firebase/firestore';
-import CommentItem from '../components/CommentItem';
+import CommentItem from '../components/post/CommentItem';
 const PostDetail = ({ navigation, route }: any) => {
   const [textRef, setTextRef] = useState('');
   const { post, userCurrent } = route.params;

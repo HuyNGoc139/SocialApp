@@ -24,7 +24,7 @@ import {
 import SpaceComponent from '../components/SpaceComponent';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import MessageList from '../components/MessageList';
+import MessageList from '../components/chat/MessageList';
 import { fontFamilies } from '../constants/fontFamily';
 import { User } from '../models/user';
 import ImagePicker from 'react-native-image-crop-picker';

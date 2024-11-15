@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { fontFamilies } from '../constants/fontFamily';
-import { handleDateTime } from '../funtion/handleDateTime';
-import { formatDate } from '../funtion/formatDate';
-import SpaceComponent from './SpaceComponent';
+import { fontFamilies } from '../../constants/fontFamily';
+import { handleDateTime } from '../../funtion/handleDateTime';
+import { formatDate } from '../../funtion/formatDate';
+import SpaceComponent from '../SpaceComponent';
 import { Trash } from 'iconsax-react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
@@ -61,7 +61,7 @@ const CommentItem = (props: any) => {
       ) : (
         <Image
           style={{ height: 48, width: 48, borderRadius: 12, marginRight: 12 }}
-          source={require('../assets/image/avatar.png')}
+          source={require('../../assets/image/avatar.png')}
         />
       )}
       <View style={{ flex: 1 }}>
@@ -78,7 +78,7 @@ const CommentItem = (props: any) => {
       </View>
       {cmt.userId == userCurrent.uid || postUserId == userCurrent.uid ? (
         <TouchableOpacity onPress={handelDeleteComment}>
-          <Image tintColor={'red'} source={require('../assets/delete.png')} />
+          <Image tintColor={'red'} source={require('../../assets/delete.png')} />
         </TouchableOpacity>
       ) : (
         <></>

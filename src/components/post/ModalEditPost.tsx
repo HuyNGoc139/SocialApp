@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import RowComponent from './RowComponent';
-import ButtonComponent from './ButtonComponent';
-import SpaceComponent from './SpaceComponent';
+import RowComponent from '../RowComponent';
+import ButtonComponent from '../ButtonComponent';
+import SpaceComponent from '../SpaceComponent';
 import { useEffect, useRef, useState } from 'react';
-import TextComponent from './TextComponent';
-import { fontFamilies } from '../constants/fontFamily';
+import TextComponent from '../TextComponent';
+import { fontFamilies } from '../../constants/fontFamily';
 import { Camera, Forbidden2, VideoAdd } from 'iconsax-react-native';
 import Video from 'react-native-video';
 import {
@@ -20,7 +20,7 @@ import {
   RichToolbar,
   actions,
 } from 'react-native-pell-rich-editor';
-import { globalStyles } from '../styles/globalStyles';
+import { globalStyles } from '../../styles/globalStyles';
 import firestore from '@react-native-firebase/firestore';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
@@ -149,7 +149,7 @@ const ModalEditPost = (props: Props) => {
                       borderRadius: 12,
                       marginRight: 12,
                     }}
-                    source={require('../assets/image/avatar.png')}
+                    source={require('../../assets/image/avatar.png')}
                   />
                 )}
               </View>

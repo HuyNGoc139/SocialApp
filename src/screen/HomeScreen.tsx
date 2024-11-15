@@ -13,7 +13,7 @@ import auth from '@react-native-firebase/auth';
 import { AddSquare, Heart } from 'iconsax-react-native';
 import SpaceComponent from '../components/SpaceComponent';
 import { fontFamilies } from '../constants/fontFamily';
-import PostCardComponent from '../components/PostCardComponent';
+import PostCardComponent from '../components/post/PostCardComponent';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 

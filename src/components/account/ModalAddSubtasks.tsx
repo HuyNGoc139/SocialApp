@@ -1,21 +1,25 @@
 import { Image, Switch, TouchableOpacity, View } from 'react-native';
-import RowComponent from './RowComponent';
-import TextComponent from './TextComponent';
-import ButtonComponent from './ButtonComponent';
+
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import TitleComponent from './TitleComponent';
-import InputComponent from './InputComponent';
-import SectionComponent from './SectionComponent';
-import Container from './Container';
+
 import ImagePicker from 'react-native-image-crop-picker';
-import SpaceComponent from './SpaceComponent';
+
 import { Designtools, Sms } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
 import DateTimePickerComponent from './DateTimePickerComponent';
 import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../redux/store';
-import { logoutUser } from '../redux/authAction';
+import { AppDispatch, RootState } from '../../redux/store';
+import { logoutUser } from '../../redux/authAction';
+import Container from '../Container';
+import SectionComponent from '../SectionComponent';
+import RowComponent from '../RowComponent';
+import TitleComponent from '../TitleComponent';
+import InputComponent from '../InputComponent';
+import TextComponent from '../TextComponent';
+import ButtonComponent from '../ButtonComponent';
+import SpaceComponent from '../SpaceComponent';
+const user2 = useSelector((state: RootState) => state.auth.user);
 const initialValue = {
   email: '',
   username: '',
@@ -29,7 +33,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
   useEffect(() => {
     getUser();
   }, [userId]);
-  const user2 = useSelector((state: RootState) => state.auth.user);
+ 
   const [user, setUser] = useState(initialValue);
   const [userName, setUserName] = useState('');
   const [isLoading, setISLoading] = useState(false);
@@ -57,6 +61,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
       updatedAt: Date.now(),
       uid: userId,
       TwoFA: isEnabled,
+      url:urlprofile,
     };
     setISLoading(true);
     try {
@@ -67,7 +72,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           console.log('Updated Profile');
         });
       // navigation.goBack();
-      dispatch(logoutUser()); //khong can
+      dispatch(logoutUser())
       setISLoading(false);
     } catch (error) {
       setISLoading(false);
@@ -115,7 +120,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
     ) : (
       <Image
         style={{ borderRadius: 5000, width: 300, height: 300 }}
-        source={require('../assets/image/avatar.png')}
+        source={require('../../assets/image/avatar.png')}
       />
     );
   }, [urlprofile, user.url]);
