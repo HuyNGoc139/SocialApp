@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import { useCallback, useMemo, useState } from 'react';
-import { Eye, EyeSlash, Lock, Sms } from 'iconsax-react-native';
+import { Lock, Sms } from 'iconsax-react-native';
 import { Image } from 'react-native';
 import SectionComponent from '../components/SectionComponent';
 import { fontFamilies } from '../constants/fontFamily';
@@ -26,16 +26,16 @@ import { AppDispatch, RootState } from '../redux/store';
 import { loginUser } from '../redux/authAction';
 import { FloatingLabelInput } from '../components/FloatingLabelInput';
 import { Colors } from '../styles';
+import { VerifyOTPModal } from '../components/chat/VerifyOtpModal';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errText, setErrorText] = useState<string>('');
-  const [showPass, setShowPass] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const errorMessage = useMemo(() => errText, [errText]);
-
   const handleLogin = useCallback(async () => {
     if (!email || !password) {
       setErrorText('Please enter your email and password!!!');
@@ -46,7 +46,21 @@ const LoginScreen = ({ navigation }: any) => {
     } else {
       setErrorText('');
       try {
-        await dispatch(loginUser({ email, password })).unwrap();
+        const unsubscribe = firestore()
+          .collection('Users')
+          .where('email', '==', email)
+          .onSnapshot(snapshot => {
+            if (!snapshot.empty) {
+              const userData = snapshot.docs[0].data();
+              if (userData?.TwoFA == true) {
+                setIsVisible(true);
+              } else {
+                dispatch(loginUser({ email, password }));
+              }
+            } else {
+              console.log('Không tìm thấy người dùng với email này.');
+            }
+          });
       } catch (error) {
         if (error instanceof Error) {
           setErrorText(error.message || 'Login failed. Please try again.');
@@ -111,6 +125,12 @@ const LoginScreen = ({ navigation }: any) => {
           </Text>
         </RowComponent>
       </SectionComponent>
+      <VerifyOTPModal
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
+        email={email}
+        password={password}
+      />
     </ImageBackground>
   );
 };

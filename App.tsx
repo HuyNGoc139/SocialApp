@@ -41,7 +41,7 @@ const HomeTab = () => (
         backgroundColor: '#ffffff',
         borderTopColor: 'transparent',
         elevation: 0,
-        height: 60,
+        height: 56,
       },
       tabBarIcon: ({ focused }) => {
         let icon;

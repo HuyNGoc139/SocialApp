@@ -1,4 +1,4 @@
-import { Image, Switch, TouchableOpacity, View } from 'react-native';
+import { Image, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
 
@@ -208,7 +208,9 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
             alignItems: 'center',
           }}
         >
-          <TitleComponent text="Update information" size={32} />
+          <Text style={{ fontSize: 32, color: 'white', fontWeight: '800' }}>
+            Update Information
+          </Text>
         </RowComponent>
 
         <TouchableOpacity

@@ -18,9 +18,9 @@ interface Props {
   isVisible: boolean;
   onClose: () => void;
   group: any;
-  onSave:() => void;
+  onSave: () => void;
 }
-const ModalChangeName = ({ isVisible, onClose, group,onSave }: Props) => {
+const ModalChangeName = ({ isVisible, onClose, group, onSave }: Props) => {
   const [groupName, setGroupName] = useState('');
   const [groupImage, setGroupImage] = useState(group.url);
   const handleSelectImage = async () => {

@@ -179,10 +179,13 @@ const RoomGroup = ({ navigation, route }: any) => {
         <View
           style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}
         >
-          <TouchableOpacity onPress={() => navigation.navigate('GroupDetails',{...group})}>
-            <Image 
-            source={require('../../assets/inform.png')} 
-            style={{width:24,height:24}}/>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('GroupDetails', { ...group })}
+          >
+            <Image
+              source={require('../../assets/inform.png')}
+              style={{ width: 24, height: 24 }}
+            />
           </TouchableOpacity>
         </View>
       </View>
