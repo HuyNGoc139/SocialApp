@@ -18,8 +18,9 @@ interface Props {
   isVisible: boolean;
   onClose: () => void;
   group: any;
+  onSave:() => void;
 }
-const ModalChangeName = ({ isVisible, onClose, group }: Props) => {
+const ModalChangeName = ({ isVisible, onClose, group,onSave }: Props) => {
   const [groupName, setGroupName] = useState('');
   const [groupImage, setGroupImage] = useState(group.url);
   const handleSelectImage = async () => {
@@ -49,7 +50,6 @@ const ModalChangeName = ({ isVisible, onClose, group }: Props) => {
       url: groupImage,
       groupName: groupName,
     });
-
     onClose();
   };
   return (
@@ -106,7 +106,7 @@ const ModalChangeName = ({ isVisible, onClose, group }: Props) => {
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity
-            onPress={onClose}
+            onPress={onSave}
             style={[styles.button, { backgroundColor: 'rgba(87, 87, 89,0.5)' }]}
           >
             <Text style={styles.buttonText}>Cancel</Text>

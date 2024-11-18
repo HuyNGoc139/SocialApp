@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { loginUser, logoutUser, registerUser,updateUser } from '../authAction';
+import { loginUser, logoutUser, registerUser, updateUser } from '../authAction';
 import { Timestamp } from '@react-native-firebase/firestore';
 interface User {
   email: string;
@@ -72,7 +72,7 @@ const authSlice = createSlice({
         state.user = { ...state.user, ...action.payload }; // Cập nhật dữ liệu người dùng trong Redux store
         state.loading = false;
       })
-      // Xử lý khi có lỗi trong quá trình cập nhật 
+      // Xử lý khi có lỗi trong quá trình cập nhật
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string; // Cập nhật thông báo lỗi

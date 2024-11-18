@@ -101,12 +101,22 @@ const Notificomponent = (props: any) => {
       <View style={{ flex: 1, flexDirection: 'row' }}>
         {data.UserSender?.url ? (
           <Image
-            style={{ height: 56, width: 56, borderRadius: 1000, marginRight: 12 }}
+            style={{
+              height: 56,
+              width: 56,
+              borderRadius: 1000,
+              marginRight: 12,
+            }}
             source={{ uri: data.UserSender?.url }}
           />
         ) : (
           <Image
-            style={{ height: 56, width: 56, borderRadius: 1000, marginRight: 12 }}
+            style={{
+              height: 56,
+              width: 56,
+              borderRadius: 1000,
+              marginRight: 12,
+            }}
             source={require('../../assets/image/avatar.png')}
           />
         )}

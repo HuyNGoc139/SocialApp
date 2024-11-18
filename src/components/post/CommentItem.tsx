@@ -78,7 +78,10 @@ const CommentItem = (props: any) => {
       </View>
       {cmt.userId == userCurrent.uid || postUserId == userCurrent.uid ? (
         <TouchableOpacity onPress={handelDeleteComment}>
-          <Image tintColor={'red'} source={require('../../assets/delete.png')} />
+          <Image
+            tintColor={'red'}
+            source={require('../../assets/delete.png')}
+          />
         </TouchableOpacity>
       ) : (
         <></>

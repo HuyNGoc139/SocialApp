@@ -66,22 +66,32 @@ export const registerUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   'auth/update',
-  async ({ userId, user, isEnabled, urlprofile }: { userId: string; user: User; isEnabled: boolean, urlprofile:string }, { rejectWithValue }) => {
+  async (
+    {
+      userId,
+      user,
+      isEnabled,
+      urlprofile,
+    }: { userId: string; user: User; isEnabled: boolean; urlprofile: string },
+    { rejectWithValue },
+  ) => {
     try {
       const data = {
         ...user,
         updatedAt: Date.now(),
         uid: userId,
         TwoFA: isEnabled,
-        url:urlprofile,
+        url: urlprofile,
       };
+
       await firestore()
         .doc(`Users/${userId}`)
         .update(data)
         .then(() => {
           console.log('Updated Profile');
         });
-        return data;
+
+      return data;
     } catch (error) {
       return rejectWithValue('Update failed!');
     }
