@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { TextInput } from 'react-native';
-import { View, Text, Image, TouchableOpacity } from 'react-native-ui-lib';
+import { Image, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native-ui-lib';
 import {
   ArrowSquareLeft,
   Call,
@@ -179,12 +179,10 @@ const RoomGroup = ({ navigation, route }: any) => {
         <View
           style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}
         >
-          <Call size="28" color="black" />
-          <SpaceComponent width={20} />
-          <Video size="28" color="black" />
-          <SpaceComponent width={20} />
-          <TouchableOpacity onPress={() => setVisible(true)}>
-            <Edit2 size="28" color="black" />
+          <TouchableOpacity onPress={() => navigation.navigate('GroupDetails',{...group})}>
+            <Image 
+            source={require('../../assets/inform.png')} 
+            style={{width:24,height:24}}/>
           </TouchableOpacity>
         </View>
       </View>
@@ -234,11 +232,6 @@ const RoomGroup = ({ navigation, route }: any) => {
           </TouchableOpacity>
         </View>
       </View>
-      <ModalChangeName
-        isVisible={visible}
-        onClose={() => setVisible(false)}
-        group={group}
-      />
     </View>
   );
 };

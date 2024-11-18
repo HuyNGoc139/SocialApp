@@ -69,8 +69,8 @@ const HomeScreen = ({ navigation }: any) => {
               const postData = doc.data();
 
               // Truy vấn thông tin người dùng dựa trên userId
-              if(postData.userId==user?.uid){
-                const userData=user
+              if (postData.userId == user?.uid) {
+                const userData = user;
                 return {
                   id: doc.id,
                   url: postData.url,
@@ -80,23 +80,22 @@ const HomeScreen = ({ navigation }: any) => {
                   type: postData.type,
                   user: userData || null,
                 };
-              }
-              else{
+              } else {
                 const userSnapshot = await firestore()
-                .collection('Users')
-                .doc(postData.userId)
-                .get();
+                  .collection('Users')
+                  .doc(postData.userId)
+                  .get();
 
-              const userData = userSnapshot.data();
-              return {
-                id: doc.id,
-                url: postData.url,
-                createAt: postData.createAt.toDate(),
-                body: postData.body,
-                userId: postData.userId,
-                type: postData.type,
-                user: userData || null,
-              };
+                const userData = userSnapshot.data();
+                return {
+                  id: doc.id,
+                  url: postData.url,
+                  createAt: postData.createAt.toDate(),
+                  body: postData.body,
+                  userId: postData.userId,
+                  type: postData.type,
+                  user: userData || null,
+                };
               }
 
               // Kết hợp dữ liệu bài đăng và thông tin người dùng

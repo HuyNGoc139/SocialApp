@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
-    Dimensions,
+  Dimensions,
   Image,
   Pressable,
   StyleProp,
@@ -44,14 +44,11 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
     () =>
       new Map([
         ['error.wrong-authentication-code', 'auth.otp code wrong'],
-        ['error.otp-code-is-expired','auth.otp code expired'],
+        ['error.otp-code-is-expired', 'auth.otp code expired'],
         ['internal server error', 'auth.error occurred'],
       ]),
     [],
   );
-
-
-
 
   const modalScaleStyle: StyleProp<ViewStyle> = {
     width: widthScale,
@@ -68,7 +65,10 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
     >
       <View style={[styles.container, modalScaleStyle]}>
         <Pressable style={styles.closeIcon} onPress={closeModal}>
-          <Image source={require('../../assets/close.png')} style={{width:24,height:24}}/>
+          <Image
+            source={require('../../assets/close.png')}
+            style={{ width: 24, height: 24 }}
+          />
         </Pressable>
         <AppText fontFamily="bold" style={styles.verifyText}>
           'verify two step'
@@ -105,7 +105,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
         <View style={styles.otpPinWrapper}>
           <OtpInput
             numberOfDigits={6}
-            onTextChange={(text) => {
+            onTextChange={text => {
               if (verifyError) {
                 setVerifyError('');
               }
@@ -121,8 +121,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
               pinCodeTextStyle: styles.pinCodeTextStyle,
               pinCodeContainerStyle: styles.pinCodeContainerStyle,
             }}
-            onFilled={(text) => {
-            }}
+            onFilled={text => {}}
           />
         </View>
 
@@ -149,9 +148,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
           {isTimerActive ? (
             <>
               <AppText style={styles.verifyDescription}>
-                {hasSentCode
-                  ? 'auth.has sent code'
-                  : 'auth.otp code failed'}
+                {hasSentCode ? 'auth.has sent code' : 'auth.otp code failed'}
               </AppText>
             </>
           ) : (
@@ -160,7 +157,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
               <AppText
                 style={[styles.verifyDescription, { color: Colors.primary }]}
                 onPress={() => {
-                 //code
+                  //code
                   setIsTimerActive(true);
                 }}
               >
@@ -256,6 +253,5 @@ const styles = StyleSheet.create({
   },
 });
 function useAppDispatch() {
-    throw new Error('Function not implemented.');
+  throw new Error('Function not implemented.');
 }
-

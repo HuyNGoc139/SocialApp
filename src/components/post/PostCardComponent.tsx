@@ -43,7 +43,7 @@ const PostCardComponent = ({
   const [userComment, setUserComment] = useState<any[]>([]);
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   const user2 = useSelector((state: RootState) => state.auth.user);
-  
+
   useEffect(() => {
     const unsubscribeLikes = subscribeLikes();
     const unsubscribeComments = subscribeComments();

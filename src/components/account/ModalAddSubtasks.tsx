@@ -21,30 +21,38 @@ import ButtonComponent from '../ButtonComponent';
 import SpaceComponent from '../SpaceComponent';
 import { User } from '../../models/user';
 import { handleDateTime } from '../../funtion/handleDateTime';
+import { useApp } from '../../hook/useAppHook';
 
 const initialValue = {
   email: '',
   username: '',
   DateBitrhDay: new Date(),
   url: '',
-  uid:'',
+  uid: '',
 };
 
 const ModalAddSubtasks = ({ navigation, route }: any) => {
   const { userId } = route.params;
   const dispatch = useDispatch<AppDispatch>();
   const user2 = useSelector((state: RootState) => state.auth.user);
-  
   // useEffect(() => {
   //   getUser();
   // }, [userId]);
- 
-  const [user, setUser] = useState<User|null>(user2);
+
+  const [user, setUser] = useState<User | null>(user2);
   const [userName, setUserName] = useState<any>(user2?.username);
   const [isLoading, setISLoading] = useState(false);
   const [urlprofile, seturlprofile] = useState<any>(user2?.url);
   const [isEnabled, setIsEnabled] = useState(user2?.TwoFA ? true : false);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
+  const [prevUser, setPrevUser] = useState<User | null>(user2);
+  const [prevUrlProfile, setPrevUrlProfile] = useState<string | undefined>(
+    user2?.url,
+  );
+  const [prevIsEnabled, setPrevIsEnabled] = useState<boolean>(
+    user2?.TwoFA ? true : false,
+  );
+  const { toastMessage } = useApp();
   // const getUser = useCallback(() => {
   //   firestore()
   //     .doc(`Users/${userId}`)
@@ -60,32 +68,85 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
   //       }
   //     });
   // }, [userId]);
-  const handleSaveDataToDatabase = useCallback(async () => {
-    // const data = {
-    //   ...user,
-    //   updatedAt: Date.now(),
-    //   uid: userId,
-    //   TwoFA: isEnabled,
-    //   url:urlprofile,
-    // };
-    setISLoading(true);
-    try {
-      // await firestore()
-      //   .doc(`Users/${userId}`)
-      //   .update(data)
-      //   .then(() => {
-      //     console.log('Updated Profile');
-      //   });
-      dispatch(updateUser({userId, user:user??initialValue, isEnabled,urlprofile}
-      ))
-      navigation.goBack();
-      // dispatch(logoutUser())
-      setISLoading(false);
-    } catch (error) {
-      setISLoading(false);
-    }
-  }, [user, urlprofile, userId, isEnabled]);
+  // const handleSaveDataToDatabase = useCallback(async () => {
+  //   // const data = {
+  //   //   ...user,
+  //   //   updatedAt: Date.now(),
+  //   //   uid: userId,
+  //   //   TwoFA: isEnabled,
+  //   //   url:urlprofile,
+  //   // };
+  //   setISLoading(true);
+  //   try {
+  //     // await firestore()
+  //     //   .doc(`Users/${userId}`)
+  //     //   .update(data)
+  //     //   .then(() => {
+  //     //     console.log('Updated Profile');
+  //     //   });
+  //     dispatch(updateUser({userId, user:user??initialValue, isEnabled,urlprofile}
+  //     ))
 
+  //     navigation.goBack();
+  //     // dispatch(logoutUser())
+  //     setISLoading(false);
+  //   } catch (error) {
+  //     setISLoading(false);
+  //   }
+  // }, [user, urlprofile, userId, isEnabled]);
+
+  const handleSaveDataToDatabase = useCallback(async () => {
+    // Kiểm tra sự thay đổi trước khi dispatch
+    if (
+      JSON.stringify(user) !== JSON.stringify(prevUser) ||
+      urlprofile !== prevUrlProfile ||
+      isEnabled !== prevIsEnabled
+    ) {
+      setISLoading(true);
+      try {
+        dispatch(
+          updateUser({
+            userId,
+            user: user ?? initialValue,
+            isEnabled,
+            urlprofile,
+          }),
+        );
+
+        // Cập nhật trạng thái trước sau khi save
+        setPrevUser(user);
+        setPrevUrlProfile(urlprofile);
+        setPrevIsEnabled(isEnabled);
+        toastMessage({
+          type: 'success',
+          title: 'Thông báo',
+          description: 'Cập nhật thông tin thành công',
+        });
+        navigation.goBack();
+      } catch (error) {
+        console.log('Error saving data:', error);
+      } finally {
+        setISLoading(false);
+      }
+    } else {
+      toastMessage({
+        type: 'warning',
+        title: 'Thông báo',
+        description: 'Thông tin chưa có gì thay đổi.',
+      });
+      // navigation.goBack()
+    }
+  }, [
+    user,
+    urlprofile,
+    isEnabled,
+    prevUser,
+    prevUrlProfile,
+    prevIsEnabled,
+    dispatch,
+    userId,
+    navigation,
+  ]);
   const handleChangeValue = useCallback(
     (id: string, value: string | Date | string[]) => {
       const item: any = { ...user };
@@ -176,7 +237,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           title="Email"
           onChange={val => {}}
           placeholder="Email"
-          value={user2?.email??''}
+          value={user2?.email ?? ''}
         />
         <InputComponent
           prefix={<Designtools size="32" color="#FAFAFA" />}
