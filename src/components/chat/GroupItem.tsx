@@ -19,7 +19,6 @@ const GroupItem = (props: Props) => {
   const { userName, groupid, onPress, currentuser, url } = props; //uid = user select
   const [lastMessage, setLastmessage] = useState<any>(undefined);
   const user = useSelector((state: RootState) => state.auth.user);
-
   useEffect(() => {
     const messagesRef = firestore()
       .collection('Group')
@@ -75,12 +74,15 @@ const GroupItem = (props: Props) => {
       )}
       <View style={{ flex: 1, marginLeft: 10 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text numberOfLines={2} style={[styles.textBold, { width: '85%' }]}>
+          <Text numberOfLines={1} style={[styles.textBold, { width: '85%' }]}>
             {userName}
           </Text>
           <Text style={styles.text}>{renderTime()}</Text>
         </View>
-        <Text numberOfLines={1} style={styles.text}>
+        <Text
+          numberOfLines={1}
+          style={[styles.text, { marginTop: 4, fontSize: 16 }]}
+        >
           {renderLastmessage()}
         </Text>
       </View>
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'center',
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     marginLeft: 10,
     marginRight: 10,
     padding: 8,

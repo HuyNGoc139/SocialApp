@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'center',
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     marginLeft: 10,
     marginRight: 10,
     padding: 8,

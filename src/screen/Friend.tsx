@@ -20,7 +20,6 @@ const FriendScreen = ({ navigation }: any) => {
   const [userSelect, setUserSelect] = useState<SelectModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [friendRequests, setFriendRequests] = useState<SelectModel[]>([]);
-  const [friends, setFriends] = useState<SelectModel[]>([]);
   const [isLoadingfr, setIsLoadingfr] = useState(false);
 
   useEffect(() => {

@@ -290,7 +290,7 @@ const ProfileScreen = ({ navigation }: any) => {
               <RowComponent styles={{ width: '90%' }}>
                 <Text style={[styles.text, { flex: 1 }]}>LogOut</Text>
                 <TouchableOpacity onPress={handleLogout}>
-                  <Logout size="28" color="black" />
+                  <Logout size="28" color="red" />
                 </TouchableOpacity>
               </RowComponent>
               <SpaceComponent height={10}></SpaceComponent>

@@ -173,7 +173,7 @@ export default PostDetail;
 const styles = StyleSheet.create({
   input: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: 50,

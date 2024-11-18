@@ -5,6 +5,8 @@ import {
   Pressable,
   StyleProp,
   StyleSheet,
+  Text,
+  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
@@ -13,26 +15,29 @@ import { OtpInput } from 'react-native-otp-entry';
 import { MODAL_HEIGHT, MODAL_WIDTH, scaleSize } from '../../funtion/ultils';
 import { AppText } from '../AppText';
 import { Colors } from '../../styles';
+import { AppButton } from '../AppButton';
+import { loginUser } from '../../redux/authAction';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../redux/store';
 
 const { width, height } = Dimensions.get('window');
 
 export type TVerifyOTPModalProps = {
   isVisible: boolean;
   onClose: () => void;
-  userName: string;
-  userEmail: string;
+  email: string;
+  password: string;
 };
 
 export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
-  const { isVisible, onClose, userName, userEmail } = props;
-  const dispatch = useAppDispatch();
+  const { isVisible, onClose, email, password } = props;
   const [otpCode, setOtpCode] = useState('');
   const [timer, setTimer] = useState(120);
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [verifyError, setVerifyError] = useState<string>('');
   const [hasSentCode, setHasSentCode] = useState(true);
   const { widthScale, heightScale } = scaleSize(MODAL_WIDTH, MODAL_HEIGHT);
-
+  const dispatch = useDispatch<AppDispatch>();
   const closeModal = () => {
     onClose();
     setVerifyError('');
@@ -64,21 +69,17 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
       onModalHide={closeModal}
     >
       <View style={[styles.container, modalScaleStyle]}>
-        <Pressable style={styles.closeIcon} onPress={closeModal}>
+        <TouchableOpacity style={styles.closeIcon} onPress={closeModal}>
           <Image
             source={require('../../assets/close.png')}
             style={{ width: 24, height: 24 }}
           />
-        </Pressable>
+        </TouchableOpacity>
         <AppText fontFamily="bold" style={styles.verifyText}>
-          'verify two step'
+          Xác thực hay yếu tố
         </AppText>
 
-        {/* <SvgIcon
-          name="2step-verify"
-          width={width * 0.33}
-          height={width * 0.33}
-        /> */}
+        <Image source={require('../../assets/otp.png')} />
 
         <AppText
           style={[
@@ -88,7 +89,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
             },
           ]}
         >
-          'verify two step description'
+          Để đăng nhập, vui lòng điền mã xác nhận được gửi tới số điện thoại:
         </AppText>
 
         <AppText
@@ -99,7 +100,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
             },
           ]}
         >
-          abc
+          {email}
         </AppText>
 
         <View style={styles.otpPinWrapper}>
@@ -131,29 +132,42 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
           </AppText>
         )}
 
-        {/* <AppButton
-          additionalStyles={styles.button}
-          contentStyle={styles.contentButton}
+        <TouchableOpacity
+          style={[
+            styles.button,
+            { backgroundColor: otpCode.length !== 6 ? 'gray' : 'green' },
+          ]}
           disabled={otpCode.length !== 6}
           onPress={() => {
-            verifyOtpCodeMutation.mutate({
-              userName,
-              otpCode,
-            });
+            if (otpCode == '123456') {
+              dispatch(loginUser({ email, password }));
+            }
           }}
-          label={t('verify')}
-        /> */}
+        >
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 16,
+              fontWeight: '700',
+              textAlign: 'center',
+            }}
+          >
+            Verify
+          </Text>
+        </TouchableOpacity>
 
         <View style={{ marginTop: 15, marginBottom: 50 }}>
           {isTimerActive ? (
             <>
               <AppText style={styles.verifyDescription}>
-                {hasSentCode ? 'auth.has sent code' : 'auth.otp code failed'}
+                {hasSentCode
+                  ? 'Đã gửi mã xác thực. Vui lòng kiểm tra tin nhắn!'
+                  : 'auth.otp code failed'}
               </AppText>
             </>
           ) : (
             <AppText style={styles.verifyDescription}>
-              'not receive code'{' '}
+              Chưa nhận được mã?{' '}
               <AppText
                 style={[styles.verifyDescription, { color: Colors.primary }]}
                 onPress={() => {
@@ -161,7 +175,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
                   setIsTimerActive(true);
                 }}
               >
-                {'resend code'}
+                Gửi lại
               </AppText>
             </AppText>
           )}
@@ -229,6 +243,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 30,
     borderRadius: 20,
+    height: 36,
+    justifyContent: 'center',
   },
 
   contentButton: {
@@ -252,6 +268,3 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.black,
   },
 });
-function useAppDispatch() {
-  throw new Error('Function not implemented.');
-}

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import SpaceComponent from '../SpaceComponent';
 import { fontFamilies } from '../../constants/fontFamily';
@@ -38,6 +39,7 @@ const ProfileModalComponent: React.FC<any> = React.memo(
     const [isfriends, setIsFriends] = useState<boolean>(true);
     const [isFriendRequested, setIsFriendRequested] = useState<boolean>();
     const [RequestedtoFriend, setRequestedtoFriend] = useState<boolean>();
+    const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
       getUserfr();
     }, [userId]);
@@ -83,6 +85,7 @@ const ProfileModalComponent: React.FC<any> = React.memo(
     };
 
     const getAllPost = () => {
+      setIsLoading(true);
       const unsubscribe = firestore()
         .collection('Posts')
         .orderBy('createAt', 'desc')
@@ -112,6 +115,7 @@ const ProfileModalComponent: React.FC<any> = React.memo(
             }),
           );
           setPostsList(postsWithUsers.filter(post => post !== null));
+          setIsLoading(false);
         });
       return unsubscribe;
     };
@@ -433,7 +437,9 @@ const ProfileModalComponent: React.FC<any> = React.memo(
             </View>
           </View>
 
-          {postsList.length ? (
+          {isLoading ? (
+            <ActivityIndicator />
+          ) : postsList.length ? (
             postsList.map(item => (
               <View key={item.id}>
                 <PostCardComponent

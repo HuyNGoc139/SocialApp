@@ -118,7 +118,7 @@ const HomeScreen = ({ navigation }: any) => {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.header}>
-        <Text style={styles.textHeader}>ScocialAPP</Text>
+        <Text style={styles.textHeader}>Scocial APP</Text>
         <View
           style={{
             flexDirection: 'row',
@@ -137,14 +137,14 @@ const HomeScreen = ({ navigation }: any) => {
                 </View>
               </>
             ) : (
-              <Heart size="30" color="black" />
+              <Heart size="30" color="white" />
             )}
           </TouchableOpacity>
           <SpaceComponent width={10} />
           <TouchableOpacity
             onPress={() => navigation.navigate('CreatePostScreen', { user })}
           >
-            <AddSquare size="30" color="black" />
+            <AddSquare size="30" color="white" />
           </TouchableOpacity>
           <SpaceComponent width={10} />
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   textHeader: {
     flex: 1,
     marginLeft: 10,
-    color: 'black',
+    color: 'white',
     fontSize: 24,
     fontFamily: fontFamilies.regular,
   },
