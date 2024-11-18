@@ -23,6 +23,7 @@ import { logoutUser } from '../redux/authAction';
 import RenderFriend from '../components/friend/RenderFriendComponent';
 import PostCardComponent from '../components/post/PostCardComponent';
 import ChangePasswordModal from '../components/account/ChangePasswordModal';
+import { useApp } from '../hook/useAppHook';
 interface FirebaseTimestamp {
   seconds: number;
   nanoseconds: number;
@@ -35,24 +36,20 @@ const ProfileScreen = ({ navigation }: any) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [friends, setFriends] = useState<any[]>([]);
   const user2 = useSelector((state: RootState) => state.auth.user);
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      await getUser();
-    };
 
-    fetchData().then(() => {
-      if (user?.uid) {
-        getUserFriends();
-        getAllPost();
-      }
-    });
+  useEffect(() => {
+    getUser();
+    getUserFriends();
+    const unsubscribePosts = getAllPost();
+    return () => {
+      unsubscribePosts;
+    };
   }, [user2]);
   const getUserFriends = () => {
     try {
       firestore()
         .collection('Users')
-        .doc(user?.uid)
+        .doc(user2?.uid)
         .get()
         .then(async userDoc => {
           if (userDoc.exists) {
@@ -86,7 +83,7 @@ const ProfileScreen = ({ navigation }: any) => {
         });
       firestore()
         .collection('Users')
-        .doc(user?.uid)
+        .doc(user2?.uid)
         .onSnapshot(
           async userDoc => {
             if (userDoc.exists) {
@@ -164,6 +161,9 @@ const ProfileScreen = ({ navigation }: any) => {
 
     return unsubscribe; // Trả về hàm hủy đăng ký khi component bị unmount
   };
+  const handleLogout = () => {
+    dispatch(logoutUser());
+  };
   const getUser = async () => {
     // const userCurrent = auth().currentUser;
     await firestore()
@@ -178,10 +178,6 @@ const ProfileScreen = ({ navigation }: any) => {
         }
       });
   };
-  const handleLogout = () => {
-    dispatch(logoutUser());
-  };
-
   const getFormattedDate = (timestamp: FirebaseTimestamp) => {
     if (!timestamp) return '';
     const date = new Date(timestamp.seconds * 1000);
@@ -202,10 +198,10 @@ const ProfileScreen = ({ navigation }: any) => {
               marginTop: 10,
             }}
           >
-            {user?.url ? (
+            {user2?.url ? (
               <Image
                 style={{ borderRadius: 5000, width: 300, height: 300 }}
-                source={{ uri: user.url }}
+                source={{ uri: user2.url }}
               />
             ) : (
               <Image
@@ -220,7 +216,7 @@ const ProfileScreen = ({ navigation }: any) => {
                 color: 'black',
               }}
             >
-              {user?.username}
+              {user2?.username}
             </Text>
             <View>
               {friends.length > 0 ? (
@@ -250,15 +246,15 @@ const ProfileScreen = ({ navigation }: any) => {
                     {
                       textAlign: 'right',
                       flex: 1,
-                      color: user?.TwoFA ? 'green' : 'black',
+                      color: user2?.TwoFA ? 'green' : 'black',
                     },
                   ]}
                 >
-                  {user?.TwoFA ? 'ACTIVE' : 'INACTIVE'}
+                  {user2?.TwoFA ? 'ACTIVE' : 'INACTIVE'}
                 </Text>
               </View>
               <SpaceComponent height={10}></SpaceComponent>
-              <Text style={styles.text}>Email: {user?.email}</Text>
+              <Text style={styles.text}>Email: {user2?.email}</Text>
               <SpaceComponent height={10}></SpaceComponent>
               <Text style={styles.text}>
                 Date Of Birth: {getFormattedDate(user?.DateBitrhDay)}
@@ -277,7 +273,7 @@ const ProfileScreen = ({ navigation }: any) => {
                 </Text>
                 <TouchableOpacity
                   onPress={() =>
-                    navigation.navigate('Update', { userId: user?.uid })
+                    navigation.navigate('Update', { userId: user2?.uid })
                   }
                 >
                   <Information size="28" color="black" />
@@ -307,7 +303,7 @@ const ProfileScreen = ({ navigation }: any) => {
               <View key={item.id}>
                 <PostCardComponent
                   post={item}
-                  userCurrent={user}
+                  userCurrent={user2}
                   isEdit={true}
                   navigation={navigation}
                 />
