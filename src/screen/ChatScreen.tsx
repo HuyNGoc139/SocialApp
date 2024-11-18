@@ -37,8 +37,8 @@ const ChatScreen = ({ navigation }: any) => {
   const [user, setUser] = useState<User>();
   const [isModalVisible, setModalVisible] = useState(false);
   const [groups, setGroups] = useState<any[]>([]);
-  const [isLoadingGr,setIsLoadingGr] =useState<boolean>(false)
-  const [isLoadingUser,setIsLoadingUser] =useState<boolean>(false)
+  const [isLoadingGr, setIsLoadingGr] = useState<boolean>(false);
+  const [isLoadingUser, setIsLoadingUser] = useState<boolean>(false);
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(user => {
       if (user) {
@@ -67,7 +67,7 @@ const ChatScreen = ({ navigation }: any) => {
 
   const handleGetAllUsers = async (currentUserId: string) => {
     try {
-      setIsLoadingUser(true)
+      setIsLoadingUser(true);
       const snapshot = await firestore().collection('Users').get();
       if (snapshot.empty) {
         console.log('User not found');
@@ -83,7 +83,7 @@ const ChatScreen = ({ navigation }: any) => {
           }
         });
         setUserSelect(items);
-        setIsLoadingUser(false)
+        setIsLoadingUser(false);
       }
     } catch (err) {
       console.log(err);
@@ -91,7 +91,7 @@ const ChatScreen = ({ navigation }: any) => {
   };
 
   const listenToGroups = useCallback((currentUserId: string) => {
-    setIsLoadingGr(true)
+    setIsLoadingGr(true);
     const unsubscribe = firestore()
       .collection('Group')
       .orderBy('createdAt', 'desc')
@@ -110,7 +110,7 @@ const ChatScreen = ({ navigation }: any) => {
         );
 
         setGroups(filteredGroups);
-        setIsLoadingGr(false)
+        setIsLoadingGr(false);
       });
 
     return () => unsubscribe();
@@ -179,56 +179,56 @@ const ChatScreen = ({ navigation }: any) => {
           />
         </TouchableOpacity>
       </View>
-      {
-        isLoadingGr?<ActivityIndicator/>:groups.length > 0 ? (
-          <FlatList
-            data={groups}
-            style={{ height: 286 }}
-            keyExtractor={item => item.id}
-            renderItem={({ item }) => (
-              <GroupItem
-                onPress={() => navigation.navigate('RoomGroup', { ...item })}
-                key={item.id}
-                currentuser={user}
-                userName={item.groupName}
-                groupid={item.id}
-                url={item.url}
-              />
-            )}
-          />
-        ) : (
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Text style={{ textAlign: 'center', color: 'coral' }}>
-              Do you want to create Group?
-            </Text>
-          </TouchableOpacity>
-        )
-      }
+      {isLoadingGr ? (
+        <ActivityIndicator />
+      ) : groups.length > 0 ? (
+        <FlatList
+          data={groups}
+          style={{ height: 286 }}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <GroupItem
+              onPress={() => navigation.navigate('RoomGroup', { ...item })}
+              key={item.id}
+              currentuser={user}
+              userName={item.groupName}
+              groupid={item.id}
+              url={item.url}
+            />
+          )}
+        />
+      ) : (
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Text style={{ textAlign: 'center', color: 'coral' }}>
+            Do you want to create Group?
+          </Text>
+        </TouchableOpacity>
+      )}
       <View style={{ flexDirection: 'row', marginLeft: 20 }}>
         <Text style={{ fontSize: 24, color: 'black' }}>User</Text>
       </View>
 
-      {
-        isLoadingUser?<ActivityIndicator/>:userSelect.length > 0 ? (
-          <FlatList
-            data={userSelect.filter(ele =>
-              ele.username.toLowerCase().includes(searchKey.toLowerCase()),
-            )}
-            keyExtractor={item => item.uid}
-            renderItem={({ item }) => (
-              <ChatItem
-                onPress={() => navigation.navigate('RoomScreen', { ...item })}
-                key={item.uid}
-                currentuser={currentUser}
-                userName={item.username}
-                uid={item.uid}
-              />
-            )}
-          />
-        ) : (
-          <Text>No Messages</Text>
-        )
-      }
+      {isLoadingUser ? (
+        <ActivityIndicator />
+      ) : userSelect.length > 0 ? (
+        <FlatList
+          data={userSelect.filter(ele =>
+            ele.username.toLowerCase().includes(searchKey.toLowerCase()),
+          )}
+          keyExtractor={item => item.uid}
+          renderItem={({ item }) => (
+            <ChatItem
+              onPress={() => navigation.navigate('RoomScreen', { ...item })}
+              key={item.uid}
+              currentuser={currentUser}
+              userName={item.username}
+              uid={item.uid}
+            />
+          )}
+        />
+      ) : (
+        <Text>No Messages</Text>
+      )}
       <ModalAddGroup
         visible={isModalVisible}
         onClose={() => setModalVisible(false)}

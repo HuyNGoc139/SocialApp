@@ -11,7 +11,6 @@ import HomeScreen from './src/screen/HomeScreen';
 import ChatScreen from './src/screen/ChatScreen';
 import { Home, Profile2User, Menu, Message } from 'iconsax-react-native';
 import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore'; // Nhập firestore
 import RoomScreen from './src/screen/RoomScreen';
 import CreatePostScreen from './src/screen/CreatePostScreen';
 import PostDetail from './src/screen/PostDetail';
@@ -25,6 +24,11 @@ import { PaperProvider } from 'react-native-paper';
 import RNBootSplash from 'react-native-bootsplash';
 import RoomGroup from './src/screen/ChatGroup/RoomGroup';
 import { updateUserStatus } from './src/funtion/updateUserStatus';
+import { createNotifications } from 'react-native-notificated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import GroupDetails from './src/screen/ChatGroup/GroupDetails';
+const { NotificationsProvider, useNotifications, ...events } =
+  createNotifications();
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -147,45 +151,65 @@ const App: React.FC = () => {
     <PaperProvider>
       <Provider store={store}>
         <MenuProvider>
-          <SafeAreaView style={{ flex: 1 }}>
-            <NavigationContainer>
-              <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {isLogin ? (
-                  <>
-                    <Stack.Screen name="HomeTab" component={HomeTab} />
-                    <Stack.Screen name="RoomScreen" component={RoomScreen} />
-                    <Stack.Screen name="RoomGroup" component={RoomGroup} />
-                    <Stack.Screen
-                      name="CreatePostScreen"
-                      component={CreatePostScreen}
-                    />
-                    <Stack.Screen name="PostDetail" component={PostDetail} />
-                    <Stack.Screen
-                      name="NotificationScreen"
-                      component={NotificationScreen}
-                    />
-                    <Stack.Screen name="Update" component={ModalAddSubtasks} />
-                    <Stack.Screen
-                      name="ProfileModalComponent"
-                      component={ProfileModalComponent}
-                      options={{
-                        presentation: 'modal', // Thiết lập trình bày như modal
-                        headerShown: false, // Ẩn header nếu cần
-                      }}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Stack.Screen name="LoginScreen" component={LoginScreen} />
-                    <Stack.Screen
-                      name="RegisterScreen"
-                      component={RegisterScreen}
-                    />
-                  </>
-                )}
-              </Stack.Navigator>
-            </NavigationContainer>
-          </SafeAreaView>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <NotificationsProvider>
+              <SafeAreaView style={{ flex: 1 }}>
+                <NavigationContainer>
+                  <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    {isLogin ? (
+                      <>
+                        <Stack.Screen name="HomeTab" component={HomeTab} />
+                        <Stack.Screen
+                          name="RoomScreen"
+                          component={RoomScreen}
+                        />
+                        <Stack.Screen name="RoomGroup" component={RoomGroup} />
+                        <Stack.Screen
+                          name="GroupDetails"
+                          component={GroupDetails}
+                        />
+                        <Stack.Screen
+                          name="CreatePostScreen"
+                          component={CreatePostScreen}
+                        />
+                        <Stack.Screen
+                          name="PostDetail"
+                          component={PostDetail}
+                        />
+                        <Stack.Screen
+                          name="NotificationScreen"
+                          component={NotificationScreen}
+                        />
+                        <Stack.Screen
+                          name="Update"
+                          component={ModalAddSubtasks}
+                        />
+                        <Stack.Screen
+                          name="ProfileModalComponent"
+                          component={ProfileModalComponent}
+                          options={{
+                            presentation: 'modal', // Thiết lập trình bày như modal
+                            headerShown: false, // Ẩn header nếu cần
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Stack.Screen
+                          name="LoginScreen"
+                          component={LoginScreen}
+                        />
+                        <Stack.Screen
+                          name="RegisterScreen"
+                          component={RegisterScreen}
+                        />
+                      </>
+                    )}
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </SafeAreaView>
+            </NotificationsProvider>
+          </GestureHandlerRootView>
         </MenuProvider>
       </Provider>
     </PaperProvider>

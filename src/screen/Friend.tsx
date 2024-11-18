@@ -16,14 +16,13 @@ import firestore from '@react-native-firebase/firestore';
 import { SelectModel } from '../models/SelectModal';
 
 const FriendScreen = ({ navigation }: any) => {
-
   const [search, setSearch] = useState('');
   const [userSelect, setUserSelect] = useState<SelectModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [friendRequests, setFriendRequests] = useState<SelectModel[]>([]);
   const [friends, setFriends] = useState<SelectModel[]>([]);
   const [isLoadingfr, setIsLoadingfr] = useState(false);
-  
+
   useEffect(() => {
     const handleInitialData = async (uid: string) => {
       await handleGetFriendRequests(uid);
@@ -102,8 +101,6 @@ const FriendScreen = ({ navigation }: any) => {
   };
 
   const requestUids = friendRequests.map(request => request.uid);
-  const friendUids = friends.map(friend => friend.uid);
-
   return (
     <View style={{ flex: 1 }}>
       <View style={globalStyles.header}>
@@ -153,8 +150,7 @@ const FriendScreen = ({ navigation }: any) => {
             <FlatList
               data={userSelect.filter(
                 ele =>
-                  !requestUids.includes(ele.uid) && 
-                  !friendUids.includes(ele.uid) && 
+                  !requestUids.includes(ele.uid) &&
                   ele.username.toLowerCase().includes(search.toLowerCase()),
               )}
               keyExtractor={item => item.uid}

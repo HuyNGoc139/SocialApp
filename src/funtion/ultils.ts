@@ -1,9 +1,9 @@
-import { Dimensions } from "react-native";
+import { Dimensions } from 'react-native';
 export const DESIGN_WIDTH = 375;
 export const DESIGN_HEIGHT = 812;
 export const MODAL_WIDTH = 315;
 export const MODAL_HEIGHT = 487;
-const { width, height } = Dimensions.get('window')
+const { width, height } = Dimensions.get('window');
 export const isValidPassword = (
   password: string,
   target: string,
