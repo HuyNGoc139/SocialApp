@@ -9,13 +9,8 @@ import {
 } from 'react-native';
 import { fontFamilies } from '../../constants/fontFamily';
 import { handleDateTime } from '../../funtion/handleDateTime';
-import { formatDate } from '../../funtion/formatDate';
 import SpaceComponent from '../SpaceComponent';
-import { Trash } from 'iconsax-react-native';
-import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-
 const CommentItem = (props: any) => {
   const { cmt, userCurrent, postid, postUserId } = props;
   const handelDeleteComment = async () => {

@@ -118,7 +118,7 @@ const HomeScreen = ({ navigation }: any) => {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.header}>
-        <Text style={styles.textHeader}>Scocial APP</Text>
+        <Text style={styles.textHeader}>HuySocial</Text>
         <View
           style={{
             flexDirection: 'row',
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: 'white',
     fontSize: 24,
-    fontFamily: fontFamilies.regular,
+    fontFamily: fontFamilies.semiBold,
   },
   image: {
     height: 48,
