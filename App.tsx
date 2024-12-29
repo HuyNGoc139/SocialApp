@@ -27,6 +27,7 @@ import { updateUserStatus } from './src/funtion/updateUserStatus';
 import { createNotifications } from 'react-native-notificated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import GroupDetails from './src/screen/ChatGroup/GroupDetails';
+import PinCodeScreen from './src/screen/PinCode';
 const { NotificationsProvider, useNotifications, ...events } =
   createNotifications();
 const Stack = createNativeStackNavigator();
@@ -184,6 +185,10 @@ const App: React.FC = () => {
                           name="Update"
                           component={ModalAddSubtasks}
                         />
+                        {/* <Stack.Screen
+                          name="PinCode"
+                          component={PinCodeScreen}
+                        /> */}
                         <Stack.Screen
                           name="ProfileModalComponent"
                           component={ProfileModalComponent}

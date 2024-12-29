@@ -188,7 +188,14 @@ const ChatScreen = ({ navigation }: any) => {
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <GroupItem
-              onPress={() => navigation.navigate('RoomGroup', { ...item })}
+              // onPress={() => navigation.navigate('RoomGroup', { ...item })}
+              onPress={() => {
+                if (item.active) {
+                  ///code chuyen den ma pin
+                } else {
+                  navigation.navigate('RoomGroup', { ...item });
+                }
+              }}
               key={item.id}
               currentuser={user}
               userName={item.groupName}

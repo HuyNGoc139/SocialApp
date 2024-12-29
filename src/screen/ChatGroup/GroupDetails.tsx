@@ -151,33 +151,29 @@ const GroupDetails = ({ navigation, route }: any) => {
                 <View style={{ marginTop: 10 }}>
                   {members.map((item, index) => {
                     return (
-                      <>
+                      <View
+                        style={{ flexDirection: 'row', marginTop: 16 }}
+                        key={index}
+                      >
+                        {item?.url ? (
+                          <Image
+                            style={styles.image}
+                            source={{ uri: item.url }}
+                          />
+                        ) : (
+                          <Image
+                            style={styles.image}
+                            source={require('../../assets/image/avatar.png')}
+                          />
+                        )}
                         <View
-                          style={{ flexDirection: 'row', marginTop: 16 }}
-                          key={index}
+                          style={{ marginLeft: 10, justifyContent: 'center' }}
                         >
-                          {item?.url ? (
-                            <Image
-                              style={styles.image}
-                              source={{ uri: item.url }}
-                            />
-                          ) : (
-                            <Image
-                              style={styles.image}
-                              source={require('../../assets/image/avatar.png')}
-                            />
-                          )}
-                          <View
-                            style={{ marginLeft: 10, justifyContent: 'center' }}
-                          >
-                            <View>
-                              <Text style={styles.textBold}>
-                                {item.username}
-                              </Text>
-                            </View>
+                          <View>
+                            <Text style={styles.textBold}>{item.username}</Text>
                           </View>
                         </View>
-                      </>
+                      </View>
                     );
                   })}
                 </View>

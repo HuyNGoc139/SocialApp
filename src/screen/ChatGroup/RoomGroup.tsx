@@ -181,6 +181,7 @@ const RoomGroup = ({ navigation, route }: any) => {
         >
           <TouchableOpacity
             onPress={() => navigation.navigate('GroupDetails', { ...group })}
+            // onPress={() => navigation.navigate('PinCode')}
           >
             <Image
               source={require('../../assets/inform.png')}

@@ -37,6 +37,7 @@ const PostCardComponent = ({
   const MemoizedRenderHTML = memo(RenderHTML);
 
   const user = post.user;
+
   const [like, setLike] = useState(false);
   const [userLike, setUserLike] = useState<any[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
