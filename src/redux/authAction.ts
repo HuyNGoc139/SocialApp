@@ -106,7 +106,7 @@ export const logoutUser = createAsyncThunk(
       auth()
         .signOut()
         .then(() => {
-          Alert.alert('Đăng xuất thành công!');
+          console.log('Đăng xuất thành công!');
         })
         .catch(error => {});
     } catch (error) {

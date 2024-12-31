@@ -1,11 +1,4 @@
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Lock, Sms } from 'iconsax-react-native';
 import { Image } from 'react-native';
@@ -16,17 +9,14 @@ import ButtonComponent from '../components/ButtonComponent';
 import SpaceComponent from '../components/SpaceComponent';
 import RowComponent from '../components/RowComponent';
 import { globalStyles } from '../styles/globalStyles';
-import TitleComponent from '../components/TitleComponent';
-import Container from '../components/Container';
 import { validateEmail, validatePassword } from './validate';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../redux/store';
-import { loginUser } from '../redux/authAction';
-import { FloatingLabelInput } from '../components/FloatingLabelInput';
-import { Colors } from '../styles';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
 import { VerifyOTPModal } from '../components/chat/VerifyOtpModal';
+import { loginUser } from '../redux/authAction';
+import { handleSendOTP } from '../funtion/OTP';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
@@ -36,6 +26,7 @@ const LoginScreen = ({ navigation }: any) => {
   const [isVisible, setIsVisible] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const errorMessage = useMemo(() => errText, [errText]);
+
   const handleLogin = useCallback(async () => {
     if (!email || !password) {
       setErrorText('Please enter your email and password!!!');
@@ -46,21 +37,29 @@ const LoginScreen = ({ navigation }: any) => {
     } else {
       setErrorText('');
       try {
-        const unsubscribe = firestore()
+        // await dispatch(checkEmailAndPassword({ email, password })).unwrap();
+        const userCredential = await auth().signInWithEmailAndPassword(
+          email,
+          password,
+        );
+        // Đăng nhập thành công -> signOut ngay để không giữ session,
+        // vì có thể user có 2FA, cần kiểm tra tiếp.
+        await auth().signOut();
+        const snapshot = await firestore()
           .collection('Users')
           .where('email', '==', email)
-          .onSnapshot(snapshot => {
-            if (!snapshot.empty) {
-              const userData = snapshot.docs[0].data();
-              if (userData?.TwoFA == true) {
-                setIsVisible(true);
-              } else {
-                dispatch(loginUser({ email, password }));
-              }
-            } else {
-              console.log('Không tìm thấy người dùng với email này.');
-            }
-          });
+          .get();
+        if (!snapshot.empty) {
+          const userData = snapshot.docs[0].data();
+          if (userData?.TwoFA) {
+            handleSendOTP(email);
+            setIsVisible(true);
+          } else {
+            dispatch(loginUser({ email, password }));
+          }
+        } else {
+          console.log('Không tìm thấy người dùng với email này.');
+        }
       } catch (error) {
         if (error instanceof Error) {
           setErrorText(error.message || 'Login failed. Please try again.');

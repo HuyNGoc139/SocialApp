@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -19,7 +19,9 @@ import { AppButton } from '../AppButton';
 import { loginUser } from '../../redux/authAction';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
-
+import axios from 'axios';
+import { CountdownText } from '../account/CountdownText';
+import { handleSendOTP } from '../../funtion/OTP';
 const { width, height } = Dimensions.get('window');
 
 export type TVerifyOTPModalProps = {
@@ -38,6 +40,31 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
   const [hasSentCode, setHasSentCode] = useState(true);
   const { widthScale, heightScale } = scaleSize(MODAL_WIDTH, MODAL_HEIGHT);
   const dispatch = useDispatch<AppDispatch>();
+  const handleVerifyOTP = async (
+    email: string,
+    otpCode: any,
+    password: string,
+  ) => {
+    const otp = parseInt(otpCode, 10);
+    try {
+      const response: any = await axios.post(
+        'http://192.168.4.77:3000/api/otp/verify',
+        {
+          email,
+          otp,
+        },
+      );
+      if (response?.status == 200) {
+        dispatch(loginUser({ email, password }));
+        console.log('OTP verified successfully!');
+      } else {
+        console.log('OTP verification failed.');
+      }
+    } catch (error) {
+      console.log('Error verifying OTP.');
+    }
+  };
+
   const closeModal = () => {
     onClose();
     setVerifyError('');
@@ -89,7 +116,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
             },
           ]}
         >
-          Để đăng nhập, vui lòng điền mã xác nhận được gửi tới số điện thoại:
+          Để đăng nhập, vui lòng điền mã xác nhận được gửi tới email:
         </AppText>
 
         <AppText
@@ -138,11 +165,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
             { backgroundColor: otpCode.length !== 6 ? 'gray' : 'green' },
           ]}
           disabled={otpCode.length !== 6}
-          onPress={() => {
-            if (otpCode == '123456') {
-              dispatch(loginUser({ email, password }));
-            }
-          }}
+          onPress={() => handleVerifyOTP(email, otpCode, password)}
         >
           <Text
             style={{
@@ -162,8 +185,16 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
               <AppText style={styles.verifyDescription}>
                 {hasSentCode
                   ? 'Đã gửi mã xác thực. Vui lòng kiểm tra tin nhắn!'
-                  : 'auth.otp code failed'}
+                  : 'Vui lòng thử lại sau vài phút!'}
               </AppText>
+              <CountdownText
+                seconds={timer}
+                onCountdownEnd={() => {
+                  handleSendOTP(email);
+                  setIsTimerActive(false);
+                }}
+                textStyle={styles.timerText}
+              />
             </>
           ) : (
             <AppText style={styles.verifyDescription}>

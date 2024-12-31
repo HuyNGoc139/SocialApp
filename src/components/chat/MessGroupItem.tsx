@@ -26,8 +26,6 @@ interface MessageItemProps {
 }
 
 const MessageGroupItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedText, setEditedText] = useState(mess.text);
   const [userSender, setUserSender] = useState<any>();
   useEffect(() => {
     getSenderUser();
@@ -40,25 +38,6 @@ const MessageGroupItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
       }
     }
   }, [mess.userId]);
-  const handleSaveMessage = () => {
-    const messageRef = firestore()
-      .collection('Group')
-      .doc(mess.groupId)
-      .collection('messages')
-      .doc(mess.id);
-
-    messageRef
-      .update({
-        text: editedText,
-        updatedAt: firestore.FieldValue.serverTimestamp(),
-      })
-      .then(() => {
-        setIsEditing(false);
-      })
-      .catch(error => {
-        console.error('Error updating message:', error);
-      });
-  };
 
   const handleDeleteMessage = async () => {
     try {
@@ -89,9 +68,6 @@ const MessageGroupItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
       console.error('Error in handleDeleteMessage:', err);
     }
   };
-  const handleEditMessage = () => {
-    setIsEditing(true);
-  };
   if (currenUser.uid == mess.userId) {
     return (
       <View
@@ -120,43 +96,7 @@ const MessageGroupItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
           >
             <Menu>
               <MenuTrigger>
-                {isEditing ? (
-                  <>
-                    <TextInput
-                      style={{
-                        fontFamily: fontFamilies.regular,
-                        fontSize: 16,
-                        color: 'black',
-                        marginBottom: 10,
-                      }}
-                      value={editedText}
-                      onChangeText={setEditedText}
-                    />
-                    {mess.url && (
-                      <Image
-                        style={{
-                          height: 160,
-                          width: 160,
-                          borderRadius: 10,
-                          marginTop: 10,
-                        }}
-                        source={{ uri: mess.url }}
-                      />
-                    )}
-                    {mess.videourl && (
-                      <Video
-                        source={{ uri: mess.videourl }}
-                        style={{
-                          height: 160,
-                          width: 160,
-                          borderRadius: 10,
-                          marginTop: 10,
-                        }}
-                        controls
-                      />
-                    )}
-                  </>
-                ) : mess.url ? (
+                {mess.url ? (
                   <>
                     <Image
                       style={{ height: 160, width: 160, borderRadius: 10 }}
@@ -214,22 +154,11 @@ const MessageGroupItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {
                   },
                 }}
               >
-                <MenuOption onSelect={handleEditMessage}>
-                  <Text style={{ padding: 10 }}>Edit</Text>
-                </MenuOption>
                 <MenuOption onSelect={handleDeleteMessage}>
                   <Text style={{ padding: 10, color: 'red' }}>Delete</Text>
                 </MenuOption>
               </MenuOptions>
             </Menu>
-            {isEditing && (
-              <TouchableOpacity
-                style={{ paddingBottom: 12 }}
-                onPress={handleSaveMessage}
-              >
-                <Save2 size="20" color="red" />
-              </TouchableOpacity>
-            )}
           </View>
           <Text style={{ fontFamily: fontFamilies.regular, fontSize: 12 }}>
             {handleDateTime.GetHour(mess.createdAt)}

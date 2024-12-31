@@ -18,8 +18,8 @@ import { MenuProvider } from 'react-native-popup-menu';
 import NotificationScreen from './src/screen/NotificationScreen';
 import ModalAddSubtasks from './src/components/account/ModalAddSubtasks';
 import ProfileModalComponent from './src/components/friend/ProfileFriend';
-import { Provider } from 'react-redux';
-import store from './src/redux/store';
+import { Provider, useSelector } from 'react-redux';
+import store, { RootState } from './src/redux/store';
 import { PaperProvider } from 'react-native-paper';
 import RNBootSplash from 'react-native-bootsplash';
 import RoomGroup from './src/screen/ChatGroup/RoomGroup';
@@ -119,6 +119,46 @@ const HomeTab = () => (
   </Tab.Navigator>
 );
 
+const MainTab = () => {
+  const isLogin = useSelector((state: RootState) => state.auth.isAuthenticated);
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {isLogin ? (
+        <>
+          <Stack.Screen name="HomeTab" component={HomeTab} />
+          <Stack.Screen name="RoomScreen" component={RoomScreen} />
+          <Stack.Screen name="RoomGroup" component={RoomGroup} />
+          <Stack.Screen name="GroupDetails" component={GroupDetails} />
+          <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} />
+          <Stack.Screen name="PostDetail" component={PostDetail} />
+          <Stack.Screen
+            name="NotificationScreen"
+            component={NotificationScreen}
+          />
+          <Stack.Screen name="Update" component={ModalAddSubtasks} />
+          {/* <Stack.Screen
+                          name="PinCode"
+                          component={PinCodeScreen}
+                        /> */}
+          <Stack.Screen
+            name="ProfileModalComponent"
+            component={ProfileModalComponent}
+            options={{
+              presentation: 'modal', // Thiết lập trình bày như modal
+              headerShown: false, // Ẩn header nếu cần
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+        </>
+      )}
+    </Stack.Navigator>
+  );
+};
+
 const App: React.FC = () => {
   const [isLogin, setIsLogin] = useState(false);
   useEffect(() => {
@@ -138,16 +178,6 @@ const App: React.FC = () => {
     // Ẩn màn hình khởi động sau khi ứng dụng đã tải xong
     RNBootSplash.hide({ fade: true });
   }, []);
-  useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(user => {
-      if (user) {
-        setIsLogin(true);
-      } else {
-        setIsLogin(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
   return (
     <PaperProvider>
       <Provider store={store}>
@@ -156,61 +186,7 @@ const App: React.FC = () => {
             <NotificationsProvider>
               <SafeAreaView style={{ flex: 1 }}>
                 <NavigationContainer>
-                  <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    {isLogin ? (
-                      <>
-                        <Stack.Screen name="HomeTab" component={HomeTab} />
-                        <Stack.Screen
-                          name="RoomScreen"
-                          component={RoomScreen}
-                        />
-                        <Stack.Screen name="RoomGroup" component={RoomGroup} />
-                        <Stack.Screen
-                          name="GroupDetails"
-                          component={GroupDetails}
-                        />
-                        <Stack.Screen
-                          name="CreatePostScreen"
-                          component={CreatePostScreen}
-                        />
-                        <Stack.Screen
-                          name="PostDetail"
-                          component={PostDetail}
-                        />
-                        <Stack.Screen
-                          name="NotificationScreen"
-                          component={NotificationScreen}
-                        />
-                        <Stack.Screen
-                          name="Update"
-                          component={ModalAddSubtasks}
-                        />
-                        {/* <Stack.Screen
-                          name="PinCode"
-                          component={PinCodeScreen}
-                        /> */}
-                        <Stack.Screen
-                          name="ProfileModalComponent"
-                          component={ProfileModalComponent}
-                          options={{
-                            presentation: 'modal', // Thiết lập trình bày như modal
-                            headerShown: false, // Ẩn header nếu cần
-                          }}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Stack.Screen
-                          name="LoginScreen"
-                          component={LoginScreen}
-                        />
-                        <Stack.Screen
-                          name="RegisterScreen"
-                          component={RegisterScreen}
-                        />
-                      </>
-                    )}
-                  </Stack.Navigator>
+                  <MainTab />
                 </NavigationContainer>
               </SafeAreaView>
             </NotificationsProvider>
