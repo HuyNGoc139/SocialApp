@@ -29,6 +29,8 @@ import { fontFamilies } from '../constants/fontFamily';
 import { User } from '../models/user';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
+import axios from 'axios';
+
 const RoomScreen = ({ navigation, route }: any) => {
   const userSelect = route.params;
   const [message, setMessage] = useState<any[]>([]);
@@ -97,9 +99,15 @@ const RoomScreen = ({ navigation, route }: any) => {
       let roomId = getRoomId(userCurrent?.uid ?? '', userSelect.uid);
       const docRef = firestore().collection('Rooms').doc(roomId);
       const messagesRef = docRef.collection('messages');
+      const response = await axios.post(
+        'http://192.168.4.77:3000/api/message/encrypt',
+        {
+          message,
+        },
+      );
       await messagesRef.add({
         userId: userCurrent?.uid,
-        text: message,
+        text: response.data?.encryptedData || '',
         senderName: user?.username,
         // createdAt: firestore.FieldValue.serverTimestamp(),
         createdAt: new Date(),
@@ -108,13 +116,78 @@ const RoomScreen = ({ navigation, route }: any) => {
         lastMessageAt: firestore.FieldValue.serverTimestamp(),
         lastMessage: message, // Lưu nội dung tin nhắn cuối cùng (tuỳ chọn)
       });
-      console.log('Message sent successfully');
+      // const response = await axios.post(
+      //   'http://192.168.4.77:3000/api/message/send',
+      //   {
+      //     roomId,
+      //     message,
+      //     senderName: user?.username,
+      //     userId: userCurrent?.uid,
+      //   },
+      // );
+      // console.log('Message sent successfully');
+      // getAllMessage();
+      // await docRef.update({
+      //   lastMessageAt: firestore.FieldValue.serverTimestamp(),
+      //   lastMessage: message, // Lưu nội dung tin nhắn cuối cùng (tuỳ chọn)
+      // });
       setTextRef(''); // Xóa nội dung input sau khi gửi
     } catch (err) {
       console.log('Error sending message:', err);
     }
   };
 
+  // const getAllMessage = async () => {
+  //   try {
+  //     let roomId = getRoomId(userCurrent?.uid ?? '', userSelect.uid);
+
+  //     // Gửi yêu cầu tới server để lấy tin nhắn
+  //     const response = await axios.post(
+  //       'http://192.168.4.77:3000/api/message/get',
+  //       {
+  //         roomId,
+  //       },
+  //     );
+
+  //     // Nếu không có tin nhắn (status 404), trả về danh sách trống
+  //     if (response.status === 404) {
+  //       console.log('No messages found');
+  //       setMessage([]); // Đặt trạng thái tin nhắn là danh sách rỗng
+  //       return [];
+  //     }
+
+  //     // Xử lý danh sách tin nhắn từ phản hồi của server
+  //     let allMessages = response.data.messages.map((doc: any) => ({
+  //       id: doc.id, // Giữ lại id của tin nhắn
+  //       roomId: roomId, // Gắn roomId hiện tại
+  //       senderName: doc.senderName,
+  //       text: doc.text || '', // Nếu text không có, để trống
+  //       url: doc.url || null, // Nếu có url, giữ nguyên, nếu không thì null
+  //       createdAt: new Date(
+  //         doc.createdAt._seconds * 1000 + doc.createdAt._nanoseconds / 1e6,
+  //       ), // Chuyển Firestore timestamp thành Date
+  //       updatedAt: doc.updatedAt
+  //         ? new Date(
+  //             doc.updatedAt._seconds * 1000 + doc.updatedAt._nanoseconds / 1e6,
+  //           )
+  //         : null, // Nếu updatedAt tồn tại, chuyển thành Date
+  //       userId: doc.userId,
+  //     }));
+
+  //     // Cập nhật state tin nhắn
+  //     setMessage(allMessages);
+
+  //     // Trả về danh sách tin nhắn
+  //     return allMessages;
+  //   } catch (error: any) {
+  //     // Xử lý lỗi nhưng không hiển thị ra giao diện
+  //     console.log('Error fetching messages:', error.message);
+
+  //     // Trả về danh sách trống nếu có lỗi
+  //     setMessage([]);
+  //     return [];
+  //   }
+  // };
   const getAllMessage = () => {
     let roomId = getRoomId(userCurrent?.uid ?? '', userSelect.uid);
     const messagesRef = firestore()
@@ -127,16 +200,47 @@ const RoomScreen = ({ navigation, route }: any) => {
 
     // Lắng nghe thay đổi trên collection 'messages'
     const unsubscribe = q.onSnapshot(
-      snapshot => {
-        // Lấy tất cả các tin nhắn từ snapshot
-        let allMessages = snapshot.docs.map(doc => ({
-          id: doc.id,
-          roomId: roomId, // Lấy id của document
-          ...doc.data(), // Gộp dữ liệu của document
-        }));
+      async snapshot => {
+        try {
+          // Lấy tất cả các tin nhắn từ snapshot
+          let allMessages = snapshot.docs.map(doc => ({
+            id: doc.id,
+            roomId: roomId,
+            ...doc.data(),
+          }));
 
-        // Cập nhật trạng thái với danh sách tin nhắn đã sắp xếp
-        setMessage(allMessages);
+          // Gửi từng message lên server để giải mã
+          const decryptedMessages = await Promise.all(
+            allMessages.map(async (message: any) => {
+              // Kiểm tra xem text có phải dạng mã hóa hay không
+              if (message.text?.content && message.text?.iv) {
+                try {
+                  const response = await axios.post(
+                    'http://192.168.4.77:3000/api/message/decrypt',
+                    {
+                      encryptedData: message.text, // Gửi `content` và `iv`
+                    },
+                  );
+                  return {
+                    ...message,
+                    text: response.data.decryptedData, // Gán text đã giải mã
+                  };
+                } catch (error) {
+                  console.error('Error decrypting message:', error);
+                  return { ...message, text: 'Failed to decrypt' }; // Thêm fallback nếu giải mã thất bại
+                }
+              } else {
+                // Nếu không phải dạng mã hóa, giữ nguyên text
+                return message;
+              }
+            }),
+          );
+
+          // Cập nhật state với danh sách tin nhắn đã giải mã
+          setMessage(decryptedMessages);
+        } catch (error) {
+          console.error('Error processing messages:', error);
+        }
       },
       error => {
         console.error('Error fetching messages:', error);
@@ -145,7 +249,6 @@ const RoomScreen = ({ navigation, route }: any) => {
 
     return unsubscribe;
   };
-
   const handleSelectImage = async () => {
     ImagePicker.openPicker({
       width: 300,

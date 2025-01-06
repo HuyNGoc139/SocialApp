@@ -4,6 +4,7 @@ import { fontFamilies } from '../../constants/fontFamily';
 import firestore from '@react-native-firebase/firestore';
 import { formatDate } from '../../funtion/formatDate';
 import { User } from '../../models/user';
+import axios from 'axios';
 interface Props {
   userName: string;
   uid: string;
@@ -33,6 +34,9 @@ const ChatItem = (props: Props) => {
       });
   };
   useEffect(() => {
+    getLastMessage();
+  }, []);
+  const getLastMessage = async () => {
     let roomId = getRoomId(currentuser?.uid ?? '', uid);
     const messagesRef = firestore()
       .collection('Rooms')
@@ -41,17 +45,42 @@ const ChatItem = (props: Props) => {
 
     const q = messagesRef.orderBy('createdAt', 'desc');
     const unsubscribe = q.onSnapshot(
-      snapshot => {
-        let allMessages = snapshot.docs.map(doc => doc.data());
-        setLastmessage(allMessages[0] ? allMessages[0] : null);
+      async snapshot => {
+        if (!snapshot.empty) {
+          const lastMessageDoc = snapshot.docs[0]; // Lấy tin nhắn cuối cùng
+          const lastMessageData = lastMessageDoc.data();
+
+          // Kiểm tra xem tin nhắn có được mã hóa không
+          if (lastMessageData.text?.content && lastMessageData.text?.iv) {
+            // Gửi dữ liệu mã hóa lên server để giải mã
+            const response = await axios.post(
+              'http://192.168.4.77:3000/api/message/decrypt',
+              {
+                encryptedData: lastMessageData.text, // Gửi `content` và `iv`
+              },
+            );
+
+            // Cập nhật tin nhắn đã giải mã
+            setLastmessage({
+              ...lastMessageData,
+              text: response.data.decryptedData, // Gán text đã giải mã
+            });
+          } else {
+            // Nếu tin nhắn không được mã hóa, lưu trực tiếp
+            setLastmessage(lastMessageData);
+          }
+        } else {
+          // Không có tin nhắn
+          setLastmessage(null);
+        }
       },
       error => {
-        console.error('Error fetching messages:', error);
+        console.log('Error fetching messages:', error);
       },
     );
-
     return unsubscribe;
-  }, []);
+  };
+
   const getRoomId = (userId1: string, userId2: string) => {
     const sortedIds = [userId1, userId2].sort();
     return sortedIds.join('-');

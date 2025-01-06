@@ -23,6 +23,7 @@ import { handleDateTime } from '../../funtion/handleDateTime';
 interface MessageItemProps {
   mess: any;
   currenUser: any;
+  roomId?: any;
 }
 
 const MessageGroupItem: React.FC<MessageItemProps> = ({ mess, currenUser }) => {

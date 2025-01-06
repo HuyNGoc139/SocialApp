@@ -6,15 +6,16 @@ interface MessageListProps {
   messages: any[];
   currenUser: any;
   url?: string;
+  roomId?: any;
 }
 
 const MessageList: React.FC<MessageListProps> = ({
   messages,
   currenUser,
   url, //url cua ban be
+  roomId,
 }) => {
   const scrollViewRef = useRef<ScrollView>(null); // Tạo một ref cho ScrollView
-
   useEffect(() => {
     // Cuộn xuống cuối khi có tin nhắn mới
     if (scrollViewRef.current) {
@@ -26,7 +27,12 @@ const MessageList: React.FC<MessageListProps> = ({
     <ScrollView ref={scrollViewRef}>
       {messages.length > 0 ? (
         messages.map((mess, index) => (
-          <MessGroupItem key={index} mess={mess} currenUser={currenUser} />
+          <MessGroupItem
+            key={index}
+            mess={mess}
+            currenUser={currenUser}
+            roomId={roomId}
+          />
         ))
       ) : (
         <View>

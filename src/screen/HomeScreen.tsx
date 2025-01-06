@@ -55,6 +55,7 @@ const HomeScreen = ({ navigation }: any) => {
     // Trả về hàm hủy đăng ký khi component bị unmount
     return unsubscribe;
   };
+
   const getAllPost = () => {
     // Lắng nghe sự thay đổi của collection "Posts"
     const unsubscribe = firestore()
@@ -115,6 +116,7 @@ const HomeScreen = ({ navigation }: any) => {
     // Trả về hàm hủy đăng ký khi component bị unmount
     return unsubscribe;
   };
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.header}>
