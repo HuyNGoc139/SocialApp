@@ -23,6 +23,7 @@ interface Props {
   type?: KeyboardTypeOptions;
   isPassword?: boolean;
   disable?: boolean;
+  onFocus?: () => void;
 }
 const InputComponent = (props: Props) => {
   const {
@@ -38,6 +39,7 @@ const InputComponent = (props: Props) => {
     type,
     isPassword,
     disable,
+    onFocus,
   } = props;
   const [showPass, setShowPass] = useState(false);
   return (
@@ -77,6 +79,7 @@ const InputComponent = (props: Props) => {
             keyboardType={type}
             secureTextEntry={isPassword ? !showPass : false}
             autoCapitalize="none"
+            onFocus={onFocus}
           />
         </View>
         {affix && affix}

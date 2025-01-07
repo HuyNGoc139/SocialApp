@@ -1,4 +1,5 @@
 import { Dimensions } from 'react-native';
+import auth from '@react-native-firebase/auth';
 export const DESIGN_WIDTH = 375;
 export const DESIGN_HEIGHT = 812;
 export const MODAL_WIDTH = 315;
@@ -94,4 +95,13 @@ export const formatTimeCountdown = (seconds: number) => {
   return `${String(minutes).padStart(2, '0')}:${String(
     remainingSeconds,
   ).padStart(2, '0')}`;
+};
+export const sendResetPasswordEmail = async (email: string) => {
+  try {
+    await auth().sendPasswordResetEmail(email);
+    console.log(`Email đặt lại mật khẩu đã được gửi tới: ${email}`);
+  } catch (error: any) {
+    console.error('Lỗi khi gửi email đặt lại mật khẩu:', error.message);
+    throw error; // Để xử lý thêm ở nơi gọi hàm
+  }
 };

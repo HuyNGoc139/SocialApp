@@ -3,8 +3,16 @@ export const validateEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-export const validatePassword = (password: string): boolean => {
-  return password.length >= 6;
+export const validatePassword = (password: string) => {
+  // Kiểm tra độ dài >= 6 ký tự
+  if (password.length < 6) {
+    return false;
+  }
+
+  // Kiểm tra mật khẩu có chứa ít nhất một ký tự thường, một ký tự viết hoa, một số, và một ký tự đặc biệt
+  const regex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%*?&!.\-_<>\^~`]).{6,}$/;
+  return regex.test(password);
 };
 
 // Optional: Extended password validation

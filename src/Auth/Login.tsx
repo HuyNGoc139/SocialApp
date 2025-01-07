@@ -1,4 +1,11 @@
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Lock, Sms } from 'iconsax-react-native';
 import { Image } from 'react-native';
@@ -17,7 +24,7 @@ import { AppDispatch } from '../redux/store';
 import { VerifyOTPModal } from '../components/chat/VerifyOtpModal';
 import { loginUser } from '../redux/authAction';
 import { handleSendOTP } from '../funtion/OTP';
-import { User } from '../models/user';
+import { sendResetPasswordEmail } from '../funtion/ultils';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
@@ -72,6 +79,15 @@ const LoginScreen = ({ navigation }: any) => {
     }
   }, [email, password, navigation]);
 
+  const handleResetPassword = async () => {
+    try {
+      await sendResetPasswordEmail(email);
+      Alert.alert('Thành công', 'Email đặt lại mật khẩu đã được gửi!');
+    } catch (error: any) {
+      Alert.alert('Lỗi', error.message);
+    }
+  };
+
   return (
     <ImageBackground
       resizeMode="cover"
@@ -114,6 +130,21 @@ const LoginScreen = ({ navigation }: any) => {
           isLoading={isLoading}
         />
         <SpaceComponent height={20} />
+        <TouchableOpacity
+          onPress={handleResetPassword}
+          style={{ alignSelf: 'flex-end', marginRight: 20 }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fontFamilies.regular,
+              color: 'white',
+            }}
+          >
+            Quên mật khẩu
+          </Text>
+        </TouchableOpacity>
+        <SpaceComponent height={10} />
         <RowComponent styles={{ marginTop: 20 }}>
           <Text style={[globalStyles.text]}>
             You don't have an account?{' '}

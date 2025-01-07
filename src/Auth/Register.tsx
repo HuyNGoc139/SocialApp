@@ -40,7 +40,9 @@ const RegisterScreen = ({ navigation }: any) => {
     } else if (!password || !confirmPassword) {
       setErrorText('Please enter your password!!!');
     } else if (!validatePassword(password)) {
-      setErrorText('Password must be to 6 characters');
+      setErrorText(
+        'Password must be at least 6 characters, include uppercase, lowercase, number, and special character.',
+      );
     } else if (password !== confirmPassword) {
       setErrorText('Password is not match!!!');
     } else {
@@ -105,6 +107,7 @@ const RegisterScreen = ({ navigation }: any) => {
           placeholder="Email"
           allowClear
           type="email-address"
+          onFocus={() => setErrorText('')}
         />
         <InputComponent
           title="Password"
@@ -113,6 +116,7 @@ const RegisterScreen = ({ navigation }: any) => {
           onChange={val => setPassword(val)}
           placeholder="Password"
           prefix={<Lock size="32" color="#FAFAFA" />}
+          onFocus={() => setErrorText('')}
         />
         <InputComponent
           title="Comfirm password"
@@ -121,6 +125,7 @@ const RegisterScreen = ({ navigation }: any) => {
           onChange={val => setConfirmPassword(val)}
           placeholder="Comfirm password"
           prefix={<Lock size="32" color="#FAFAFA" />}
+          onFocus={() => setErrorText('')}
         />
 
         {errorText && <TextComponent text={errorText} color="coral" flex={0} />}
