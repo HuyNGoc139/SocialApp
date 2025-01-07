@@ -16,7 +16,7 @@ import { MODAL_HEIGHT, MODAL_WIDTH, scaleSize } from '../../funtion/ultils';
 import { AppText } from '../AppText';
 import { Colors } from '../../styles';
 import { AppButton } from '../AppButton';
-import { loginUser } from '../../redux/authAction';
+import { loginUser, updateUser } from '../../redux/authAction';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
 import axios from 'axios';
@@ -32,11 +32,24 @@ export type TVerifyOTPModalProps = {
   isActive?: boolean;
   userId?: string;
   emailOTP: string;
+  isVerifyEmail?: boolean;
+  newEmail?: string;
+  updateUser2?: any;
 };
 
 export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
-  const { isVisible, onClose, email, password, isActive, userId, emailOTP } =
-    props;
+  const {
+    isVisible,
+    onClose,
+    email,
+    password,
+    isActive,
+    userId,
+    emailOTP,
+    isVerifyEmail,
+    newEmail,
+    updateUser2,
+  } = props;
   const [otpCode, setOtpCode] = useState('');
   const [timer, setTimer] = useState(300);
   const [isTimerActive, setIsTimerActive] = useState(true);
@@ -44,12 +57,13 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
   const [hasSentCode, setHasSentCode] = useState(true);
   const { widthScale, heightScale } = scaleSize(MODAL_WIDTH, MODAL_HEIGHT);
   const dispatch = useDispatch<AppDispatch>();
-  const addEmailOTPActive = async (isActive: boolean) => {
+  const addEmailOTPActive = async () => {
     try {
       const userRef = firestore().collection('Users').doc(userId);
 
       // Kiểm tra xem tài liệu có tồn tại không
       const userDoc = await userRef.get();
+
       if (!userDoc.exists) {
         console.error('User not found! Cannot add emailOTPActive.');
         return;
@@ -57,11 +71,35 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
 
       // Thêm trường emailOTPActive
       await userRef.update({
-        emailOTPActive: isActive,
+        emailOTPActive: !userDoc.data()?.emailOTPActive,
         updatedAt: firestore.FieldValue.serverTimestamp(), // Cập nhật thời gian sửa đổi
+        TwoFA: !userDoc.data()?.emailOTPActive,
       });
 
       console.log('Added emailOTPActive successfully for user:', userId);
+    } catch (error: any) {
+      console.error('Error adding emailOTPActive:', error.message);
+    }
+  };
+
+  const handleChangeEmail = async () => {
+    try {
+      const userRef = firestore().collection('Users').doc(userId);
+
+      // Kiểm tra xem tài liệu có tồn tại không
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        console.error('User not found! Cannot add emailOTPActive.');
+        return;
+      }
+
+      // Thêm trường emailOTPActive
+      await userRef.update({
+        emailOTP: newEmail,
+      });
+
+      console.log('Update successfully for user:');
     } catch (error: any) {
       console.error('Error adding emailOTPActive:', error.message);
     }
@@ -75,15 +113,17 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
     const otp = parseInt(otpCode, 10);
     try {
       const response: any = await axios.post(
-        'http://192.168.4.77:3000/api/otp/verify',
+        'http://192.168.0.105:3000/api/otp/verify',
         {
           email: emailOTP,
           otp,
         },
       );
       if (response?.status == 200) {
-        isActive
-          ? addEmailOTPActive(true)
+        isVerifyEmail
+          ? handleChangeEmail()
+          : isActive
+          ? addEmailOTPActive()
           : dispatch(loginUser({ email, password }));
         console.log('OTP verified successfully!');
         onClose();

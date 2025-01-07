@@ -45,19 +45,17 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
   const [userName, setUserName] = useState<any>(user2?.username);
   const [isLoading, setISLoading] = useState(false);
   const [urlprofile, seturlprofile] = useState<any>(user2?.url);
-  const [emailOTP, setEmailOTP] = useState<any>(user2?.emailOTP);
+  const [emailOTP, setEmailOTP] = useState<any>(user?.emailOTP);
   const [isEnabled, setIsEnabled] = useState(user2?.TwoFA ? true : false);
   const [isVisible, setIsVisible] = useState(false);
-  const toggleSwitch = () => {
-    setIsEnabled(!isEnabled);
-  };
+  const [isVisible2, setIsVisible2] = useState(false);
   const [emailOTPActive, setEmailOTPActive] = useState<boolean | null>(null);
   const [prevUser, setPrevUser] = useState<User | null>(user2);
   const [prevUrlProfile, setPrevUrlProfile] = useState<string | undefined>(
     user2?.url,
   );
   const [prevIsEnabled, setPrevIsEnabled] = useState<boolean>(
-    user2?.TwoFA ? true : false,
+    user?.TwoFA ? true : false,
   );
   const { toastMessage } = useApp();
 
@@ -135,7 +133,8 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
     if (
       JSON.stringify(user) !== JSON.stringify(prevUser) ||
       urlprofile !== prevUrlProfile ||
-      isEnabled !== prevIsEnabled
+      isEnabled !== prevIsEnabled ||
+      user2?.emailOTP !== emailOTP
     ) {
       setISLoading(true);
       try {
@@ -148,8 +147,6 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
             emailOTP,
           }),
         );
-
-        // Cập nhật trạng thái trước sau khi save
         setPrevUser(user);
         setPrevUrlProfile(urlprofile);
         setPrevIsEnabled(isEnabled);
@@ -159,6 +156,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           description: 'Cập nhật thông tin thành công',
         });
         navigation.goBack();
+        // Cập nhật trạng thái trước sau khi save
       } catch (error) {
         console.log('Error saving data:', error);
       } finally {
@@ -209,28 +207,6 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         console.log('Error selecting image:', error);
       });
   }, []);
-
-  const addEmailOTPActive = async (isActive: boolean) => {
-    try {
-      const userRef = firestore().collection('Users').doc(userId);
-
-      // Kiểm tra xem tài liệu có tồn tại không
-      const userDoc = await userRef.get();
-      if (!userDoc.exists) {
-        console.error('User not found! Cannot add emailOTPActive.');
-        return;
-      }
-
-      // Thêm trường emailOTPActive
-      await userRef.update({
-        emailOTPActive: isActive,
-        TwoFA: isActive,
-        updatedAt: firestore.FieldValue.serverTimestamp(), // Cập nhật thời gian sửa đổi
-      });
-    } catch (error: any) {
-      console.error('Error adding emailOTPActive:', error.message);
-    }
-  };
 
   const renderProfileImage = useMemo(() => {
     return urlprofile ? (
@@ -288,11 +264,12 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
             trackColor={{ false: '#767577', true: '#81b0ff' }}
             thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-            disabled={emailOTPActive ? false : true}
+            // onValueChange={toggleSwitch}
+            value={emailOTPActive}
+            disabled={true}
           />
         </View>
+
         <InputComponent
           prefix={<Sms size="32" color="#FAFAFA" />}
           title="Email 2FA"
@@ -303,6 +280,25 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           placeholder="Email"
           value={emailOTP}
         />
+        <TouchableOpacity
+          onPress={() => {
+            if (emailOTP !== user2?.emailOTP) {
+              setIsVisible2(true);
+              handleSendOTP(user2?.emailOTP || '');
+            }
+          }}
+          style={{
+            alignSelf: 'center',
+            backgroundColor: emailOTP !== user2?.emailOTP ? 'green' : 'gray',
+            paddingVertical: 10,
+            paddingHorizontal: 24,
+            borderRadius: 25,
+          }}
+          disabled={emailOTP !== user2?.emailOTP ? false : true}
+        >
+          <Text style={{ color: 'white', fontSize: 20 }}>Save</Text>
+        </TouchableOpacity>
+
         <InputComponent
           prefix={<Designtools size="32" color="#FAFAFA" />}
           title="UserName"
@@ -330,7 +326,8 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
                 setIsVisible(true);
                 handleSendOTP(user2?.emailOTP || '');
               } else {
-                addEmailOTPActive(false);
+                setIsVisible(true);
+                handleSendOTP(user2?.emailOTP || '');
               }
             }}
             style={{
@@ -389,6 +386,24 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         isActive={true}
         userId={userId}
         emailOTP={user2?.emailOTP || ''}
+      />
+      <VerifyOTPModal
+        isVisible={isVisible2}
+        onClose={() => setIsVisible2(false)}
+        email={user2?.email || ''}
+        password={''}
+        isActive={true}
+        userId={userId}
+        emailOTP={user2?.emailOTP || ''}
+        isVerifyEmail={true}
+        newEmail={emailOTP}
+        updateUser2={{
+          userId,
+          user: user ?? initialValue,
+          isEnabled,
+          urlprofile,
+          emailOTP,
+        }}
       />
     </Container>
     // </Modal>

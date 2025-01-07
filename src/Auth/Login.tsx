@@ -16,7 +16,11 @@ import ButtonComponent from '../components/ButtonComponent';
 import SpaceComponent from '../components/SpaceComponent';
 import RowComponent from '../components/RowComponent';
 import { globalStyles } from '../styles/globalStyles';
-import { validateEmail, validatePassword } from './validate';
+import {
+  validateEmail,
+  validatePassword,
+  validatePasswordLogin,
+} from './validate';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useDispatch } from 'react-redux';
@@ -40,7 +44,7 @@ const LoginScreen = ({ navigation }: any) => {
       setErrorText('Please enter your email and password!!!');
     } else if (!validateEmail(email)) {
       setErrorText('Please enter the correct email format');
-    } else if (!validatePassword(password)) {
+    } else if (!validatePasswordLogin(password)) {
       setErrorText('Password must be at least 6 characters');
     } else {
       setErrorText('');

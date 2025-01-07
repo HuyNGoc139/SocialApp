@@ -178,6 +178,7 @@ const ProfileScreen = ({ navigation }: any) => {
         }
       });
   };
+
   const getFormattedDate = (timestamp: FirebaseTimestamp) => {
     if (!timestamp) return '';
     const date = new Date(timestamp.seconds * 1000);
@@ -246,11 +247,11 @@ const ProfileScreen = ({ navigation }: any) => {
                     {
                       textAlign: 'right',
                       flex: 1,
-                      color: user2?.TwoFA ? 'green' : 'red',
+                      color: user?.TwoFA ? 'green' : 'red',
                     },
                   ]}
                 >
-                  {user2?.TwoFA ? 'ACTIVE' : 'INACTIVE'}
+                  {user?.TwoFA ? 'ACTIVE' : 'INACTIVE'}
                 </Text>
               </View>
               <SpaceComponent height={10}></SpaceComponent>
