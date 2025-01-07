@@ -246,7 +246,7 @@ const ProfileScreen = ({ navigation }: any) => {
                     {
                       textAlign: 'right',
                       flex: 1,
-                      color: user2?.TwoFA ? 'green' : 'black',
+                      color: user2?.TwoFA ? 'green' : 'red',
                     },
                   ]}
                 >

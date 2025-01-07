@@ -11,6 +11,8 @@ interface User {
   createAt?: string;
   userId?: string;
   TwoFA?: boolean;
+  emailOTP?: string;
+  emailOTPActive?: boolean;
 }
 interface AuthState {
   isAuthenticated: boolean;

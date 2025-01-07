@@ -17,6 +17,7 @@ import { AppDispatch } from '../redux/store';
 import { VerifyOTPModal } from '../components/chat/VerifyOtpModal';
 import { loginUser } from '../redux/authAction';
 import { handleSendOTP } from '../funtion/OTP';
+import { User } from '../models/user';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
@@ -26,7 +27,7 @@ const LoginScreen = ({ navigation }: any) => {
   const [isVisible, setIsVisible] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const errorMessage = useMemo(() => errText, [errText]);
-
+  const [user, setUser] = useState<any>();
   const handleLogin = useCallback(async () => {
     if (!email || !password) {
       setErrorText('Please enter your email and password!!!');
@@ -51,8 +52,9 @@ const LoginScreen = ({ navigation }: any) => {
           .get();
         if (!snapshot.empty) {
           const userData = snapshot.docs[0].data();
+          setUser(userData);
           if (userData?.TwoFA) {
-            handleSendOTP(email);
+            handleSendOTP(userData?.emailOTP);
             setIsVisible(true);
           } else {
             dispatch(loginUser({ email, password }));
@@ -129,6 +131,7 @@ const LoginScreen = ({ navigation }: any) => {
         onClose={() => setIsVisible(false)}
         email={email}
         password={password}
+        emailOTP={user?.emailOTP}
       />
     </ImageBackground>
   );

@@ -22,6 +22,9 @@ import SpaceComponent from '../SpaceComponent';
 import { User } from '../../models/user';
 import { handleDateTime } from '../../funtion/handleDateTime';
 import { useApp } from '../../hook/useAppHook';
+import { VerifyOTPModal } from '../chat/VerifyOtpModal';
+import { fontFamilies } from '../../constants/fontFamily';
+import { handleSendOTP } from '../../funtion/OTP';
 
 const initialValue = {
   email: '',
@@ -38,13 +41,17 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
   // useEffect(() => {
   //   getUser();
   // }, [userId]);
-
   const [user, setUser] = useState<User | null>(user2);
   const [userName, setUserName] = useState<any>(user2?.username);
   const [isLoading, setISLoading] = useState(false);
   const [urlprofile, seturlprofile] = useState<any>(user2?.url);
+  const [emailOTP, setEmailOTP] = useState<any>(user2?.emailOTP);
   const [isEnabled, setIsEnabled] = useState(user2?.TwoFA ? true : false);
-  const toggleSwitch = () => setIsEnabled(!isEnabled);
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleSwitch = () => {
+    setIsEnabled(!isEnabled);
+  };
+  const [emailOTPActive, setEmailOTPActive] = useState<boolean | null>(null);
   const [prevUser, setPrevUser] = useState<User | null>(user2);
   const [prevUrlProfile, setPrevUrlProfile] = useState<string | undefined>(
     user2?.url,
@@ -53,6 +60,34 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
     user2?.TwoFA ? true : false,
   );
   const { toastMessage } = useApp();
+
+  useEffect(() => {
+    // Lắng nghe thay đổi từ Firestore
+    const unsubscribe = firestore()
+      .collection('Users')
+      .doc(userId)
+      .onSnapshot(
+        docSnapshot => {
+          if (docSnapshot.exists) {
+            const data = docSnapshot.data();
+            setEmailOTPActive(data?.emailOTPActive ?? null); // Cập nhật trạng thái
+          } else {
+            console.error('User document not found');
+            setEmailOTPActive(null); // Trả về null nếu không tìm thấy tài liệu
+          }
+        },
+        error => {
+          console.error('Error listening to emailOTPActive:', error);
+          setEmailOTPActive(null); // Xử lý lỗi
+        },
+      );
+
+    // Dừng lắng nghe khi component bị unmount
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   // const getUser = useCallback(() => {
   //   firestore()
   //     .doc(`Users/${userId}`)
@@ -110,6 +145,7 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
             user: user ?? initialValue,
             isEnabled,
             urlprofile,
+            emailOTP,
           }),
         );
 
@@ -174,6 +210,28 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
       });
   }, []);
 
+  const addEmailOTPActive = async (isActive: boolean) => {
+    try {
+      const userRef = firestore().collection('Users').doc(userId);
+
+      // Kiểm tra xem tài liệu có tồn tại không
+      const userDoc = await userRef.get();
+      if (!userDoc.exists) {
+        console.error('User not found! Cannot add emailOTPActive.');
+        return;
+      }
+
+      // Thêm trường emailOTPActive
+      await userRef.update({
+        emailOTPActive: isActive,
+        TwoFA: isActive,
+        updatedAt: firestore.FieldValue.serverTimestamp(), // Cập nhật thời gian sửa đổi
+      });
+    } catch (error: any) {
+      console.error('Error adding emailOTPActive:', error.message);
+    }
+  };
+
   const renderProfileImage = useMemo(() => {
     return urlprofile ? (
       <Image
@@ -232,14 +290,18 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
             value={isEnabled}
+            disabled={emailOTPActive ? false : true}
           />
         </View>
         <InputComponent
           prefix={<Sms size="32" color="#FAFAFA" />}
-          title="Email"
-          onChange={val => {}}
+          title="Email 2FA"
+          onChange={val => {
+            setEmailOTP(val);
+            handleChangeValue('emailOTP', val);
+          }}
           placeholder="Email"
-          value={user2?.email ?? ''}
+          value={emailOTP}
         />
         <InputComponent
           prefix={<Designtools size="32" color="#FAFAFA" />}
@@ -252,6 +314,42 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
           allowClear
           value={userName}
         />
+        <View style={{ flexDirection: 'row' }}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 20,
+              fontFamily: fontFamilies.medium,
+            }}
+          >
+            Active Email:
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              if (!emailOTPActive) {
+                setIsVisible(true);
+                handleSendOTP(user2?.emailOTP || '');
+              } else {
+                addEmailOTPActive(false);
+              }
+            }}
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'flex-end',
+            }}
+          >
+            <Text
+              style={{
+                color: emailOTPActive ? 'red' : 'green',
+                fontSize: 20,
+                fontFamily: fontFamilies.medium,
+              }}
+            >
+              {emailOTPActive ? 'Tắt' : 'Bật'}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <DateTimePickerComponent
           selected={
             user?.DateBitrhDay instanceof Date ? user.DateBitrhDay : new Date()
@@ -283,6 +381,15 @@ const ModalAddSubtasks = ({ navigation, route }: any) => {
         </RowComponent>
         <SpaceComponent height={20} />
       </SectionComponent>
+      <VerifyOTPModal
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
+        email={user2?.email || ''}
+        password={''}
+        isActive={true}
+        userId={userId}
+        emailOTP={user2?.emailOTP || ''}
+      />
     </Container>
     // </Modal>
   );

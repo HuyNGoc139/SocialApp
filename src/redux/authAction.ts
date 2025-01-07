@@ -55,9 +55,10 @@ export const registerUser = createAsyncThunk(
         createAt: new Date(),
         url: '',
         uid,
+        emailOTP: email,
       });
       updateUserStatus('online');
-      return { uid, email, username, friends: [] };
+      return { uid, email, username, friends: [], emailOTP: email };
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -72,7 +73,14 @@ export const updateUser = createAsyncThunk(
       user,
       isEnabled,
       urlprofile,
-    }: { userId: string; user: User; isEnabled: boolean; urlprofile: string },
+      emailOTP,
+    }: {
+      userId: string;
+      user: User;
+      isEnabled: boolean;
+      urlprofile: string;
+      emailOTP: string;
+    },
     { rejectWithValue },
   ) => {
     try {
@@ -82,6 +90,7 @@ export const updateUser = createAsyncThunk(
         uid: userId,
         TwoFA: isEnabled,
         url: urlprofile,
+        emailOTP: emailOTP,
       };
 
       await firestore()

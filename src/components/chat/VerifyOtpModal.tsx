@@ -23,23 +23,50 @@ import axios from 'axios';
 import { CountdownText } from '../account/CountdownText';
 import { handleSendOTP } from '../../funtion/OTP';
 const { width, height } = Dimensions.get('window');
-
+import firestore from '@react-native-firebase/firestore';
 export type TVerifyOTPModalProps = {
   isVisible: boolean;
   onClose: () => void;
   email: string;
   password: string;
+  isActive?: boolean;
+  userId?: string;
+  emailOTP: string;
 };
 
 export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
-  const { isVisible, onClose, email, password } = props;
+  const { isVisible, onClose, email, password, isActive, userId, emailOTP } =
+    props;
   const [otpCode, setOtpCode] = useState('');
-  const [timer, setTimer] = useState(120);
+  const [timer, setTimer] = useState(300);
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [verifyError, setVerifyError] = useState<string>('');
   const [hasSentCode, setHasSentCode] = useState(true);
   const { widthScale, heightScale } = scaleSize(MODAL_WIDTH, MODAL_HEIGHT);
   const dispatch = useDispatch<AppDispatch>();
+  const addEmailOTPActive = async (isActive: boolean) => {
+    try {
+      const userRef = firestore().collection('Users').doc(userId);
+
+      // Kiểm tra xem tài liệu có tồn tại không
+      const userDoc = await userRef.get();
+      if (!userDoc.exists) {
+        console.error('User not found! Cannot add emailOTPActive.');
+        return;
+      }
+
+      // Thêm trường emailOTPActive
+      await userRef.update({
+        emailOTPActive: isActive,
+        updatedAt: firestore.FieldValue.serverTimestamp(), // Cập nhật thời gian sửa đổi
+      });
+
+      console.log('Added emailOTPActive successfully for user:', userId);
+    } catch (error: any) {
+      console.error('Error adding emailOTPActive:', error.message);
+    }
+  };
+
   const handleVerifyOTP = async (
     email: string,
     otpCode: any,
@@ -50,13 +77,16 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
       const response: any = await axios.post(
         'http://192.168.4.77:3000/api/otp/verify',
         {
-          email,
+          email: emailOTP,
           otp,
         },
       );
       if (response?.status == 200) {
-        dispatch(loginUser({ email, password }));
+        isActive
+          ? addEmailOTPActive(true)
+          : dispatch(loginUser({ email, password }));
         console.log('OTP verified successfully!');
+        onClose();
       } else {
         console.log('OTP verification failed.');
       }
@@ -69,7 +99,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
     onClose();
     setVerifyError('');
     setOtpCode('');
-    setTimer(120);
+    setTimer(300);
   };
 
   const errorVerifyMessageMap = useMemo(
@@ -127,7 +157,7 @@ export const VerifyOTPModal = (props: TVerifyOTPModalProps) => {
             },
           ]}
         >
-          {email}
+          {emailOTP}
         </AppText>
 
         <View style={styles.otpPinWrapper}>

@@ -7,6 +7,8 @@ export interface User {
   friends?: string[];
   createAt?: any;
   TwoFA?: boolean;
+  emailOTP?: string;
+  emailOTPActive?: boolean;
 }
 export interface posts {
   id?: string;
