@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import { User } from '../models/user';
 import ModalAddGroup from '../components/chat/ModalAddGroup';
 import GroupItem from '../components/chat/GroupItem';
 import OnlineUsers from '../components/chat/UserActiveComponent';
+import Bimotrics from '../Security/Bimotrics';
 interface Group {
   id?: string;
   members: string[];
@@ -37,8 +38,13 @@ const ChatScreen = ({ navigation }: any) => {
   const [user, setUser] = useState<User>();
   const [isModalVisible, setModalVisible] = useState(false);
   const [groups, setGroups] = useState<any[]>([]);
+  const [groupsId, setGroupsId] = useState();
+  const [item, setItem] = useState({});
+
   const [isLoadingGr, setIsLoadingGr] = useState<boolean>(false);
   const [isLoadingUser, setIsLoadingUser] = useState<boolean>(false);
+  const [pin, setPin] = useState();
+
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(user => {
       if (user) {
@@ -50,6 +56,7 @@ const ChatScreen = ({ navigation }: any) => {
     });
     return () => unsubscribe();
   }, []);
+
 
   const getUser = () => {
     firestore()
@@ -115,7 +122,28 @@ const ChatScreen = ({ navigation }: any) => {
 
     return () => unsubscribe();
   }, []);
+  const childRef = useRef();
 
+  const callChildFunction =async (item) => {
+    setGroupsId(item.id)
+    setItem({...item})
+    const get = firestore()
+    .collection('Group').doc(item.id)
+    const userDoc = await get.get();
+    
+    
+    if (userDoc.exists) {
+      const data = userDoc.data();
+      const access = data?.security?.[user?.uid]?.access;
+      console.log(access);
+      
+      if(access !== true){
+        navigation.navigate('RoomGroup', { ...item });
+      }else{
+    if (childRef.current) {
+      childRef.current.childFunction();
+    }}
+  }}
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.chatHeader}>
@@ -190,11 +218,14 @@ const ChatScreen = ({ navigation }: any) => {
             <GroupItem
               // onPress={() => navigation.navigate('RoomGroup', { ...item })}
               onPress={() => {
-                if (item.active) {
+                // if (item.active) {
                   ///code chuyen den ma pin
-                } else {
-                  navigation.navigate('RoomGroup', { ...item });
-                }
+                  callChildFunction(item)
+                // } else {
+                //   navigation.navigate('RoomGroup', { ...item });
+                //   console.log(item);
+                  
+                // }
               }}
               key={item.id}
               currentuser={user}
@@ -211,11 +242,10 @@ const ChatScreen = ({ navigation }: any) => {
           </Text>
         </TouchableOpacity>
       )}
-      <View style={{ flexDirection: 'row', marginLeft: 20 }}>
+      {/* <View style={{ flexDirection: 'row', marginLeft: 20 }}>
         <Text style={{ fontSize: 24, color: 'black' }}>User</Text>
-      </View>
-
-      {isLoadingUser ? (
+      </View> */}
+      {/* {isLoadingUser ? (
         <ActivityIndicator />
       ) : userSelect.length > 0 ? (
         <FlatList
@@ -235,14 +265,17 @@ const ChatScreen = ({ navigation }: any) => {
         />
       ) : (
         <Text>No Messages</Text>
-      )}
-      <ModalAddGroup
+      )} */}
+      {/* <ModalAddGroup
         visible={isModalVisible}
         onClose={() => setModalVisible(false)}
         users={userSelect}
         currentuser={user}
-      />
+      /> */}
+      <Bimotrics containerStyle={{height:200,}} ref={childRef} input={()=>navigation.navigate('RoomGroup',item)} setPin={setPin} groupID={groupsId} getPin={pin}/>
+      
     </View>
+    
   );
 };
 

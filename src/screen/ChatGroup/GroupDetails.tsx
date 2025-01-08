@@ -1,22 +1,145 @@
 import { ArrowDown2, ArrowSquareLeft, ArrowUp2 } from 'iconsax-react-native';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import ModalChangeName from '../../components/chat/ModalChangeName';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import SpaceComponent from '../../components/SpaceComponent';
 import { fontFamilies } from '../../constants/fontFamily';
 import firestore from '@react-native-firebase/firestore';
 import { User } from '../../models/user';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+
+import { PinModal } from '../../Security/PinModal';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import Bimotrics from '../../Security/Bimotrics';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { Button } from 'react-native';
 const GroupDetails = ({ navigation, route }: any) => {
   const group = route.params;
   const [visible, setVisible] = useState(false);
   const [isShow, setIsShow] = useState(false);
   const [members, setMembers] = useState<User[]>([]);
+  const [access,setAccess] = useState()
+  const [modalVisible, setModalVisible] = useState(false);
+  const [pin, setPin] = useState();
+  const [changePin, setChangePin] = useState();
+
+  const rnBiometrics = new ReactNativeBiometrics();
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+
+
   const user = useSelector((state: RootState) => state.auth.user);
   useEffect(() => {
     getAllMembers();
+    getSecurity()
+    setSecurity()
   }, []);
+
+  useEffect(()=>{
+    setSecurity()
+    getPinDb()
+  },[access])
+  const getSecurity =  async() =>{
+      const get = firestore()
+      .collection('Group').doc(group.id)
+      const userDoc = await get.get();
+      if (userDoc.exists) {
+        const data = userDoc.data();
+        const access = data?.security?.[user?.uid]?.access;
+        const pin = data?.security?.[user?.uid]?.pin;
+
+      if(access === true && pin){
+          setAccess(true)
+        }else{
+          setAccess(false)
+        }
+     
+      }  
+  }
+
+ const setSecurity= async()=>{
+  const userRef = firestore()
+      .collection('Group').doc(group.id)
+      if(access === true){
+      await userRef.update({
+          [`security.${user?.uid}.access`]: true,
+        });
+      }
+      if(access === false){
+        await userRef.update({
+          [`security.${user?.uid}.access`]: false,
+        });
+      }
+ }
+
+ const getPinDb = async() =>{
+  const get = firestore()
+  .collection('Group').doc(group.id)
+  const userDoc = await get.get();
+  if (userDoc.exists) {
+    const data = userDoc.data();
+  const pin = data?.security?.[user?.uid]?.pin;
+  if(access === true ){
+    if(pin === undefined){
+      setModalVisible(true)
+      setChangePin(false)
+    }else{
+      setModalVisible(false)
+      setChangePin(true)
+    }
+  }
+  }  
+ }
+
+ const setPinDb = async()=>{
+  const userRef = firestore()
+  .collection('Group').doc(group.id)
+      await userRef.update({
+    [`security.${user?.uid}`]: {
+      pin:pin,
+      access: true,
+    },
+  });
+ }
+
+ const handleBiometricAuth = () => {
+     console.log(rnBiometrics.allowDeviceCredentials);
+     rnBiometrics
+       .simplePrompt({
+         promptMessage: 'Xác thực sinh trắc học',
+       })
+       .then(result => {
+         if (result.success) {
+           if (rnBiometrics.allowDeviceCredentials === false) {         
+             Alert.alert('Xác thực thành công bằng sinh trắc học!');
+             setAccess(false)
+           } else {
+             Alert.alert('TouchID đã được mở khoá');
+             rnBiometrics.allowDeviceCredentials = false;
+           }
+         } else {
+          setAccess(true)
+         }
+       })
+       .catch(error => {
+         Alert.alert('TouchId tạm khoá do nhập sai quá nhiều lần');
+         rnBiometrics.allowDeviceCredentials = true;
+         setAccess(true)
+       });
+   };
+
+  const handleChangePin = () =>{
+    // setModalVisible(true)
+
+  }
+ const toggleSwitch = () => {
+  setAccess(previousState => !previousState)
+  if(access){
+    handleBiometricAuth()
+  }
+};
+
   const getAllMembers = () => {
     const currentUserFriends = group.members || [];
     const unsubscribeUsers = firestore()
@@ -42,6 +165,14 @@ const GroupDetails = ({ navigation, route }: any) => {
     return () => {
       unsubscribeUsers();
     };
+  };
+
+  const childRef = useRef();
+
+  const callChildFunction = () => {
+    if (childRef.current) {
+      childRef.current.childFunction();
+    }
   };
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -185,9 +316,19 @@ const GroupDetails = ({ navigation, route }: any) => {
         ) : (
           <></>
         )}
-        {/* <View>
-          <Text>adadafsdjigfhusdg</Text>
-        </View> */}
+        <View style={{flexDirection:'row',marginVertical:10}}>
+          <Text   style={{
+              color: 'black',
+              fontSize: 18,
+              fontFamily: fontFamilies.regular,
+              flex: 1,
+            }}>Bảo mật</Text>
+          <Switch value={access}   onValueChange={toggleSwitch}></Switch>
+        </View>
+        {changePin? <TouchableOpacity onPress={callChildFunction}><Text style={{ color: 'black',
+              fontSize: 18,
+              fontFamily: fontFamilies.regular,
+              }}>Đổi mã pin</Text></TouchableOpacity>:null}
       </View>
 
       <ModalChangeName
@@ -199,6 +340,13 @@ const GroupDetails = ({ navigation, route }: any) => {
         onSave={() => setVisible(false)}
         group={group}
       />
+      <PinModal  modalVisible={modalVisible} setModalVisible={setModalVisible} onpress={setPinDb} setPin={setPin}
+      cancel={setModalVisible}
+      ></PinModal>
+      <Bimotrics ref={childRef} input={()=>setModalVisible(true)
+      } setPin={setPin} groupID={group.id} getPin={pin}/>
+        
+      
     </View>
   );
 };
